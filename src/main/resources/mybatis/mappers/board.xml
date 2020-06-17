@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+    <!--&lt;!&ndash;회원정보&ndash;&gt;
+    <resultMap id="memberResult" type="member">
+        <result property="id" column="id" />
+        <result property="passwd" column="passwd" />
+        <result property="name" column="name" />
+        <result property="email" column="email" />
+        <result property="zonecode" column="zonecode" />
+        <result property="address" column="address" />
+        <result property="extraAddress" column="extraAddress" />
+        <result property="detailAddress" column="detailAddress" />
+        <result property="regdate" column="regdate" />
+        <result property="profileImage" column="profileImage" />
+        <result property="enable" column="enable" />
+    </resultMap>-->
+
+
+</mapper>
+
+<!--
+SELECT C.CONTENT,C.REGDATE,M.NAME,M.PROFILEIMAGE
+        FROM COMMENT_BOARD C JOIN MEMBER M ON C.WRITER = M.ID
+        WHERE ARTICLENO = 1-->

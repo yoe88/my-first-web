@@ -1,0 +1,67 @@
+@font-face {
+    font-family: 'Cafe24Oneprettynight';
+    src: url('../font/Cafe24Oneprettynight.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.over-lay {
+    position: fixed;
+    background-color: #fdf5e6 !important;
+    color: #000 !important;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.content {         
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.img {
+    max-width: 600px;
+    max-height: 450px;
+}
+
+img{
+    width: 100%;
+    border-radius: 15px;
+}
+
+h2 {
+    color: saddlebrown;
+    font-family: 'Cafe24Oneprettynight';
+    font-weight: 400;
+    word-break: keep-all;
+}
+
+.back-home {
+    margin-top: 15px;
+    display: inline-block;
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-decoration: none;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: white;
+    background-color: #ff5722!important
+}
+
+.back-home:hover {
+    color: #4CAF50 !important;
+}
+
+@media screen and (max-width: 600px) {
+    .back-home{
+        width: 60%;
+        max-width: 140px;
+        font-size: 1.3rem;
+        padding: 15px 5px;
+    }
+    .content{
+        width: 75%;
+    }
+}
