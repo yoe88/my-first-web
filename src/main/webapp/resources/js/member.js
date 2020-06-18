@@ -202,19 +202,19 @@ function addMember(form){
         return false;
     }
     //비밀번호 체크
-    const passwd = form.querySelectorAll("div[class=PASSWD] input");
-    if(passwd[0].value.includes(' ') || passwd[0].value.length <4 || passwd[0].value.length >21){
-        form.querySelector(".error-passwd").textContent = '비밀번호는 공백을 제외한 4~20자입니다.';
-        passwd[0].focus();
+    const password = form.querySelectorAll("div[class=PASSWORD] input");
+    if(password[0].value.includes(' ') || password[0].value.length <4 || password[0].value.length >21){
+        form.querySelector(".error-pw").textContent = '비밀번호는 공백을 제외한 4~20자입니다.';
+        password[0].focus();
         return false;
     }
-    if(passwd[0].value !== passwd[1].value){
+    if(password[0].value !== password[1].value){
         alert('비밀번호가 일치하지 않습니다.');
-        form.querySelector(".error-passwd").textContent = '비밀번호가 일치하지 않습니다.';
-        passwd[1].focus();
+        form.querySelector(".error-pw").textContent = '비밀번호가 일치하지 않습니다.';
+        password[1].focus();
         return false;
     }else{
-        form.querySelector(".error-passwd").textContent = '';
+        form.querySelector(".error-pw").textContent = '';
     }
     //닉네임 체크
     const name = form.querySelector("input[name=name]");
@@ -260,7 +260,7 @@ function validateLogin(form){
         document.querySelector('.error-id').textContent = '아이디를 입력해주세요.';
         return false;
     }
-    if(form.passwd.value.length === 0){
+    if(form.password.value.length === 0){
         document.querySelector('.error-pw').textContent = '비밀번호를 입력해주세요.';
         return false;
     }

@@ -23,15 +23,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
-    private final MemberService memberService;
 
     @Autowired
-    public CustomAuthenticationProvider(PasswordEncoder passwordEncoder, CustomUserDetailsService customUserDetailsService
-                                    ,MemberService memberService) {
-        logger.info("인증설정");
+    public CustomAuthenticationProvider(PasswordEncoder passwordEncoder
+            , CustomUserDetailsService customUserDetailsService) {
+        logger.info("CustomAuthenticationProvider Init");
         this.passwordEncoder = passwordEncoder;
         this.customUserDetailsService = customUserDetailsService;
-        this.memberService = memberService;
     }
 
     @Override
@@ -69,17 +67,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new CredentialsExpiredException("User credentials have expired");
         }
         logger.info("인증완료");
-        ///인증이 되었으면 ID에 해당하는 권한정보를 가져와 저장한다.
-        List<MemberRole> memberRoles = memberService.getMemberRoles(user.getUsername());
-        // 로그인 한 사용자의 권한 정보를 GrantedAuthority를 구현하고 있는 SimpleGrantedAuthority객체에 담아
-        // 리스트에 추가한다. MemberRole 이름은 "ROLE_"로 시작해야 한다
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        if(memberRoles != null) {
-            for (MemberRole memberRole : memberRoles) {
-                authorities.add(new SimpleGrantedAuthority(memberRole.getRoleName()));
-            }
-        }
-        user.setAuthorities(authorities);
+
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         result.setDetails(authentication.getDetails());
         return result;

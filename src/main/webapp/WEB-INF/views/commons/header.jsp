@@ -27,7 +27,7 @@
 	                        <li class="nav-item"><a class="nav-link" href="${contextPath}/member/register"><i class="fas fa-user-plus pr-1"></i>회원가입</a></li>
                         </sec:authorize>
                         <sec:authorize access="isAuthenticated()">
-                            <li class="nav-item"><a class="d-md-none nav-link" href="${contextPath}/member/profile"><i class="fas fa-user pr-1"></i>내정보</a></li>
+                            <li class="nav-item"><a class="d-md-none nav-link" href="${contextPath}/member/me"><i class="fas fa-user pr-1"></i>내정보</a></li>
                             <li class="nav-item"><a class="d-md-none nav-link" href="${contextPath}/logout"><i class="fas fa-sign-out-alt pr-1"></i>로그아웃</a></li>
                         	<li class="nav-item">
 	                        	<div class="dropdown">
@@ -36,7 +36,7 @@
 								     src="${contextPath}/file/thumb/${username}/${profileImage}" alt="profile" style="cursor: pointer;" />
 								    <!-- Menu -->
 								    <div class="dropdown-menu dropdown-menu-right">
-								        <a class="dropdown-item" href="${contextPath}/member/profile"><i class="fas fa-user pr-1"></i>내정보</a>
+								        <a class="dropdown-item" href="${contextPath}/member/me"><i class="fas fa-user pr-1"></i>내정보</a>
 								        <a class="dropdown-item" href="${contextPath}/logout"><i class="fas fa-sign-out-alt pr-1"></i>로그아웃</a>
 								    </div>
 								</div>

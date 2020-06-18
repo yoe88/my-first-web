@@ -35,7 +35,7 @@ function getReplyComment(){
             }
         }
     }
-    xhttp.open('GET','/yh/boards/1/reply/1',false);
+    xhttp.open('GET',getRoot() + '/boards/1/reply/1',false);
     xhttp.send();
     return list;
 }
@@ -127,7 +127,7 @@ function toggleReplyComment(){
 function test(){  
     const listCmt = new Array();
     const xhttp = new XMLHttpRequest();
-    xhttp.open('GET','/yh/boards/1/reply/1',true);
+    xhttp.open('GET',getRoot() + '/boards/1/reply/1',true);
     xhttp.send();
     xhttp.onreadystatechange = function(){
         if(this.readyState == 4){

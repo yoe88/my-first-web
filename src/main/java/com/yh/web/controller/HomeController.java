@@ -1,10 +1,11 @@
 package com.yh.web.controller;
 
-import com.yh.web.dao.impl.MemberDaoImpl;
+import com.yh.web.security.CustomUserDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,8 +20,6 @@ public class HomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-    @Autowired
-    MemberDaoImpl service;
 
     @RequestMapping(value = "/index", method = RequestMethod.GET)
     public ModelAndView home() {
@@ -29,13 +28,13 @@ public class HomeController {
         mav.addObject("page_title", "YH");
         return mav;
     }
- 
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping(path = "/para")
-    public @ResponseBody
-    Principal haha(Principal principal) {
+    public @ResponseBody Principal haha(Principal principal) {
         return principal;
     }
+
 
 
 }

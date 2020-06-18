@@ -91,6 +91,7 @@ public class MemberController {
      */
     @PostMapping("/new")
     public String addMember(@ModelAttribute Member member) {
+        logger.info(member.toString());
         memberService.addMember(member);
         return "redirect:/index";
     }
@@ -100,12 +101,15 @@ public class MemberController {
      * @return 회원정보 페이지로 리턴
      */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/profile")
-    public ModelAndView profile(Principal principal) {
-        ModelAndView mav = new ModelAndView("/member/profile");
+    @GetMapping("/me")
+    public ModelAndView myInfor(Principal principal) {
+        ModelAndView mav = new ModelAndView("/member/me");
         mav.addObject("page_title", "내정보");
-        Member m = memberService.getMemberInfor(principal.getName());
+        Member m = memberService.getMemberInfo(principal.getName());
         mav.addObject("m", m);
+
         return mav;
     }
+
+
 }

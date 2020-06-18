@@ -7,7 +7,7 @@ import com.yh.web.dto.MemberRole;
 
 public interface MemberDao {
 	List<Member> selectAllMemberList();
-	void updateMember();
+	int updateMember();
 	Member selectMemberById(String loginUserId);
 	List<MemberRole> selectRolesById(String id);
 	String selectId(String id);

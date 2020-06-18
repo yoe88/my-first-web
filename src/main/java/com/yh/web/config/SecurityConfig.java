@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import javax.sql.DataSource;
 
 @Configuration
-@EnableWebSecurity //@EnableWebSecurity가 붙어 있을 경우 스프링 시큐리티를 구성하는 기본적인 빈(Bean)들을 자동으로 구성해줍니다.
+@EnableWebSecurity //@EnableWebSecurity가 붙어 있을 경우 스프링 시큐리티를 구성하는 기본적인 빈(Bean)들을 자동으로 구성해준다.
 //@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true) //default false
 @ComponentScan(basePackages = {"com.yh.web.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public SecurityConfig(@Lazy AuthenticationProvider customAuthenticationProvider,
                           @Lazy CustomUserDetailsService customUserDetailsService,
                           DataSource dataSource) {
-        logger.info("시큐리티 설정");
+        logger.info("SecurityConfig Init");
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.customUserDetailsService = customUserDetailsService;
         this.dataSource = dataSource;
@@ -68,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin()  //로그인관련 설정
             .loginPage("/member/login")   //로그인페이지로 가는 요청
             .usernameParameter("id")
-            .passwordParameter("passwd")
+            .passwordParameter("password")
             .loginProcessingUrl("/member/loginProcess")  //로그인 인증
             //.failureForwardUrl("/members/login")    //로그인 실패시 이동할 페이지 forward방식
             //.failureUrl("/members/login?login_error=1") //로그인 실패시 이동할 페이지 Redirect방식
@@ -113,6 +113,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationSuccessHandler customAuthenticationSuccessHandler(){
         return new CustomAuthenticationSuccessHandler();
     }
+
 
     // tokenRepository의 구현체
     @Bean

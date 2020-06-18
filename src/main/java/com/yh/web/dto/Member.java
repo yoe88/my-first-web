@@ -7,14 +7,14 @@ import lombok.Data;
 @Data
 public class Member {
 	private String id;
-	private String passwd;
+	private String password;
 	private String name;
 	private String email;
-	private String zonecode;
+	private String zoneCode;
 	private String address;
 	private String extraAddress;
 	private String detailAddress;
-	private LocalDateTime regdate;
+	private LocalDateTime regDate;
 	private String profileImage;
 	private boolean enable;
 }

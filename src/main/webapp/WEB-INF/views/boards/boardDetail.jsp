@@ -19,8 +19,8 @@
     <!-- 내가만든 스타일 -->
     <link rel="shortcut icon" href="./favicon.ico">
     <link rel="icon" href="./favicon.ico">
-    <!-- <link rel="stylesheet" href="../css/mystyle.css"> -->
-    <link rel="stylesheet" href="<c:url value="/resources/css/mystyle.css" />">
+    <!-- <link rel="stylesheet" href="../css/myStyle.css"> -->
+    <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">
 
     <style>
         .table td,
@@ -144,7 +144,6 @@
                 </tr>
                 <tr class="row">
                     <th class="col-md-2">내용</th>
-                    <!-- required -->
                     <td class="col-md-10">
                         <textarea rows="14" name="content" class="form-control" readonly></textarea>
                     </td>
@@ -248,8 +247,9 @@
             element.style.height = (element.scrollHeight)+"px";
         }
     </script>
-    <script src="/js/boards.js"></script>
-    <!-- <script src="<c:url value="/resources/js/boards.js" />"></script> -->
+    <%--<script src="/js/boards.js"></script>--%>
+    <script src="<c:url value="/resources/js/commons.js" />"></script>
+    <script src="<c:url value="/resources/js/boards.js" />"></script>
 </body>
 
 </html>

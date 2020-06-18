@@ -17,15 +17,17 @@ public class MemberDaoImpl implements MemberDao {
     private final SqlSession sqlSession;
 
     public MemberDaoImpl(SqlSession sqlSession) {
+        logger.info("MemberDaoImpl Init...");
         this.sqlSession = sqlSession;
     }
 
     //트랜잭션 테스트 메서드
     @Override
-    public void updateMember() {
+    public int updateMember() {
 
         sqlSession.update(MAPPER + "updatePasswdById1");
         sqlSession.update(MAPPER + "updatePasswdById2");
+        return 0;
     }
 
     @Override

@@ -20,10 +20,10 @@
     <%-- 내가만든 스타일 --%>
     <%-- <link rel="shortcut icon" href="./favicon.ico">
     <link rel="icon" href="./favicon.ico">
-    <link rel="stylesheet" href="../css/mystyle.css"> --%>
+    <link rel="stylesheet" href="../css/myStyle.css"> --%>
     <link rel="shortcut icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="icon" href="<c:url value="/resources/images/favicon.ico" />">
-    <link rel="stylesheet" href="<c:url value="/resources/css/mystyle.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">
     
     <title><tiles:insertAttribute name="title" /></title>
 </head>

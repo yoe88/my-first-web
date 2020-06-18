@@ -19,10 +19,10 @@
     <!-- 내가만든 스타일 -->
     <!-- <link rel="shortcut icon" href="./favicon.ico">
     <link rel="icon" href="./favicon.ico">
-    <link rel="stylesheet" href="../css/mystyle.css"> -->
+    <link rel="stylesheet" href="../css/myStyle.css"> -->
     <link rel="shortcut icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="icon" href="<c:url value="/resources/images/favicon.ico" />">
-    <link rel="stylesheet" href="<c:url value="/resources/css/mystyle.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">
 
     <!-- 다음 주소 API -->
     <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -53,12 +53,12 @@
                     <span class="error-id small"></span>
                 </div>
 
-                <div class="PASSWD">
+                <div class="PASSWORD">
                     <div class="input-group my-1">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-lock"></i></span>
                         </div>
-                        <input type="password" class="form-control" placeholder="비밀번호" name="passwd" autocomplete="new-password">
+                        <input type="password" class="form-control" placeholder="비밀번호" name="password" autocomplete="new-password">
                     </div>
                     <div class="input-group my-1">
                         <div class="input-group-prepend">
@@ -66,7 +66,7 @@
                         </div>
                         <input type="password" class="form-control" placeholder="비밀번호 확인" autocomplete="new-password">
                     </div>
-                    <span class="error-passwd small"></span>
+                    <span class="error-pw small"></span>
                 </div>
 
                 <div class="NAME">

@@ -7,11 +7,11 @@ import com.yh.web.dto.MemberRole;
 
 public interface MemberService{
 	//시큐리티 관련
-	Member getMemberInfor(String loginUserId);
+	Member getMemberInfo(String loginUserId);
     List<MemberRole> getMemberRoles(String loginUserId);
 	
 	List<Member> getAllMemberList();
-	void updateMember();
+	int updateMember();
 	String searchId(String id);
 	String searchEmail(String email);
 	int addMember(Member member);

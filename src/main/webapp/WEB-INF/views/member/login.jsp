@@ -19,10 +19,10 @@
     <!-- 내가만든 스타일 -->
     <!-- <link rel="shortcut icon" href="./favicon.ico">
     <link rel="icon" href="./favicon.ico">
-    <link rel="stylesheet" href="../css/mystyle.css"> -->
+    <link rel="stylesheet" href="../css/myStyle.css"> -->
    	<link rel="shortcut icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="icon" href="<c:url value="/resources/images/favicon.ico" />">
-    <link rel="stylesheet" href="<c:url value="/resources/css/mystyle.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">
 </head>
 
 <body>
@@ -39,7 +39,7 @@
                     </div>
 
                     <div>
-                        <input class="form-control my-1" type="password" placeholder="비밀번호" name="passwd"
+                        <input class="form-control my-1" type="password" placeholder="비밀번호" name="password"
                           autocomplete="off" onkeydown="errTextInit();">
                             <!--minlen4 maxlen20 required-->
                         <span class="error-pw  small">${errMsg}</span>

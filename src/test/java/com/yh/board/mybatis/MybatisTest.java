@@ -34,7 +34,7 @@ public class MybatisTest {
 	
 	@Test
 	public void getMemberInfor() {
-		Member m = memberService.getMemberInfor("nana");
+		Member m = memberService.getMemberInfo("nana");
 		System.out.println(m);
 	}
 }

@@ -7,14 +7,14 @@
 	<!--회원정보-->
 	<resultMap id="memberResult" type="member">
 		<result property="id" column="id" />
-        <result property="passwd" column="passwd" />
+        <result property="password" column="password" />
         <result property="name" column="name" />
         <result property="email" column="email" />
-		<result property="zonecode" column="zonecode" />
+		<result property="zoneCode" column="zoneCode" />
 		<result property="address" column="address" />
 		<result property="extraAddress" column="extraAddress" />
 		<result property="detailAddress" column="detailAddress" />
-		<result property="regdate" column="regdate" />
+		<result property="regDate" column="regDate" />
 		<result property="profileImage" column="profileImage" />
 		<result property="enable" column="enable" />
 	</resultMap>
@@ -22,7 +22,7 @@
 	<!--회원권한-->
 	<resultMap id="memberRoleResult" type="memberRole">
 		<result property="id" column="id" />
-        <result property="roleName" column="rolename" />
+        <result property="roleName" column="roleName" />
 	</resultMap> 
 
 	<!--회원전체검색-->
@@ -57,10 +57,10 @@
 		INSERT INTO
 			MEMBER(
 					ID
-					,PASSWD
+					,PASSWORD
 					,NAME
 					,EMAIL
-					<if test="zonecode != null and !zonecode.equals('')">
+					<if test="zoneCode != null and !zoneCode.equals('')">
 					,ZONECODE
 					,ADDRESS
 					,EXTRAADDRESS
@@ -69,11 +69,11 @@
 				)
 			VALUES(
 					#{id}
-					,#{passwd}
+					,#{password}
 					,#{name}
 					,#{email}
-					<if test="zonecode != null and !zonecode.equals('')">
-					,#{zonecode}
+					<if test="zoneCode != null and !zoneCode.equals('')">
+					,#{zoneCode}
 					,#{address}
 					,#{extraAddress}
 					,#{detailAddress}

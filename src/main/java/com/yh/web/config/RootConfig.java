@@ -73,14 +73,12 @@ public class RootConfig {
 		sessionFactory.setDataSource(dataSource());
 		sessionFactory.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("classpath:mybatis/model/modelConfig.xml"));
 		sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mybatis/mappers/*.xml"));
-		 SqlSessionFactory factory =  sessionFactory.getObject();
-		return factory;
+		return sessionFactory.getObject();
 	}
 	
 	@Bean  // SqlSession구현
-	public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) throws Exception {
-		final SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory);
-		return sqlSessionTemplate;
+	public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+		return new SqlSessionTemplate(sqlSessionFactory);
 	}	
 	
      //트랜잭션 관리
