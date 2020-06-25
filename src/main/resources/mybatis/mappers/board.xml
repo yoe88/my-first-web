@@ -4,21 +4,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="mapper.board">
-    <!--&lt;!&ndash;회원정보&ndash;&gt;
-    <resultMap id="memberResult" type="member">
-        <result property="id" column="id" />
-        <result property="passwd" column="passwd" />
-        <result property="name" column="name" />
-        <result property="email" column="email" />
-        <result property="zonecode" column="zonecode" />
-        <result property="address" column="address" />
-        <result property="extraAddress" column="extraAddress" />
-        <result property="detailAddress" column="detailAddress" />
-        <result property="regdate" column="regdate" />
-        <result property="profileImage" column="profileImage" />
-        <result property="enable" column="enable" />
-    </resultMap>-->
+    <resultMap id="boardListResult" type="boardList">
+        <result property="articleNo" column="articleNo" />
+        <result property="title" column="title" />
+        <result property="writer" column="writer" />
+        <result property="regDate" column="regDate" />
+        <result property="recommend" column="recommend" />
+        <result property="hit" column="hit" />
+        <result property="cmt" column="cmt" />
+        <result property="lv" column="lv" />
+    </resultMap>
 
+    <select id="selectBoardList" resultMap="boardListResult" parameterType="java.util.Map">
+        SELECT *
+        FROM(
+            SELECT ROWNUM NUM, board.*, LEVEL-1 LV
+            FROM(
+                    SELECT b.ARTICLENO, b.TITLE, b.writer, b.REGDATE, b.RECOMMEND, b.HIT, b.PARENT, b.GRPNO, count(c.ARTICLENO) cmt
+                    FROM
+                        (
+                            SELECT bb.ARTICLENO, bb.TITLE, bb.REGDATE, bb.RECOMMEND, bb.HIT, bb.PARENT, bb.GRPNO, bb.PUB, m.NAME writer
+                            FROM BOARD bb
+                                     JOIN MEMBER m
+                                          ON writer = m.id
+                        )b
+                            LEFT JOIN COMMENT_BOARD c
+                                      ON b.ARTICLENO = c.ARTICLENO
+                    WHERE ${field} LIKE '%'||#{query}||'%' AND PUB = 1
+                    GROUP BY b.ARTICLENO, b.TITLE, b.writer, b.REGDATE, b.RECOMMEND, b.HIT, b.PARENT, b.GRPNO
+                )board
+            START WITH board.PARENT = 0
+            CONNECT BY PRIOR board.ARTICLENO = board.PARENT
+            ORDER SIBLINGS BY GRPNO DESC
+            )
+        WHERE NUM BETWEEN #{start} AND #{end}
+    </select>
 
 </mapper>
 

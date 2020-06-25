@@ -46,12 +46,24 @@ div[class= input-group-append] span[class ~= input-group-text]:hover{
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoGoldenPierA.woff')
     format('woff'); font-weight: normal; font-style: normal;
 }
+.font-Mapo{
+    font-family: 'MapoGoldenPier', serif;
+}
+.font-pretty-night{
+    font-family: 'Cafe24Oneprettynight', serif;
+}
+.black{
+    color: black;
+}
+.white{
+    color: white;
+}
 
 .hide{
-    display: none;
+    display: none!important;
 }
 .bg-light-gray{
-
+    background-color: #f5f6f8;
 }
 
 .bg-black{
@@ -182,9 +194,7 @@ div.btn-outline-success[role=alert]:hover{
 /*로그인 회원가입*/
 
 /*boardList*/
-.h1-title{
-    font-family: 'MapoGoldenPier';
-}
+
 table.tbl-board thead th, table.tbl-board tbody td{
     padding: .75rem 0.2rem;
 }
@@ -195,7 +205,7 @@ table.tbl-board thead th{
 }
 
 table.tbl-board{
-    font-family: 'Cafe24Oneprettynight';
+    font-family: 'Cafe24Oneprettynight', serif;
     color: black!important;
 }
 

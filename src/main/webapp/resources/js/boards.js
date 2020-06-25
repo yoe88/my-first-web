@@ -1,3 +1,88 @@
+'use strict'
+//게시판 작성페이지
+function validateBoard(form){
+    const title = form.title;
+    const content = form.content;
+    if(title.value.length === 0 ){
+        alert('제목을 입력하세요.');
+        return false;
+    }
+    if(title.value.length > 26 ){
+        alert('제목의 글자수는 최대 26자입니다.');
+        return false;
+    }
+    if(content.value.length === 0 ){
+        alert('내용을 입력하세요.');
+        return false;
+    }
+    /* if(stringByteLength > 300){
+        alert('최대 입력값을 초과하였습니다.');
+        return false;
+    } */
+    return true;
+}
+function checkMaxByte(text){ //textArea
+    let len = checkByte(text.value);
+    document.querySelector(".currentByte").textContent = len.b;
+    if(len.b > 300){
+        text.value= text.value.substring(0,len.i -1);
+        len = checkByte(text.value);
+        document.querySelector(".currentByte").textContent = len.b
+        alert('최대 입력값을 초과하였습니다.');
+    }
+}
+function checkByte(s,b,i,c){
+    for(b=i=0;c=s.charCodeAt(i++);){
+        b+=c>>11?3:c>>7?2:1; //2048로나눴을때 몫이 있으면 3바이트 다시 128이랑비교해서 몫이 있으면 2바이트 없으면1바이트
+        if(b > 300){
+            return{
+                b:b,  //바이트
+                i:i   //글자수
+            };
+        }
+    }
+    return{
+        b:b
+    };
+};
+function changeFile(thisFile) { //실제 입력된 파일
+    const acceptedImageTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/bmp', 'image/tiff']; //허용가능한 파일 확장자
+    const thumbImg = document.querySelector('.thumb-img'); //썸네일
+    const file = thisFile.files[0];//fileList[0]; 첫번째파일객체
+    const fileName = document.querySelector(".custom-file-label"); //화면상에 보이는 파일이름
+
+    if (file.value.length === 0) {  // name?
+        fileName.textContent = 'Choose file';
+        thumbImg.src = '';
+        thumbImg.style.display = 'none';
+        return;
+    }
+    if (file.size > 10485760) {  //10485760 10mb;
+        alert('파일 사이즈는 최대 10mb입니다.');
+        thisFile.value = '';  //파일초기화
+        fileName.textContent = 'Choose file';
+        thumbImg.src = '';
+        thumbImg.style.display = 'none';
+        return;
+    }
+    fileName.textContent = file.name; //파일이름 변경
+
+    //첨부파일이 이미지일경우
+    if (acceptedImageTypes.includes(file.type)) {
+        makeThumbnail(file, thumbImg, 50, 50);
+    } else {
+        thumbImg.src = '';
+        thumbImg.style.display = 'none';
+    }
+}
+
+function cancle() {
+    if (confirm("변경사항이 저장되지 않을 수 있습니다."))
+        history.go(-1);
+}
+//게시판 작성페이지
+
+
 //상세보기페이지
 //댓글창 보이기.안보이기
 function toggleComment(){
@@ -106,15 +191,7 @@ function toggleReplyComment(){
             //댓글입력창 추가
             root.appendChild(div);
         }else{
-            //console.log('펄스');
-            
-            //console.dir(li.lastElementChild);
-            /* if(li.lastElementChild.classList.contains('comment-write-box'))
-                li.lastElementChild.remove(); */
             let len = root.children.length -1;
-            /* for(let i = 4; i<len; i++){
-                li.lastElementChild.remove();
-            } */
             while(root.children[len--].nodeName != 'A'){
                 root.lastElementChild.remove();
             }
@@ -122,26 +199,4 @@ function toggleReplyComment(){
     });
 }     
 
-
-
-function test(){  
-    const listCmt = new Array();
-    const xhttp = new XMLHttpRequest();
-    xhttp.open('GET',getRoot() + '/boards/1/reply/1',true);
-    xhttp.send();
-    xhttp.onreadystatechange = function(){
-        if(this.readyState == 4){
-            if(this.status == 200){
-                listCmt.push(1);
-                listCmt.push(2);
-                listCmt.push(3);
-                console.dir(listCmt);
-            }else{
-                alert('replyComment, error');
-            }
-        }
-    }
-    console.dir(listCmt);
-    return listCmt;
-}
 //상세보기페이지

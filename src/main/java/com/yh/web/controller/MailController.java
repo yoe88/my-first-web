@@ -23,7 +23,7 @@ public class MailController {
 		this.mailService = mailService;
 	}
 
-	@RequestMapping(value = "/createcode", method = RequestMethod.GET)
+	@RequestMapping(value = "/createcode", method = RequestMethod.GET, consumes = "text/plain")
 	@ResponseBody
 	public String sendSimpleMail(HttpServletRequest request, @RequestParam(name = "email")String receiveEmail) throws Exception {
 		request.setCharacterEncoding("utf-8");

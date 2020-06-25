@@ -70,6 +70,6 @@
         </div>
     </div>
     <!-- <script src="../js/member.js"></script> -->
-    <script src="<c:url value="/resources/js/member.js" />"></script>
+    <script src="<c:url value="/resources/js/member/login.js" />"></script>
 </body>
 </html>

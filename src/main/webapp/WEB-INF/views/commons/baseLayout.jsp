@@ -18,9 +18,6 @@
     <script src="https://kit.fontawesome.com/9766199556.js" crossorigin="anonymous"></script>
     
     <%-- 내가만든 스타일 --%>
-    <%-- <link rel="shortcut icon" href="./favicon.ico">
-    <link rel="icon" href="./favicon.ico">
-    <link rel="stylesheet" href="../css/myStyle.css"> --%>
     <link rel="shortcut icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">

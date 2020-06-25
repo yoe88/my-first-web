@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 
 
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 //web.xml을 대신한다.
@@ -35,7 +36,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
 
-        return new Filter[]{encodingFilter};
+        return new Filter[]{encodingFilter, new HiddenHttpMethodFilter()};
     }
 
     @Override

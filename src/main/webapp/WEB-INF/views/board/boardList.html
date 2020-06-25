@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <title>YH - Index</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--부트스트랩 설정-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- 아이콘  설정-->
+    <script src="https://kit.fontawesome.com/9766199556.js" crossorigin="anonymous"></script>
+    
+    <!-- 내가만든 스타일 -->
+    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="icon" href="./favicon.ico">
+    <link rel="stylesheet" href="../css/mystyle.css">
+
+    <style>
+       
+    </style>
+   
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md bg-purple navbar-dark mb-5">
+            <div class="container py-2">
+                <a class="navbar-brand font-weight-bolder" href="#" style="font-size: 150%;">YH</a>       
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-clipboard pr-1"></i>게시판</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#"><i class="fas fa-images pr-1"></i>포토갤러리</a></li>
+                    </ul>
+                    <ul class="navbar-nav align-items-lg-center ml-auto">
+                        <a class="nav-item nav-link" href="/login"><i class="fas fa-sign-in-alt pr-1"></i>로그인</a>
+                        <a class="nav-item nav-link" href="/register"><i class="fas fa-user-plus pr-1"></i>회원가입</a>
+                        <a class="nav-item nav-link" href="/myInfor"><i class="fas fa-user pr-1"></i>내정보</a>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section class="container">
+            <div>
+                <h1 class="h1-title">* 자유게시판 *</h1>
+            </div>
+
+            <!--검색창-->
+            <div class="text-right my-3 float-right">
+                <form action="">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <select class="form-control">
+                                <option>제목</option>
+                                <option>작성자</option>
+                            </select>
+                        </div>
+                        <input type="text" class="form-control">
+                        <div class="input-group-append">
+                            <button type="submit" class="form-control btn-purple"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!--게시글목록-->
+            <div class="table-responsive">
+                <table class="table tbl-board">
+                <thead>
+                    <tr class="text-center">
+                        <th class="">번호</th>
+                        <th class="">제목</th>
+                        <th class="">글쓴이</th>
+                        <th class="">작성일</th>
+                        <th class="">추천</th>
+                        <th class="">조회</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td>19922</td>
+                        <td class="text-left tbl-title"><a href="">한글한글한글한글한글한글한글한글한글한글한글한글한</a></td>
+                        <td class="">abcdefgh</td>
+                        <td>20.03.22</td>
+                        <td>5</td>
+                        <td>203</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td>19922</td>
+                        <td class="text-left tbl-title"><a href="">1234567890123456789012345</a></td>
+                        <td class="ellipsis"><span></span></td>
+                        <td>20.03.22</td>
+                        <td>15012</td>
+                        <td>203</td>
+                    </tr>
+                    <tr class="text-center">
+                        <td>19922</td>
+                        <td class="text-left tbl-title"><a href="">abcdefghijklmnopqrstuvwxyz</a></td>
+                        <td class=""><span></span></td>
+                        <td>20.03.22</td>
+                        <td>15012</td>
+                        <td>203</td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="container my-3 text-center">
+            <div class="float-left">
+                <a href="boardForm.html"><button class="btn btn-outline-danger">글쓰기</button></a>
+            </div>
+            <nav class="pager">
+                <ul class="pagination" style="align-items: center;">
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-double-left"></i></a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-double-right"></i></a></li>
+                </ul>
+            </nav>
+        </section>
+    </main>
+
+    <footer class="container-fluid text-center p-3 bg-black">
+        Copyright &copy; 2020 YH Web
+    </footer>
+</body>
+</html>

@@ -7,7 +7,7 @@
     <sec:authentication property="principal.profileImage" var="profileImage" />
 </sec:authorize>
 <header>
-        <nav class="navbar navbar-expand-md bg-purple navbar-dark mb-5">
+        <nav class="navbar navbar-expand-md bg-purple navbar-dark mb-3 mb-md-5">
             <div class="container py-2">
                 <a class="navbar-brand font-weight-bolder" href="${contextPath}/index" style="font-size: 150%;">YH</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
@@ -33,7 +33,7 @@
 	                        	<div class="dropdown">
 								    <!-- Trigger --> 
                                     <img class="ml-1 rounded-circle d-none d-md-block" width="50" height="50" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-								     src="${contextPath}/file/thumb/${username}/${profileImage}" alt="profile" style="cursor: pointer;" />
+								     src="${contextPath}/file/thumb/${username}/${profileImage}?w=50&h=50" alt="profile" style="cursor: pointer;" />
 								    <!-- Menu -->
 								    <div class="dropdown-menu dropdown-menu-right">
 								        <a class="dropdown-item" href="${contextPath}/member/me"><i class="fas fa-user pr-1"></i>내정보</a>

@@ -11,9 +11,8 @@ public interface MemberService{
     List<MemberRole> getMemberRoles(String loginUserId);
 	
 	List<Member> getAllMemberList();
-	int updateMember();
 	String searchId(String id);
 	String searchEmail(String email);
 	int addMember(Member member);
-
+    boolean modifyMember(Member member);
 }

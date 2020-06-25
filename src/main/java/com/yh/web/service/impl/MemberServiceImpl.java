@@ -21,13 +21,11 @@ public class MemberServiceImpl implements MemberService {
     final MemberDao memberDao;
     final PasswordEncoder passwordEncoder;
 
-
     @Autowired
     public MemberServiceImpl(MemberDao memberDao, PasswordEncoder passwordEncoder) {
         logger.info("MemberServiceImpl Init...");
         this.memberDao = memberDao;
         this.passwordEncoder = passwordEncoder;
-
     }
 
     @Transactional(readOnly = true)
@@ -46,15 +44,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<Member> getAllMemberList() {
         return memberDao.selectAllMemberList();
-    }
-
-    @Transactional
-    @Override
-    public int updateMember() {
-        int result = memberDao.updateMember();
-        CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        user.setProfileImage("123123");
-        return result;
     }
 
     @Transactional(readOnly = true)
@@ -78,5 +67,30 @@ public class MemberServiceImpl implements MemberService {
         result += memberDao.insertMember(member);
         result += memberDao.insertMemberRole(member.getId());
         return  result;
+    }
+
+    @Transactional
+    @Override
+    public boolean modifyMember(Member member) {
+        int result;
+        if(member.getPassword() != null) //수정할 비밀번호가 있으면 암호화 작업
+            member.setPassword(passwordEncoder.encode(member.getPassword()));
+        
+        result = memberDao.updateMember(member); //
+        if(result != 0){ //업데이트 완료
+            CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if(member.getProfileImage() != null){ //프로필 이미지 변경 됐으면 세션 수정
+                if (member.getProfileImage().equals("")) {
+                    user.setProfileImage("none");
+                } else {
+                    user.setProfileImage(member.getProfileImage());
+                }
+            }
+            if(member.getPassword() != null)  //비밀번호 변경 됐으면 세션 수정
+                user.setPassword(member.getPassword());
+            return true;
+        }else{
+            return false;
+        }
     }
 }

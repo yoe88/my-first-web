@@ -1,26 +1,48 @@
 package com.yh.web.controller;
 
+import com.yh.web.Utils;
 import com.yh.web.dto.Member;
+import com.yh.web.security.CustomUserDetails;
+import com.yh.web.service.FileService;
 import com.yh.web.service.MemberService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URI;
 import java.security.Principal;
 
 @Controller
 @RequestMapping(path = "/member")
 public class MemberController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    final MemberService memberService;
+    private final MemberService memberService;
+    private final FileService fileService;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberController(MemberService memberService) {
+    @Autowired
+    public MemberController(MemberService memberService
+                            ,FileService fileService
+                            ,PasswordEncoder passwordEncoder) {
         this.memberService = memberService;
+        this.fileService = fileService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -41,75 +63,187 @@ public class MemberController {
 
     /**
      * @param id 아이디
-     * @return true: 중복된 아이디, false: 존재하지 않는 아이디
+     * @return OK: 사용가능한 아이디, CONFLICT: 중복된 아이디
      */
-    @GetMapping("/checkid")
-    @ResponseBody
-    public boolean isDuplicatedId(@RequestParam(name = "id") String id) {
+    @GetMapping(value = "/checkid", consumes = "text/plain")
+    public ResponseEntity isDuplicatedId(@RequestParam(name = "id") String id) {
         logger.info("아이디 중복검사: {}", id);
         String result = memberService.searchId(id);
-        return result != null;
+        if(result == null)
+            return new ResponseEntity<>("1",HttpStatus.OK);
+        else
+            return new ResponseEntity<>("0",HttpStatus.CONFLICT);
     }
 
     /**
      * @param email 이메일
-     * @return true: 중복된 이메일, false: 존재하지 않는 이메일
+     * @return OK: 사용가능한 이메일, CONFLICT: 중복된 이메일
      */
-    @GetMapping("/checkemail")
-    @ResponseBody
-    public boolean isDuplicatedEmail(@RequestParam(name = "email") String email) {
+    @GetMapping(path = "/checkemail", consumes = "text/plain")
+    public ResponseEntity isDuplicatedEmail(@RequestParam(name = "email") String email) {
         logger.info("이메일 중복검사: {}", email);
         String result = memberService.searchEmail(email);
-        return result != null;
+        if(result == null)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     /**
      * @param code 사용자가 입력한 인증번호
      * @return 1:일치 0:불일치
      */
-    @GetMapping("/checkcode")
-    @ResponseBody
-    public String checkCode(@RequestParam(name = "code", required = false) String code,
+    @GetMapping(value = "/checkcode")
+    public ResponseEntity checkCode(@RequestParam(name = "code", required = false) String code,
                             HttpServletRequest request) {
-        System.out.println(code);
+        logger.info("{}",code);
         HttpSession session = request.getSession();
         String code_ = (String) session.getAttribute("code_");
         if (code_ == null) {
-            return "2"; //서버가 재시작하여 세션이 날라간경우
+            return new ResponseEntity<>("2",HttpStatus.OK); //서버가 재시작하여 세션이 날라간경우
         }
         if (code_.equals(code)) {
             //입력한 인증코드와 실제 인증코드가 일치하면 1전송
             session.removeAttribute("code_");
-            return "1";
+            return new ResponseEntity<>("1",HttpStatus.OK);
         } else
-            return "0";
+            return new ResponseEntity<>("0",HttpStatus.OK);
     }
 
     /**
+     * @param password 사용자가 입력한 비밀번호
+     * @return 1:일치 0:불일치
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(value = "/checkpassword")
+    public ResponseEntity<String> checkPassword(@RequestParam(name = "password") String password) {
+        logger.info("{}",password);
+        CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(passwordEncoder.matches(password,user.getPassword()))
+            return new ResponseEntity<>("1",HttpStatus.OK);
+        else
+            return new ResponseEntity<>("0",HttpStatus.OK);
+    }
+
+
+    /**
+     * 회원정보추가
      * @param member 회원정보
-     * @return 첫페이지로 리턴
+     * 성공시 첫페이지로 리턴
      */
     @PostMapping("/new")
-    public String addMember(@ModelAttribute Member member) {
+    public void addMember(@ModelAttribute Member member
+                        ,HttpServletResponse response) throws IOException {
         logger.info(member.toString());
-        memberService.addMember(member);
-        return "redirect:/index";
+        int result;
+        result = memberService.addMember(member);
+        if(result != 0){
+            response.sendRedirect(Utils.getRoot() + "/index");
+        } else{
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            String msg = "<script>" +
+                    "        alert('회원정보 추가에 실패하였습니다.');" +
+                    "        location.href= ' " + Utils.getRoot() + "/index';" +
+                    "    </script>";
+            out.write(msg);
+        }
     }
 
     /**
+     * 내정보
      * @param principal 회원아이디 조회하고
      * @return 회원정보 페이지로 리턴
      */
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ModelAndView myInfor(Principal principal) {
+    public ModelAndView myInfo(Principal principal) {
         ModelAndView mav = new ModelAndView("/member/me");
         mav.addObject("page_title", "내정보");
         Member m = memberService.getMemberInfo(principal.getName());
         mav.addObject("m", m);
+        return mav;
+    }
+    
+    /**
+     * 내정보 수정페이지
+     * @param principal 회원아이디 조회하고
+     * @return 회원수정 페이지로 리턴
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/edit/{type}")
+    public ModelAndView editProfile(Principal principal, @PathVariable("type") String type) {
+        logger.info("회원정보 수정 type: {}", type);
 
+        ModelAndView mav = new ModelAndView("/member/modify");
+        Member m = memberService.getMemberInfo(principal.getName());
+        mav.addObject("m", m);
+
+        switch (type) {
+            case "profile":
+                mav.addObject("page_title", "프로필 수정");
+                mav.addObject("type", 1);
+                break;
+            case "info":
+                mav.addObject("page_title", "정보 수정");
+                mav.addObject("type", 2);
+                break;
+            case "password":
+                mav.addObject("page_title", "비밀번호 수정");
+                mav.addObject("type", 3);
+                break;
+            case "address":
+                mav.addObject("page_title", "주소 수정");
+                mav.addObject("type", 4);
+                break;
+        }
         return mav;
     }
 
+    /**   name, profile 수정
+     * @return  프로필 수정이 완료 되면 리턴 1
+     */
+    //multipartResolver는 put 메서드를 지원하지 않는다.
+    @PreAuthorize("isAuthenticated()")
+    @RequestMapping(path = "/edit/profile", method = {RequestMethod.POST, RequestMethod.PUT})
+    public ResponseEntity<String> modifyProfile(@ModelAttribute Member member
+                                                ,@RequestParam(value = "image", required = false) MultipartFile mf
+                                                ,@RequestParam(value = "isDelete", required = false) boolean isDelete
+                                                ,HttpServletRequest request){
+        CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        member.setId(user.getUsername());
+        String folderName = FileService.getProfilePath() + File.separator + user.getUsername(); //  /profile/id
 
+        //---------파일관련 수정
+        if(mf!=null) { //파일이 첨부된 경우 업로드하고 멤버객체에 세팅
+            logger.info("file: {}, size: {}", mf.getOriginalFilename(), mf.getSize());
+            String profileImage =  fileService.upload(mf, folderName);
+            if(profileImage != null){
+                fileService.deleteFile(folderName,user.getProfileImage());
+                member.setProfileImage(profileImage);
+            }
+        }
+        if(isDelete) {  //파일 삭제인 경우
+            member.setProfileImage("");
+            fileService.deleteFile(folderName,user.getProfileImage());
+        }
+        //---------파일관련 수정
+
+
+        //회원정보 수정
+        logger.info("업데이트 하기전 member: {}",member);
+        boolean result = memberService.modifyMember(member);  //db수정
+        if(!result){
+            return new ResponseEntity<>("Server Error...", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        logger.info("method: {}",request.getMethod());
+        if(request.getMethod().equals("POST")){
+            return new ResponseEntity<>("1", HttpStatus.OK);
+        }else{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create(Utils.getRoot() + "/member/me"));
+            return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        }
+    }
 }

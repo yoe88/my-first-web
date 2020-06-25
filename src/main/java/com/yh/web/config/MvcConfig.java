@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.view.tiles3.TilesConfigurer;
 import org.springframework.web.servlet.view.tiles3.TilesViewResolver;
@@ -48,5 +49,14 @@ public class MvcConfig implements WebMvcConfigurer {
         configurer.setDefinitions("classpath:tiles/*.xml");
         configurer.setCheckRefresh(true);
         return configurer;
+    }
+
+    @Bean
+    public CommonsMultipartResolver multipartResolver(){
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        resolver.setMaxUploadSizePerFile(10485760);  //한 파일당 업로드가 허용되는 최대 용량 바이트 단위 10mb
+        resolver.setMaxUploadSize(52428800); //한 요청당 업로드가 허용되는 최대 용량 바이트 단위  50mb
+        resolver.setDefaultEncoding("utf-8");
+        return resolver;
     }
 }

@@ -77,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .successHandler(customAuthenticationSuccessHandler())
             .permitAll()
         .and()
-            .logout()
+            .logout()                 //로그아웃설정
             .logoutUrl("/logout")     //로그아웃 요청 url
             .logoutSuccessUrl("/")     //로그아웃이 됐으면 이동할 url
             .invalidateHttpSession(true)   //로그아웃시 세션전부제거
@@ -85,11 +85,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
        		.exceptionHandling()
        		.accessDeniedPage("/WEB-INF/views/commons/error/error403.jsp")  //권한없는 요청시
         .and()
+            .rememberMe() //로그인 유지설정
             // http.rememberMe()에 userDetailsService(DB에서 유저 정보를 가져오는 역할)의 구현체와
             // JdbcTokenRepositoryImpl(dataSource)타입을 값으로 준다.
-            .rememberMe()
             .userDetailsService(customUserDetailsService)
-            .tokenRepository(tokenRepository()); //username, 시리즈, 토근 정보를 DB에 저장
+            .tokenRepository(tokenRepository()) //username, 시리즈, 토근 정보를 DB에 저장
+        .and()
+            .sessionManagement() //세션관리
+            .maximumSessions(1)  //중복 로그인 방지
+            .maxSessionsPreventsLogin(false) //default false
+            //먼저 접속한 사용자가 있으면 접속이 안된다.
+            //false일경우 먼저 접속한 사용자가 로그아웃된다.
+            .expiredUrl("/expired");
     }
 
     //내가 만든 인증 시스템인 CustomAuthenticationProvider를 ProviderManager가 알 수 있게 ProviderManager에게 등록해줘야한다.

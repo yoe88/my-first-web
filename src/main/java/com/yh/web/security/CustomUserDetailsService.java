@@ -35,10 +35,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (member == null) { //존재하지 않은 아이디인 경우 여기서 리턴
             throw new UsernameNotFoundException("사용자가 입력한 아이디에 해당하는 사용자를 찾을 수 없습니다.");
         }
+        logger.info(member.toString());
 
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.setUsername(member.getId());
         customUserDetails.setPassword(member.getPassword());
+        if(member.getProfileImage() == null){
+            member.setProfileImage("none");
+        }
         customUserDetails.setProfileImage(member.getProfileImage());
 
         customUserDetails.setEnabled(member.isEnable());
@@ -61,6 +65,4 @@ public class CustomUserDetailsService implements UserDetailsService {
         logger.info("success setting customUser");
         return customUserDetails;
     }
-
-
 }

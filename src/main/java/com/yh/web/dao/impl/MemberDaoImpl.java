@@ -21,13 +21,11 @@ public class MemberDaoImpl implements MemberDao {
         this.sqlSession = sqlSession;
     }
 
-    //트랜잭션 테스트 메서드
     @Override
-    public int updateMember() {
-
-        sqlSession.update(MAPPER + "updatePasswdById1");
-        sqlSession.update(MAPPER + "updatePasswdById2");
-        return 0;
+    public int updateMember(Member member) {
+        int result;
+        result = sqlSession.update(MAPPER + "updateMember", member);
+        return result;
     }
 
     @Override
@@ -66,5 +64,4 @@ public class MemberDaoImpl implements MemberDao {
     public int insertMemberRole(String id) {
         return sqlSession.insert(MAPPER + "insertMemberRole", id);
     }
-
 }

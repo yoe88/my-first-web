@@ -27,10 +27,7 @@ public class MybatisTest {
 		System.out.println(list);
 	}	
 	
-	@Test
-	public void txTest() {
-		memberService.updateMember();
-	}
+
 	
 	@Test
 	public void getMemberInfor() {
