@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.comment">
+    <resultMap id="commentListResult" type="commentList">
+        <result property="cno" column="cno" />
+        <result property="profileImage" column="profileImage" />
+        <result property="name" column="name" />
+        <result property="id" column="id" />
+        <result property="content" column="content" />
+        <result property="regDate" column="regDate" />
+        <result property="pub" column="pub" />
+        <result property="count" column="count" />
+    </resultMap>
+
+
+    <select id="selectCommentByArticleNo" resultMap="commentListResult" parameterType="_int">
+        SELECT CNO, PROFILEIMAGE, NAME, ID, CONTENT, C.REGDATE, PUB, COUNT
+        FROM(
+            SELECT C1.CNO, C1.CONTENT, C1.WRITER, C1.REGDATE, C1.PUB, COUNT(C2.CNO) COUNT
+            FROM COMMENT_BOARD C1
+            LEFT JOIN COMMENT_BOARD C2 ON C1.CNO = C2.PARENT
+            WHERE C1.ARTICLENO = #{articleNo} AND C1.PARENT = 0
+            GROUP BY C1.CNO, C1.CONTENT, C1.WRITER, C1.REGDATE, C1.PUB
+        )C
+        JOIN MEMBER M ON C.WRITER = M.ID
+        ORDER BY CNO ASC
+    </select>
+
+    <select id="selectCommentByCno" resultMap="commentListResult" parameterType="_int">
+        SELECT CNO, PROFILEIMAGE, NAME, ID, CONTENT, C.REGDATE, PUB
+        FROM COMMENT_BOARD C
+        JOIN MEMBER M ON C.WRITER = M.ID
+        WHERE PARENT = #{cno}
+        ORDER BY CNO ASC
+    </select>
+</mapper>

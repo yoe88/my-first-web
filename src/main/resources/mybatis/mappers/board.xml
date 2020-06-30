@@ -15,34 +15,117 @@
         <result property="lv" column="lv" />
     </resultMap>
 
-    <select id="selectBoardList" resultMap="boardListResult" parameterType="java.util.Map">
-        SELECT *
+    <!--  - - - - - - - - - -   글 쓰기 위한 쿼리 - - - - - - - - - - -->
+    <!-- 시퀀스 조회 -->
+    <select id="selectNextSequence" resultType="_int">
+        SELECT SEQ_BOARD.NEXTVAL FROM DUAL
+    </select>
+
+    <!-- 해당 글번호에 대한 그룹번호 조회 -->
+    <select id="selectGrpNoByArticleNo" resultType="_int" parameterType="_int">
+        SELECT GRPNO FROM BOARD WHERE ARTICLENO = #{articleNo}
+    </select>
+
+    <!-- 글 추가 -->
+    <insert id="insertBoard" parameterType="board">
+        INSERT INTO
+            BOARD(
+            ARTICLENO, TITLE, CONTENT, WRITER
+            , PARENT, GRPNO, IP
+        )
+        VALUES(
+            #{articleNo} ,#{title}, #{content}, #{writer}
+            , #{parent}, #{grpNo}, #{ip}
+        )
+    </insert>
+
+    <!-- 파일 추가 -->
+    <insert id="insertBoardFile" parameterType="boardFile">
+        INSERT INTO
+            BOARD_FILE(ARTICLENO, FILENAME, FILESIZE, ORIGINALFILENAME)
+        VALUES(#{articleNo}, #{fileName}, #{fileSize}, #{originalFileName})
+    </insert>
+
+    <!--  - - - - - - - - - -   상세 조회 위한 쿼리 - - - - - - - - - - -->
+    <!-- 글번호 존재 하는지 검색 -->
+    <select id="selectBoardCountByArticleNo" resultType="_int" parameterType="_int">
+        SELECT COUNT(ARTICLENO) count  FROM BOARD WHERE ARTICLENO = #{articleNo} AND PUB =1
+    </select>
+
+    <!-- 조회수 증가 -->
+    <update id="updateBoardHitByArticleNo" parameterType="_int">
+        UPDATE BOARD SET HIT = HIT +1 WHERE ARTICLENO = #{articleNo}
+    </update>
+
+    <!-- 해당 글번호 상세 조회 -->
+    <select id="selectBoardDetailByArticleNo" resultType="boardDetail" parameterType="_int">
+        SELECT B.ARTICLENO ARTICLENO, TITLE, CONTENT, NAME, ID,
+               B.REGDATE REGDATE, RECOMMEND, HIT, FILENAME, ORIGINALFILENAME, PROFILEIMAGE
         FROM(
-            SELECT ROWNUM NUM, board.*, LEVEL-1 LV
-            FROM(
-                    SELECT b.ARTICLENO, b.TITLE, b.writer, b.REGDATE, b.RECOMMEND, b.HIT, b.PARENT, b.GRPNO, count(c.ARTICLENO) cmt
-                    FROM
-                        (
-                            SELECT bb.ARTICLENO, bb.TITLE, bb.REGDATE, bb.RECOMMEND, bb.HIT, bb.PARENT, bb.GRPNO, bb.PUB, m.NAME writer
-                            FROM BOARD bb
-                                     JOIN MEMBER m
-                                          ON writer = m.id
-                        )b
-                            LEFT JOIN COMMENT_BOARD c
-                                      ON b.ARTICLENO = c.ARTICLENO
-                    WHERE ${field} LIKE '%'||#{query}||'%' AND PUB = 1
-                    GROUP BY b.ARTICLENO, b.TITLE, b.writer, b.REGDATE, b.RECOMMEND, b.HIT, b.PARENT, b.GRPNO
-                )board
-            START WITH board.PARENT = 0
-            CONNECT BY PRIOR board.ARTICLENO = board.PARENT
-            ORDER SIBLINGS BY GRPNO DESC
-            )
+                SELECT *
+                FROM BOARD
+                WHERE ARTICLENO = #{articleNo} AND PUB = 1
+            )B
+        JOIN MEMBER M ON B.WRITER = M.ID
+        LEFT JOIN BOARD_FILE F ON B.ARTICLENO = F.ARTICLENO
+    </select>
+
+    <!--  - - - - - - - - - -   수정 위한 쿼리 - - - - - - - - - - -->
+    <!-- 해당 글번호 수정 -->
+    <update id="updateBoard" parameterType="board">
+        UPDATE BOARD SET TITLE = #{title}, CONTENT = #{content} WHERE ARTICLENO = #{articleNo}
+    </update>
+
+    <!-- 파일 이름 조회 -->
+    <select id="selectBoardFileNameByArticleNo" resultType="string" parameterType="_int">
+        SELECT FILENAME FROM BOARD_FILE WHERE ARTICLENO = #{articleNo}
+    </select>
+
+    <!-- 파일 정보 수정 -->
+    <update id="updateBoardFile" parameterType="boardFile">
+        UPDATE BOARD_FILE SET FILENAME = #{fileName}, FILESIZE = #{fileSize}, ORIGINALFILENAME = #{originalFileName}
+        WHERE ARTICLENO = #{articleNo}
+    </update>
+
+    <!-- 파일 정보 삭제 -->
+    <delete id="deleteBoardFileByArticleNo" parameterType="_int">
+        DELETE BOARD_FILE WHERE ARTICLENO = #{articleNo}
+    </delete>
+
+    <!--  - - - - - - - - - -   목록 위한 쿼리 - - - - - - - - - - -->
+    <!-- 게시글 목록 조회 -->
+    <select id="selectBoardList" resultMap="boardListResult" parameterType="map">
+        SELECT *
+        <include refid="selectBoardList" />
         WHERE NUM BETWEEN #{start} AND #{end}
     </select>
 
-</mapper>
+    <!-- 게시글 개수 조회 -->
+    <select id="selectBoardListCount" resultType="_int" parameterType="map">
+        SELECT count(*)
+        <include refid="selectBoardList" />
+    </select>
 
-<!--
-SELECT C.CONTENT,C.REGDATE,M.NAME,M.PROFILEIMAGE
-        FROM COMMENT_BOARD C JOIN MEMBER M ON C.WRITER = M.ID
-        WHERE ARTICLENO = 1-->
+    <sql id="selectBoardList">
+        FROM(
+            SELECT ROWNUM NUM, bbbb.*
+            FROM(
+                    SELECT bbb.*, LEVEL-1 LV
+                    FROM(
+                            SELECT ARTICLENO, TITLE, writer, REGDATE, RECOMMEND, HIT, PARENT, GRPNO, PUB, count(cmt) cmt
+                            FROM(
+                                    SELECT b.ARTICLENO, b.TITLE, b.REGDATE, b.RECOMMEND, b.HIT, b.PARENT, b.GRPNO, b.PUB, m.NAME writer, c.CNO cmt
+                                    FROM BOARD b
+                                             JOIN MEMBER m ON writer = m.id
+                                             LEFT JOIN COMMENT_BOARD c ON b.ARTICLENO = c.ARTICLENO
+                                )bb
+                            GROUP BY ARTICLENO, TITLE, writer, REGDATE, RECOMMEND, HIT, PARENT, GRPNO, PUB
+                        )bbb
+                    START WITH PARENT = 0
+                    CONNECT BY PRIOR ARTICLENO = PARENT
+                    ORDER SIBLINGS BY GRPNO DESC
+                )bbbb
+            WHERE UPPER(${field}) LIKE UPPER('%'||#{query}||'%') AND PUB = 1
+        )
+    </sql>
+</mapper>

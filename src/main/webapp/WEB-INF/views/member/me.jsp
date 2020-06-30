@@ -12,7 +12,7 @@
                 <div class="card-header">프로필사진 / 닉네임</div>
                 <div class="card-body">
                     <a target="_blank" href="${contextPath}/file/original/${username}/${profileImage}" style="text-decoration: none">
-                        <img class="border rounded-circle" src="${contextPath}/file/thumb/${username}/${profileImage}?w=60&h=60" alt="프로필사진" width="60" height="60">
+                        <img class="border rounded-circle" src="${contextPath}/file/thumb/${username}/${profileImage}/size?w=60&h=60" alt="프로필사진" width="60" height="60">
                     </a>
                     <div class="d-inline-block ml-5">
                         <strong>닉네임</strong><span class="ml-2">${m.name}</span>

@@ -5,8 +5,7 @@ import com.yh.web.dto.Member;
 import com.yh.web.dto.MemberRole;
 import com.yh.web.security.CustomUserDetails;
 import com.yh.web.service.MemberService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,15 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     final MemberDao memberDao;
     final PasswordEncoder passwordEncoder;
 
     @Autowired
     public MemberServiceImpl(MemberDao memberDao, PasswordEncoder passwordEncoder) {
-        logger.info("MemberServiceImpl Init...");
+        log.info("MemberServiceImpl Init...");
         this.memberDao = memberDao;
         this.passwordEncoder = passwordEncoder;
     }
@@ -61,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public int addMember(Member member) {
-        logger.info(passwordEncoder.toString());
+        log.info(passwordEncoder.toString());
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         int result = 0;
         result += memberDao.insertMember(member);

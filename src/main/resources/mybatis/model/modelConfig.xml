@@ -5,9 +5,12 @@
 <configuration>
 	<typeAliases>
 		<typeAlias type="com.yh.web.dto.Member"  alias="member" />
-		<typeAlias type="com.yh.web.dto.MemberRole" alias="memberRole" />
-		<typeAlias type="com.yh.web.dto.Board" alias="board" />
-		<typeAlias type="com.yh.web.dto.BoardList" alias="boardList" />
-
+		<typeAlias type="com.yh.web.dto.MemberRole" alias="memberRole"/>
+		<typeAlias type="com.yh.web.dto.board.Board" alias="board" />
+		<typeAlias type="com.yh.web.dto.board.BoardList" alias="boardList" />
+		<typeAlias type="com.yh.web.dto.board.BoardDetail" alias="boardDetail" />
+		<typeAlias type="com.yh.web.dto.board.BoardFile" alias="boardFile" />
+		<typeAlias type="com.yh.web.dto.CommentList" alias="commentList" />
+		<typeAlias type="com.yh.web.dto.Comment" alias="comment" />
 	</typeAliases>
 </configuration>

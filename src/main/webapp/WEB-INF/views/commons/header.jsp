@@ -33,7 +33,7 @@
 	                        	<div class="dropdown">
 								    <!-- Trigger --> 
                                     <img class="ml-1 rounded-circle d-none d-md-block" width="50" height="50" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-								     src="${contextPath}/file/thumb/${username}/${profileImage}?w=50&h=50" alt="profile" style="cursor: pointer;" />
+								     src="${contextPath}/file/thumb/${username}/${profileImage}/size?w=50&h=50" alt="profile" style="cursor: pointer;" />
 								    <!-- Menu -->
 								    <div class="dropdown-menu dropdown-menu-right">
 								        <a class="dropdown-item" href="${contextPath}/member/me"><i class="fas fa-user pr-1"></i>내정보</a>

@@ -1,9 +1,5 @@
 package com.yh.web.config;
 
-import java.io.IOException;
-
-import javax.sql.DataSource;
-
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -11,8 +7,6 @@ import org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig;
 import org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,11 +15,13 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.sql.DataSource;
+import java.io.IOException;
+
 @Configuration //설정용 클래스
 @EnableTransactionManagement //<tx:annotation-driven />
 @ComponentScan(basePackages = { "com.yh.web.dao", "com.yh.web.service"})
 public class RootConfig {
-	private static final Logger logger = LoggerFactory.getLogger(RootConfig.class);
 	@Value("${jdbc.driverClassName}")
 	private String driverClassName;
 	@Value("${jdbc.url}")
@@ -65,7 +61,6 @@ public class RootConfig {
 		dataSource.setPassword(password);
 		return dataSource;
 	}
-
 
 	@Bean
 	public SqlSessionFactory sqlSessionFactory() throws Exception {

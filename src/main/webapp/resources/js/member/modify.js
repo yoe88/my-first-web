@@ -57,7 +57,7 @@ function deleteProfileImage(button){
     singleImageFile = null;
     document.querySelector("#isDelete").value = 'true';
     const img = document.querySelector("#profile-image");
-    img.src = getRoot() +'/file/thumb/anonymous/none?w=160&h=160';
+    img.src = getRoot() +'/file/thumb/anonymous/none/size?w=160&h=160';
     document.querySelector("#input-file").value = '';
 
     button.classList.remove('btn-outline-danger');

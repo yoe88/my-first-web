@@ -2,13 +2,14 @@
 function getRoot(){
     return "/web";
 }
-
-//엔터키 방지
-document.addEventListener('keydown', function(event) {
-    if (event.keyCode === 13) {
-        event.preventDefault();
-    };
-}, true);
+function notAllowEnter(){
+    //엔터키 방지
+    document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        };
+    }, true);
+}
 //특수키
 const functionKey = [9,13,16,17,18,19,20,27,33,34,35,36,37,38,39,40,44
     ,45,46,91,93,112,113,114,115,116,117,118,119,120,121,122,123,144,145
@@ -47,12 +48,12 @@ function closeLoading(){
 }
 //경고창 보이기
 let setTimeoutAlert = null;
-function showAlert(color, text, autoOff) {
+function showAlert(color, text, autoOff) { //색상, 출력할 텍스트, 자동으로 닫을것인지
     if(document.querySelector("div[role=alert]") != null){
         document.querySelector("div[role=alert]").remove();
         clearTimeout(setTimeoutAlert);
     }
-    const alert = `<div class="btn btn-outline-${color} d-inline-block" role="alert">
+    const alert = `<div class="btn btn-outline-${color} d-inline-block" role="alert" onclick="closeAlert()">
                     <strong>${text}<i class="fas fa-exclamation mx-2" style="font-size: 1.25rem;"></i></strong>
                 </div>`;
     appendHtml(document.body, alert);

@@ -7,8 +7,8 @@
 
 .pagination > .active > a
 {
-    color: white;
     background-color: #775cdc !Important;
+    color: white;
     border: solid 1px #775cdc !Important;
 }
 
@@ -23,7 +23,7 @@
     box-shadow:  0 0 1px rgba(150, 21, 155, 0.6);
 }
 select.form-control:focus {
-    box-shadow: 0;
+    box-shadow: none;
 }
 
 div[class= input-group-append] span[class ~= input-group-text]{
@@ -31,6 +31,14 @@ div[class= input-group-append] span[class ~= input-group-text]{
 }
 div[class= input-group-append] span[class ~= input-group-text]:hover{
     background-color: #ccd2d8!important;
+}
+div[class= input-group-append] button[class ~= input-group-text]:focus{
+    outline: 0;
+}
+.btn-outline-dark:hover{
+    color: inherit;
+    background-color: inherit;
+    border-color: inherit;
 }
 /* bootstrap */
 
@@ -92,6 +100,7 @@ div[class= input-group-append] span[class ~= input-group-text]:hover{
     color: white;
 }
 .btn-purple:focus {
+    background-color: #772ce8;
     color: white;
 }
 
@@ -231,4 +240,55 @@ table.tbl-board tbody tr:hover a{
 .pager{
     display: inline-block;
 }
+.reply-count{
+    padding-right: .4em;
+    padding-left: .4em;
+    border-radius: 10rem;
+    border: 1px solid rgb(218, 210, 210);
+    color: rgb(247, 87, 14);
+    font-size: .9rem;
+    font-weight: 800;
+    margin-left: 3px;
+}
+.current-page-num{
+    color: #d91ca8;
+}
+.icon-reply{
+    width: 7px;
+    height: 7px;
+    display: inline-block;
+    background: url("/web/resources/images/reply.png");
+    margin-right: 3px;
+}
 /*board*/
+
+/*boardDetail*/
+#comment-view{
+    background-color: #f3f0f0;
+}
+.comment-option{
+    cursor: pointer;
+}
+.comment-content{
+    word-break: break-all;
+}
+.dropdown-menu{
+    min-width: 0;
+}
+.dropdown-item:not(:first-child){
+    border-top: 1px solid lightgray;
+}
+div.comment-write-box{
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    border-collapse: collapse;
+}
+div.comment-write-box textarea{
+    border: 1px solid white;
+}
+
+.board-info{
+    font-size: 1rem;
+    font-weight: bold;
+    color: #666;
+}

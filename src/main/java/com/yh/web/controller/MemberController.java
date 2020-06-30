@@ -5,8 +5,7 @@ import com.yh.web.dto.Member;
 import com.yh.web.security.CustomUserDetails;
 import com.yh.web.service.FileService;
 import com.yh.web.service.MemberService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,10 +27,10 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.security.Principal;
 
+@Slf4j
 @Controller
 @RequestMapping(path = "/member")
 public class MemberController {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final MemberService memberService;
     private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
@@ -67,7 +66,7 @@ public class MemberController {
      */
     @GetMapping(value = "/checkid", consumes = "text/plain")
     public ResponseEntity isDuplicatedId(@RequestParam(name = "id") String id) {
-        logger.info("아이디 중복검사: {}", id);
+        log.info("아이디 중복검사: {}", id);
         String result = memberService.searchId(id);
         if(result == null)
             return new ResponseEntity<>("1",HttpStatus.OK);
@@ -81,7 +80,7 @@ public class MemberController {
      */
     @GetMapping(path = "/checkemail", consumes = "text/plain")
     public ResponseEntity isDuplicatedEmail(@RequestParam(name = "email") String email) {
-        logger.info("이메일 중복검사: {}", email);
+        log.info("이메일 중복검사: {}", email);
         String result = memberService.searchEmail(email);
         if(result == null)
             return new ResponseEntity<>(HttpStatus.OK);
@@ -96,7 +95,7 @@ public class MemberController {
     @GetMapping(value = "/checkcode")
     public ResponseEntity checkCode(@RequestParam(name = "code", required = false) String code,
                             HttpServletRequest request) {
-        logger.info("{}",code);
+        log.info("{}",code);
         HttpSession session = request.getSession();
         String code_ = (String) session.getAttribute("code_");
         if (code_ == null) {
@@ -117,7 +116,7 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/checkpassword")
     public ResponseEntity<String> checkPassword(@RequestParam(name = "password") String password) {
-        logger.info("{}",password);
+        log.info("{}",password);
         CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(passwordEncoder.matches(password,user.getPassword()))
             return new ResponseEntity<>("1",HttpStatus.OK);
@@ -134,7 +133,7 @@ public class MemberController {
     @PostMapping("/new")
     public void addMember(@ModelAttribute Member member
                         ,HttpServletResponse response) throws IOException {
-        logger.info(member.toString());
+        log.info(member.toString());
         int result;
         result = memberService.addMember(member);
         if(result != 0){
@@ -174,7 +173,7 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/edit/{type}")
     public ModelAndView editProfile(Principal principal, @PathVariable("type") String type) {
-        logger.info("회원정보 수정 type: {}", type);
+        log.info("회원정보 수정 type: {}", type);
 
         ModelAndView mav = new ModelAndView("/member/modify");
         Member m = memberService.getMemberInfo(principal.getName());
@@ -213,31 +212,29 @@ public class MemberController {
                                                 ,HttpServletRequest request){
         CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         member.setId(user.getUsername());
-        String folderName = FileService.getProfilePath() + File.separator + user.getUsername(); //  /profile/id
+        String folderName = FileService.profilePath + File.separator + user.getUsername(); //  profile/id
 
-        //---------파일관련 수정
-        if(mf!=null) { //파일이 첨부된 경우 업로드하고 멤버객체에 세팅
-            logger.info("file: {}, size: {}", mf.getOriginalFilename(), mf.getSize());
+        //---------이미지 관련 수정
+        if(mf!=null) { //이미지가 첨부된 경우 업로드하고 멤버객체에 세팅
+            log.info("file: {}, size: {}", mf.getOriginalFilename(), mf.getSize());
             String profileImage =  fileService.upload(mf, folderName);
             if(profileImage != null){
                 fileService.deleteFile(folderName,user.getProfileImage());
                 member.setProfileImage(profileImage);
             }
         }
-        if(isDelete) {  //파일 삭제인 경우
+        if(isDelete) {  //이미지 삭제인 경우
             member.setProfileImage("");
             fileService.deleteFile(folderName,user.getProfileImage());
         }
-        //---------파일관련 수정
-
 
         //회원정보 수정
-        logger.info("업데이트 하기전 member: {}",member);
+        log.info("업데이트 하기전 member: {}",member);
         boolean result = memberService.modifyMember(member);  //db수정
         if(!result){
             return new ResponseEntity<>("Server Error...", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        logger.info("method: {}",request.getMethod());
+        log.info("method: {}",request.getMethod());
         if(request.getMethod().equals("POST")){
             return new ResponseEntity<>("1", HttpStatus.OK);
         }else{

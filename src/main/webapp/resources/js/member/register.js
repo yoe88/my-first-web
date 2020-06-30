@@ -1,5 +1,6 @@
 'use strict'
 //엔터키 막기
+notAllowEnter();
 
 /*SSL 을 사용하지 않는 경우 GET 및 POST 는 동일합니다. SSL이 존재할 때 POST는 GET에 비해 더 안전하지만.
 GET은 암호화되지 않은 데이터를 전송하지만 SSL을 사용하면 전송 될 HTTP 데이터가 암호화되므로 보안이 유지됩니다.*/

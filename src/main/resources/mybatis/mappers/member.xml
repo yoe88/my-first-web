@@ -54,7 +54,7 @@
 	<insert id="insertMember" parameterType="member">
 		INSERT INTO
 		MEMBER(
-				ID ,PASSWORD ,NAME ,EMAIL
+				ID, PASSWORD, NAME, EMAIL
 				<if test="zoneCode != null and !zoneCode.equals('')">
 				,ZONECODE ,ADDRESS ,EXTRAADDRESS ,DETAILADDRESS
 				</if>

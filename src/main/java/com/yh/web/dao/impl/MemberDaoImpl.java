@@ -3,21 +3,20 @@ package com.yh.web.dao.impl;
 import com.yh.web.dao.MemberDao;
 import com.yh.web.dto.Member;
 import com.yh.web.dto.MemberRole;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Slf4j
 @Repository("memberDao")
 public class MemberDaoImpl implements MemberDao {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final String MAPPER = "mapper.member.";
     private final SqlSession sqlSession;
 
     public MemberDaoImpl(SqlSession sqlSession) {
-        logger.info("MemberDaoImpl Init...");
+        log.info("MemberDaoImpl Init...");
         this.sqlSession = sqlSession;
     }
 
