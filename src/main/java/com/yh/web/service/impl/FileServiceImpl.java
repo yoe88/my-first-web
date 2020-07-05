@@ -15,17 +15,6 @@ import java.net.URLEncoder;
 @Slf4j
 @Service
 public class FileServiceImpl implements FileService {
-    //private final String SE = File.separator;
-    //private final String uploadPath = "C:" + SE + "upload";
-    //private static final String profilePath = "profile";
-
-    //private static final String defaultProfile = "user.png";
-
-   /* public static String getProfilePath() {
-        return profilePath;
-    }*/
-    //public static String getDefaultProfile() { return defaultProfile; }
-
     /**
      * 원본 이미지를 썸네일로 만들어 출력
      *

@@ -31,4 +31,10 @@ public interface BoardDao {
     int updateBoardFile(BoardFile boardFile);
 
     int deleteBoardFileByArticleNo(int articleNo);
+
+    int deleteBoardByArticleNo(int articleNo);
+
+    boolean isAlreadyExistsID(Map<String, Object> map);
+
+    int insertRecommend(Map<String, Object> map);
 }

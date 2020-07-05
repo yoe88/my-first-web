@@ -40,6 +40,11 @@ div[class= input-group-append] button[class ~= input-group-text]:focus{
     background-color: inherit;
     border-color: inherit;
 }
+
+.action .btn-outline-dark:hover{
+    background-color: #f7f7f7;
+}
+
 /* bootstrap */
 
 
@@ -172,7 +177,7 @@ align-items: center;
 }
 
 div[role=alert] {
-position: absolute;
+position: fixed;
 background-color: white;
 left: 50%;
 top: 10%;

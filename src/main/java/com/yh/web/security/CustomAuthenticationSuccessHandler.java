@@ -1,10 +1,7 @@
 package com.yh.web.security;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -14,14 +11,12 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.security.Principal;
 
 @Slf4j
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     private final RequestCache requestCache = new HttpSessionRequestCache();
-    private final RedirectStrategy redirectStratgy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -40,10 +35,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (savedRequest != null) {
             String targetUrl = savedRequest.getRedirectUrl();
             log.info(savedRequest.toString());
-            redirectStratgy.sendRedirect(request, response, targetUrl);
+            redirectStrategy.sendRedirect(request, response, targetUrl);
         } else { //요청명이 존재하지 않을경우 == 다른 url에서 직접 로그인창을 요청한경우
             String defaultUrl = "/";
-            redirectStratgy.sendRedirect(request, response, defaultUrl);
+            redirectStrategy.sendRedirect(request, response, defaultUrl);
         }
     }
 }

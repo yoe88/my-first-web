@@ -87,4 +87,19 @@ public class BoardDaoImpl implements BoardDao {
     public int deleteBoardFileByArticleNo(int articleNo) {
         return sqlSession.delete(MAPPER + "deleteBoardFileByArticleNo", articleNo);
     }
+
+    @Override
+    public int deleteBoardByArticleNo(int articleNo) {
+        return sqlSession.delete(MAPPER + "deleteBoardByArticleNo", articleNo);
+    }
+
+    @Override
+    public boolean isAlreadyExistsID(Map<String, Object> map) {
+        return sqlSession.selectOne(MAPPER + "isAlreadyExistsID", map);
+    }
+
+    @Override
+    public int insertRecommend(Map<String, Object> map) {
+        return sqlSession.insert(MAPPER + "insertRecommend", map);
+    }
 }

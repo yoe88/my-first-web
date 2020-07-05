@@ -55,7 +55,7 @@ function showAlert(color, text, autoOff) { //색상, 출력할 텍스트, 자동
     }
     const alert = `<div class="btn btn-outline-${color} d-inline-block" role="alert" onclick="closeAlert()">
                     <strong>${text}<i class="fas fa-exclamation mx-2" style="font-size: 1.25rem;"></i></strong>
-                </div>`;
+                   </div>`;
     appendHtml(document.body, alert);
     if(autoOff === true){
         setTimeoutAlert = setTimeout(function () {
@@ -66,8 +66,10 @@ function showAlert(color, text, autoOff) { //색상, 출력할 텍스트, 자동
 
 //경고창 닫기
 function closeAlert() {
-    if(document.querySelector("div[role=alert]") != null)
+    if(document.querySelector("div[role=alert]") != null) {
         document.querySelector("div[role=alert]").remove();
+        clearTimeout(setTimeoutAlert);
+    }
 }
 
 //이미지 파일, 썸네일 들어갈 img, 너비, 높이

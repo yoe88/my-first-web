@@ -41,6 +41,10 @@ public class MailService {
 	
 
 	//출처 https://ktko.tistory.com/entry
+
+	/**
+	 * @return 랜덤코드 6자리
+	 */
 	public static String createRandomCode() {
 		int certCharLength = 6;
 		final char[] characterTable = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',

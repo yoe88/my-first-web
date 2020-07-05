@@ -1,25 +1,17 @@
 package com.yh.web.security;
 
-import com.yh.web.dto.MemberRole;
-import com.yh.web.service.MemberService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Slf4j
 @Service
 //로그인 인증관리
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailsService customUserDetailsService;
@@ -27,7 +19,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     public CustomAuthenticationProvider(PasswordEncoder passwordEncoder
             , CustomUserDetailsService customUserDetailsService) {
-        logger.info("CustomAuthenticationProvider Init");
+        log.info("CustomAuthenticationProvider Init");
         this.passwordEncoder = passwordEncoder;
         this.customUserDetailsService = customUserDetailsService;
     }
@@ -38,12 +30,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             throw new InternalAuthenticationServiceException("Authentication is null");
         }
         String username = authentication.getName();
-        logger.info("사용자가 입력한 아이디 : " + username);
+        log.info("사용자가 입력한 아이디 : " + username);
         if (authentication.getCredentials() == null) {
             throw new AuthenticationCredentialsNotFoundException("Credentials is null");
         }
         String password = authentication.getCredentials().toString();
-        logger.info("사용자가 입력한 비밀번호 : " + password);
+        log.info("사용자가 입력한 비밀번호 : " + password);
 
         CustomUserDetails user = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
         //계정 잠금여부
@@ -66,7 +58,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if (!user.isCredentialsNonExpired()) {
             throw new CredentialsExpiredException("User credentials have expired");
         }
-        logger.info("인증완료");
+        log.info("인증완료");
 
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         result.setDetails(authentication.getDetails());

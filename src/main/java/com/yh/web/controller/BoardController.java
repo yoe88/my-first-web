@@ -6,6 +6,8 @@ import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.dto.board.BoardList;
 import com.yh.web.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +43,12 @@ public class BoardController {
 			"        location.href= ' " + Utils.getRoot() + "/boards';" +
 			"    </script>";
 
+	private final String failedDelete =
+			"<script>" +
+					"        alert('글 삭제를 실패했습니다.!');" +
+					"        location.href= ' " + Utils.getRoot() + "/boards';" +
+					"    </script>";
+
 	public BoardController(BoardService boardService) {
 		log.info("BoardController Init...");
 		this.boardService = boardService;
@@ -49,17 +57,17 @@ public class BoardController {
 	/**
 	 * @param field  검색타입
 	 * @param query  검색 하고자 하는 내용
-	 * @param page_  페이지 숫자
+	 * @param p_  페이지 숫자
 	 * @return  게시글 리스트
 	 */
 	@PreAuthorize("permitAll()")  //누구나
 	@GetMapping(path = {"","/"})
 	public ModelAndView boardList(@RequestParam(name = "f",required = false,defaultValue = "title") String field
 								 ,@RequestParam(name = "q",required = false,defaultValue = "") String query
-								 ,@RequestParam(name = "p",required = false,defaultValue = "1") String page_){
+								 ,@RequestParam(name = "p",required = false,defaultValue = "1") String p_){
 		int page;
 		try{  //page 문자열이 숫자로 변환이 안되거나 음수일 경우 1로 초기화
-			page = Integer.parseInt(page_);
+			page = Integer.parseInt(p_);
 			if(page < 1) page = 1;
 		} catch (NumberFormatException e){
 			page = 1;
@@ -74,7 +82,7 @@ public class BoardController {
 
 		List<BoardList> list = (List<BoardList>) resultMap.get("list"); //게시글 리스트
 		int listTotalCount = (int) resultMap.get("count"); 				//검색된 게시글 총개수
-		int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)boardService.getListNum())); 	//67개일경우 7
+		int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)boardService.listNum)); 	//67개일경우 7
 		pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;
 
 		int listCount = list.size();  //현재 페이지 게시글 개수  ? <= 10
@@ -116,7 +124,7 @@ public class BoardController {
 	 * 				답글쓰기 페이지
 	 */
 	@GetMapping(path = "/{articleNo}/reply")
-	public ModelAndView boardForm(@PathVariable("articleNo") String parent_
+	public ModelAndView replyBoardForm(@PathVariable("articleNo") String parent_
 								, HttpServletResponse response) throws IOException {
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html");
@@ -143,6 +151,7 @@ public class BoardController {
 	}
 
 	/**
+	 * 					글 추가 기능 
 	 * @param board     글정보
 	 * @param principal 사용자 정보
 	 * @param mf        첨부된 파일
@@ -226,22 +235,33 @@ public class BoardController {
 	 * @return 글 수정페이지
 	 */
 	@GetMapping(path = "/{articleNo}/edit")
-	public ModelAndView editBoard(@PathVariable("articleNo") int articleNo
-								,HttpServletResponse response) throws IOException {
+	public ModelAndView editBoardForm(@PathVariable("articleNo") int articleNo
+								,HttpServletResponse response
+								,Principal principal) throws IOException {
 		ModelAndView mav = new ModelAndView();
+
+
 		mav.addObject("page_title", "글 수정하기");
 		BoardDetail b = boardService.getBoardDetail(articleNo, true);
-		if(b == null){
+		if(b == null){		//존재 하지 않는 글인경우
 			response.setCharacterEncoding("UTF-8");
 			response.setContentType("text/html");
 			PrintWriter out = response.getWriter();
 
 			out.print(notAllow);
 		}else{
-			mav.addObject("b",b);
-			mav.setViewName("/board/boardForm");
-			mav.addObject("title","글 수정");
-			mav.addObject("action",articleNo+"/edit");
+			if(b.getId().equals(principal.getName())){ //글 작성자와 로그인한 아이디가 같은경우에만
+				mav.addObject("b",b);
+				mav.setViewName("/board/boardForm");
+				mav.addObject("title","글 수정");
+				mav.addObject("action",articleNo+"/edit");
+			}else{
+				response.setCharacterEncoding("UTF-8");
+				response.setContentType("text/html");
+				PrintWriter out = response.getWriter();
+
+				out.print(notAllow);
+			}
 		}
 		return mav;
 	}
@@ -269,5 +289,35 @@ public class BoardController {
 			out.print(failedWrite);
 		}
 		return  mav;
+	}
+
+	/** 실제 삭제가 아닌 비공개로 전환
+	 * @param articleNo 글번호
+	 */
+	@DeleteMapping(path = "/{articleNo}")
+	public ModelAndView deleteBoard(@PathVariable("articleNo") int articleNo, HttpServletResponse response) throws IOException {
+		ModelAndView mav = new ModelAndView();
+		int result = boardService.deleteBoard(articleNo);
+		if(result != 0){ //성공적으로 삭제(변경)한 경우 리스트로
+			mav.setViewName("redirect: " + Utils.getRoot() + "/boards");
+		}else{
+			response.setCharacterEncoding("UTF-8");
+			response.setContentType("text/html");
+			PrintWriter out = response.getWriter();
+
+			out.print(failedDelete);
+		}
+		return mav;
+	}
+
+	/**
+	 * @param articleNo 글번호
+	 * @return 추천 되었으면 1 아니면 0
+	 */
+	@GetMapping(path = "/{articleNo}/recommend")
+	public ResponseEntity<Integer> upRecommend(@PathVariable("articleNo") int articleNo, Principal principal){
+		String userName = principal.getName();
+		int result = boardService.upRecommend(articleNo, userName);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 }

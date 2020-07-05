@@ -19,19 +19,12 @@ import java.util.Map;
 @Service
 public class BoardServiceImpl implements BoardService {
     private final BoardDao boardDao;
-    private final int listNum = 10;  //게시글 개수 10개씩
     private final FileService fileService;
-
 
     public BoardServiceImpl(BoardDao boardDao, FileService fileService) {
         log.info("BoardServiceImpl Init...");
         this.boardDao = boardDao;
         this.fileService = fileService;
-    }
-
-    @Override
-    public int getListNum() {
-        return listNum;
     }
 
     /**
@@ -53,15 +46,16 @@ public class BoardServiceImpl implements BoardService {
     @Transactional(readOnly = true)
     @Override
     public Map<String,Object> getBoardList(String field, String query, int page) {
-        Map<String,Object> resultMap = new HashMap<>();
 
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
-        int start = 1 + (page-1)*listNum;
+        int start = 1 + (page-1) * listNum;
         int end = page * listNum;
         map.put("start",start);
         map.put("end",end);
+
+        Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("list",boardDao.selectBoardList(map));
         resultMap.put("count",boardDao.selectBoardListCount(map));
 
@@ -165,5 +159,31 @@ public class BoardServiceImpl implements BoardService {
             }
         }
         return result;
+    }
+
+    @Override
+    public int deleteBoard(int articleNo) {
+        return boardDao.deleteBoardByArticleNo(articleNo);
+    }
+
+    /**
+     * @param articleNo 글번호
+     * @param userName  유저 아이디
+     * @return 추천수를 올렸으면 1 이미 올린 상태면 0
+     */
+    @Transactional
+    @Override
+    public int upRecommend(int articleNo, String userName) {
+        //isAlreadyExistsID?
+        Map<String, Object> map = new HashMap<>();
+        map.put("articleNo", articleNo);
+        map.put("id", userName);
+        boolean isExists = boardDao.isAlreadyExistsID(map);
+        
+        if(isExists){ //이미 추천한 아이디 이므로 0리턴
+            return 0;
+        }else{ //추천수 올리고 결과 리턴
+            return boardDao.insertRecommend(map);
+        }
     }
 }

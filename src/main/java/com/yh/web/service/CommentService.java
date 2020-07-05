@@ -1,11 +1,18 @@
 package com.yh.web.service;
 
-import com.yh.web.dto.CommentList;
+import com.yh.web.dto.Comment;
 
-import java.util.List;
+import java.util.Map;
 
 public interface CommentService {
-    List<CommentList> selectCommentByArticleNo(int articleNo);
+    //댓글 10개씩 보여주기
+    int listNum = 10;
 
-    List<CommentList> selectCommentByCno(int cno);
+    Map<String, Object> selectCommentByArticleNo(int articleNo, int page);
+
+    Map<String, Object> selectCommentByCno(int cno, int page);
+
+    int addComment(Comment comment);
+
+    int deleteComment(int cno);
 }

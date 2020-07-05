@@ -15,25 +15,77 @@
         <result property="count" column="count" />
     </resultMap>
 
+    <!-- 글번호 댓글 총 개수 조회 -->
+    <select id="selectCommentToTalCountByArticleNo" resultType="_int" parameterType="_int">
+        SELECT COUNT(*)
+        FROM COMMENT_BOARD
+        WHERE ARTICLENO = #{articleNo}
+    </select>
 
-    <select id="selectCommentByArticleNo" resultMap="commentListResult" parameterType="_int">
-        SELECT CNO, PROFILEIMAGE, NAME, ID, CONTENT, C.REGDATE, PUB, COUNT
+    <!-- 글번호 댓글 개수 조회   *답글제외 -->
+    <select id="selectCommentCountByArticleNo" resultType="_int" parameterType="_int">
+        SELECT COUNT(*)
+        FROM COMMENT_BOARD
+        WHERE ARTICLENO = #{articleNo} AND PARENT = 0
+    </select>
+
+    <!-- 글에 해당하는 댓글 리스트 *답글제외 -->
+    <select id="selectCommentByArticleNo" resultMap="commentListResult" parameterType="map">
+        SELECT *
         FROM(
-            SELECT C1.CNO, C1.CONTENT, C1.WRITER, C1.REGDATE, C1.PUB, COUNT(C2.CNO) COUNT
-            FROM COMMENT_BOARD C1
-            LEFT JOIN COMMENT_BOARD C2 ON C1.CNO = C2.PARENT
-            WHERE C1.ARTICLENO = #{articleNo} AND C1.PARENT = 0
-            GROUP BY C1.CNO, C1.CONTENT, C1.WRITER, C1.REGDATE, C1.PUB
-        )C
-        JOIN MEMBER M ON C.WRITER = M.ID
-        ORDER BY CNO ASC
+            SELECT ROW_NUMBER() OVER(ORDER BY CNO) NUM, CNO, PROFILEIMAGE, NAME, ID, CONTENT, C.REGDATE, PUB, COUNT
+            FROM(
+                SELECT C1.CNO, C1.CONTENT, C1.WRITER, C1.REGDATE, C1.PUB, COUNT(C2.CNO) COUNT
+                FROM COMMENT_BOARD C1
+                         LEFT JOIN COMMENT_BOARD C2 ON C1.CNO = C2.PARENT
+                WHERE C1.ARTICLENO = #{articleNo} AND C1.PARENT = 0
+                GROUP BY C1.CNO, C1.CONTENT, C1.WRITER, C1.REGDATE, C1.PUB
+            )C
+                JOIN MEMBER M ON C.WRITER = M.ID
+        )
+        WHERE NUM BETWEEN #{start} AND #{end}
     </select>
 
-    <select id="selectCommentByCno" resultMap="commentListResult" parameterType="_int">
-        SELECT CNO, PROFILEIMAGE, NAME, ID, CONTENT, C.REGDATE, PUB
-        FROM COMMENT_BOARD C
-        JOIN MEMBER M ON C.WRITER = M.ID
+    <!-- 댓글번호 답글 개수 조회 -->
+    <select id="selectCommentCountByCno" resultType="_int" parameterType="_int">
+        SELECT COUNT(*)
+        FROM COMMENT_BOARD
         WHERE PARENT = #{cno}
-        ORDER BY CNO ASC
     </select>
+
+    <!-- 댓글번호에 해당하는 답글 리스트 -->
+    <select id="selectCommentByCno" resultMap="commentListResult" parameterType="map">
+        SELECT *
+        FROM(
+            SELECT ROW_NUMBER() OVER(ORDER BY CNO) NUM , CNO, PROFILEIMAGE, NAME, ID, CONTENT, C.REGDATE, PUB
+            FROM COMMENT_BOARD C
+                     JOIN MEMBER M ON C.WRITER = M.ID
+            WHERE PARENT = #{cno}
+            )
+        WHERE NUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 댓글 추가 -->
+    <insert id="insertComment" parameterType="comment">
+        INSERT INTO
+        COMMENT_BOARD
+            (CNO,ARTICLENO,CONTENT,WRITER
+            <if test="parent != 0">
+            ,PARENT
+            </if>
+            ,IP
+        )
+        VALUES
+            (SEQ_BOARD_COMMENT.NEXTVAL ,#{articleNo} ,#{content} ,#{writer}
+            <if test="parent != 0">
+            ,#{parent}
+            </if>
+            ,#{ip}
+        )
+    </insert>
+
+    <!-- 댓글 삭제 기능 실제 삭제 아닌 공개x -->
+    <update id="updateComment" parameterType="_int">
+        UPDATE COMMENT_BOARD SET PUB = 0 WHERE CNO = #{cno}
+    </update>
 </mapper>
