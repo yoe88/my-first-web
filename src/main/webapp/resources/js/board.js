@@ -1,13 +1,4 @@
 'use strict'
-function notAllowEmpty(form) {
-    const q = form.querySelector("#q");
-    if(q.value === ''){
-        showAlert('danger','검색어를 입력해주세요.',true);
-        return false;
-    }
-    return true;
-}
-
 //게시판 작성페이지
 function validateBoard(form){
     const title = form.title;
@@ -82,12 +73,6 @@ function cancel() {
 //게시판 작성페이지
 
 
-
-function deleteBoard(form) { //글번호
-    if(confirm('정말 삭제하시겠습니까?')){
-        form.submit();
-    }
-}
 
 //수정페이지
 function deleteFile(){

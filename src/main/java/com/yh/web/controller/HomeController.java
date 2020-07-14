@@ -1,6 +1,7 @@
 package com.yh.web.controller;
 
 import com.yh.web.Utils;
+import com.yh.web.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,16 +16,25 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.Principal;
+import java.util.List;
 
 @Slf4j
 @Controller
 public class HomeController {
 
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    private final BoardService boardService;
+    public HomeController(BoardService boardService) {
+        log.info("HomeController Init...");
+        this.boardService = boardService;
+    }
+
+    @GetMapping(path = "/index")
     public ModelAndView home() {
         ModelAndView mav = new ModelAndView("/index");
-        log.info("메인페이지");
         mav.addObject("page_title", "YH");
+
+        List<String> boardTitleList =  boardService.selectTitleLastFive();
+        log.info(boardTitleList.toString());
         return mav;
     }
 
@@ -51,7 +61,4 @@ public class HomeController {
                 "    </script>";
         out.write(msg);
     }
-
-
-
 }

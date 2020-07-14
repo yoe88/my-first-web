@@ -15,6 +15,26 @@
         <result property="lv" column="lv" />
     </resultMap>
 
+    <resultMap id="titleListResult" type="string">
+        <result property="title" column="title"/>
+    </resultMap>
+
+    <!-- 가지고 있는 자식 글개수 -->
+    <select id="selectChildCount" resultType="_int" parameterType="_int">
+        SELECT COUNT(*) FROM BOARD WHERE PARENT = #{articleNo}
+    </select>
+
+    <!-- 최근 게시물 제목 5개 -->
+    <select id="selectTitleLastFive" resultMap="titleListResult">
+        SELECT TITLE
+        FROM(
+            SELECT ROW_NUMBER() OVER(ORDER BY ARTICLENO DESC) NUM, TITLE
+            FROM BOARD
+            WHERE PUB = 1
+        )
+        WHERE NUM BETWEEN 1 AND 5
+    </select>
+
     <!--  - - - - - - - - - -   글 쓰기 위한 쿼리 - - - - - - - - - - -->
     <!-- 시퀀스 조회 -->
     <select id="selectNextSequence" resultType="_int">
@@ -80,7 +100,6 @@
                 LEFT JOIN RECOMMEND_BOARD r ON b.ARTICLENO = r.ARTICLENO
                 WHERE b.ARTICLENO = #{articleNo} AND PUB = 1
                 GROUP BY b.ARTICLENO, B.TITLE, B.CONTENT, B.WRITER, B.REGDATE, B.HIT
-
             )B
         JOIN MEMBER M ON B.WRITER = M.ID
         LEFT JOIN BOARD_FILE F ON B.ARTICLENO = F.ARTICLENO
@@ -108,11 +127,15 @@
         DELETE BOARD_FILE WHERE ARTICLENO = #{articleNo}
     </delete>
 
-    <!--  - - - - - - - - - -   삭제 위한 쿼리 - - - - - - - - - - -->
-    <!-- 실제 삭제 아닌 비공개로 전환 -->
-    <update id="deleteBoardByArticleNo" parameterType="_int">
+    <!-- 비공개로 전환 -->
+    <update id="updateBoardPubByArticleNo" parameterType="_int">
         UPDATE BOARD SET PUB = 0 WHERE ARTICLENO = #{articleNo}
     </update>
+
+    <!--  - - - - - - - - - -   삭제 위한 쿼리 - - - - - - - - - - -->
+    <delete id="deleteBoardByArticleNo" parameterType="_int">
+        DELETE FROM BOARD WHERE ARTICLENO = #{articleNo}
+    </delete>
 
     <!--  - - - - - - - - - -   목록 위한 쿼리 - - - - - - - - - - -->
     <!-- 게시글 목록 조회 -->

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
+import com.yh.web.dao.AdminDao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ import com.yh.web.service.MemberService;
 public class MybatisTest {
 	@Autowired
 	MemberService memberService;
+
+	@Autowired
+	AdminDao adminDao;
 	
 	@Test
 	public void selectAllMemberList() {
@@ -34,4 +38,11 @@ public class MybatisTest {
 		Member m = memberService.getMemberInfo("nana");
 		System.out.println(m);
 	}
+
+	@Test
+	public void oneToMany(){
+
+	}
+
+
 }

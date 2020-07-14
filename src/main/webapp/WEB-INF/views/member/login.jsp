@@ -55,9 +55,9 @@
                     </div>
 
                     <div class=" small mt-2">
-                        <div class="float-left">
-                            <a class="text-muted" href="register"><i class="fas fa-user-lock pr-1"></i>아이디</a>
-                            <a class="text-muted" href="register"><i class="fas fa-circle pr-1"></i>비밀번호찾기</a>
+                        <div class="float-left action">
+                            <span class="text-muted" data-toggle="modal" data-target="#searchID"><i class="fas fa-user-lock pr-1"></i>아이디</span>
+                            <span class="text-muted" data-toggle="modal" data-target="#searchMember"><i class="fas fa-circle pr-1"></i>비밀번호찾기</span>
                         </div>
                         <div class="float-right">
                             <a class="text-muted" href="register"><i class="fas fa-user-plus pr-1"></i>회원가입</a>
@@ -69,7 +69,58 @@
             <a href="${contextPath}/index" class="btn btn-outline-danger float-right my-2">돌아가기</a>
         </div>
     </div>
+
+    <div class="modal fade" id="searchID" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">아이디 찾기</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="input-email" class="col-form-label">인증한 이메일을 입력해주세요.</label>
+                        <input type="email" class="form-control" id="input-email" placeholder="이메일">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" onclick="findID();">확인</button>
+                </div>
+                <div class="modal-footer">
+                    <p id="search-ID-Result" style="font-weight: 600"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="searchMember" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">비밀번호 찾기</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-form-label">아이디</label>
+                        <input type="text" class="form-control mb-1" placeholder="아이디">
+                        <label class="col-form-label">이메일</label>
+                        <input type="email" class="form-control" placeholder="이메일">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" onclick="findMember();">확인</button>
+                </div>
+                <div class="modal-footer">
+                    <p id="search-Member-Result" style="font-weight: 600"></p>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- <script src="../js/member.js"></script> -->
+    <script src="<c:url value="/resources/js/commons.js" />"></script>
     <script src="<c:url value="/resources/js/member/login.js" />"></script>
 </body>
 </html>

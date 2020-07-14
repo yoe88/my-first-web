@@ -20,4 +20,6 @@ public interface FileService{
 
     String upload(MultipartFile mf, String folderName);
     boolean deleteFile(String folderName, String fileName);
+
+    boolean deleteFolder(String folderName);
 }

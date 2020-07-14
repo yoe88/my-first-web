@@ -1,55 +1,15 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="contextPath"  value="${pageContext.request.contextPath}"/>
 <sec:authorize access="isAuthenticated()">
     <sec:authentication property="principal.username" var="username" />
     <sec:authorize access="hasRole('ROLE_ADMIN')" var="isAdmin" />
 </sec:authorize>
-<style>
-    .table td,
-    .table th {
-        border-top: 0;
-    }
 
-    .table tr {
-        border-top: 1px solid #dee2e6
-    }
-
-    .table th {
-        padding: 0.7rem 0.75rem 0.1rem;
-    }
-
-    .table td {
-        padding: 0.1rem 0.75rem 0.7rem;
-    }
-
-    @media (min-width: 768px) {
-
-        .table th,
-        .table td {
-            padding: .75em;
-        }
-    }
-
-    .btn:focus {
-        box-shadow: 0 0 0 0.2rem rgba(246, 199, 255, 0.5)!important;
-    }
-
-    a:hover{
-        text-decoration: none;
-    }
-    li .form-control{
-        border: 1px solid white;
-    }
-    input[type=radio]{
-        display: none;
-    }
-</style>
-
-<main>
+<main id="boardDetail">
     <input type="hidden" id="user-name" value="${username}">
     <input type="hidden" id="admin" value="${isAdmin}">
     <input type="hidden" id="ano" value="${b.articleNo}">
@@ -103,23 +63,23 @@
             </tr>
 
             <c:if test="${isAdmin || username == b.id}">
-            <!-- 관리자 또는 작성자만 보이게하기 -->
+            <!-- 관리자 이상 또는 작성자만 보이게하기 -->
             <tr>
                 <td colspan="2" class="py-3 d-flex justify-content-around">
+                <sec:authorize access="hasRole('ROLE_ADMIN')"> <%--관리자 이상만 비공개 처리 가능--%>
+                    <input type="button" value="비공개하기" class="btn btn-purple" onclick="disableBoard('${b.articleNo}');">
+                </sec:authorize>
                 <c:if test="${username == b.id}">
                     <a href="${b.articleNo}/edit" class="btn btn-purple">수정하기</a>
                 </c:if>
-                    <form action="${b.articleNo}" method="post">
-                        <input type="hidden" name="_method" value="delete" />
-                        <input type="button" value="삭제하기" class="btn btn-purple" onclick="deleteBoard(this.form);">
-                    </form>
+                    <input type="button" value="삭제하기" class="btn btn-purple" onclick="deleteBoard('${b.articleNo}');">
                 </td>
             </tr>
             </c:if>
         </table>
     </section>
     <div class="container my-3 clearfix action">
-        <button class="btn btn-outline-dark" onclick="toggleViewComment();">댓글<span class="text-danger ml-1" id="total-comment-count">댓글개수</span></button>
+        <button class="btn btn-outline-dark" onclick="toggleViewComment();">댓글<span class="text-danger ml-1" id="total-comment-count">0</span></button>
         <button class="btn btn-outline-dark" onclick="upRecommend();">추천하기<span class="text-danger ml-1" id="recommend-count">${b.recommend}</span></button>
         <a href="${b.articleNo}/reply" class="btn btn-outline-danger float-right">답글</a>
     </div>

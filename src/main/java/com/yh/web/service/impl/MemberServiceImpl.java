@@ -1,9 +1,11 @@
 package com.yh.web.service.impl;
 
+import com.yh.web.Utils;
 import com.yh.web.dao.MemberDao;
 import com.yh.web.dto.Member;
 import com.yh.web.dto.MemberRole;
 import com.yh.web.security.CustomUserDetails;
+import com.yh.web.service.MailService;
 import com.yh.web.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +14,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service("memberService")
 public class MemberServiceImpl implements MemberService {
     final MemberDao memberDao;
     final PasswordEncoder passwordEncoder;
+    final MailService mailService;
 
     @Autowired
-    public MemberServiceImpl(MemberDao memberDao, PasswordEncoder passwordEncoder) {
+    public MemberServiceImpl(MemberDao memberDao, PasswordEncoder passwordEncoder, MailService mailService) {
         log.info("MemberServiceImpl Init...");
         this.memberDao = memberDao;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     @Transactional(readOnly = true)
@@ -47,13 +53,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public String searchId(String id) {
+    public String findId(String id) {
         return memberDao.selectId(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public String searchEmail(String email) {
+    public String findEmail(String email) {
         return memberDao.selectEmail(email);
     }
 
@@ -90,6 +96,55 @@ public class MemberServiceImpl implements MemberService {
             return true;
         }else{
             return false;
+        }
+    }
+
+    @Override
+    public String findIdByEmail(String email) {
+        return memberDao.searchIdByEmail(email);
+    }
+
+    @Override
+    public int searchMember(String id, String email) {
+        Map<String, String> map = new HashMap<>();
+        map.put("id", id);
+        map.put("email", email);
+        return memberDao.searchMember(map);
+    }
+
+    /**
+     * @param id    아이디
+     * @param email 이메일
+     * @return  패스워드 변경하고 이메일 전송했으면 true, 실패 false
+     */
+    @Transactional
+    @Override
+    public boolean changeTempPassword(String id, String email) {
+        //랜덤 코드 생성
+        String tempPassword_ = Utils.createRandomCode();
+        String tempPassword = passwordEncoder.encode(tempPassword_);
+        Member m = new Member();
+        m.setId(id);
+        m.setPassword(tempPassword);
+        int result = memberDao.updateMember(m);
+        if(result == 0)
+            return false;
+        else{
+            try{
+                String sb = "<html>" +
+                            "<body>" +
+                            "    <div style=\"border: 2px solid rgb(77, 194, 125); display: inline-block;padding: 2px 5px;\">" +
+                            "    <p>변경된 비밀번호입니다.</p>" +
+                            "    <p>비밀번호:  <span style=\"font-size: 1.3rem; color: #1d80fb; font-weight: bold; text-decoration: underline;\">" + tempPassword_ + "</span></p>" +
+                            "    </div>" +
+                            "</body>" +
+                            "</html>";
+                mailService.sendMail( email, "임시 비밀번호 발급.", sb); //받는사람이메일주소,제목,내용
+                return true;
+            }catch (Exception e){
+                e.printStackTrace();
+                return false;
+            }
         }
     }
 }

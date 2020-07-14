@@ -47,7 +47,6 @@ async function loadComment(page) {//페이지 번호
     const userName = document.querySelector('#user-name').value;  //로그인한 유저 아이디 string
     const isAdmin = document.querySelector('#admin').value;       //admin 권한을 가졌는지 true/false string형
 
-    //for(const comment of list){  //배열 하나씩 꺼내기
     list.forEach((comment, i) => {
         if((seq+i) <= lastSeq  ) return;
 
@@ -84,7 +83,7 @@ async function loadComment(page) {//페이지 번호
                             }
                         </div>
                         <hr class="my-1">
-                        <p class="comment-content my-1" style="white-space: pre;">${comment.pub === true ? comment.content : '<i class="fas fa-exclamation-circle mr-1" style="color: #fbbd0d"></i><span style="color: #d0d0d0">삭제된 댓글 입니다.</span>'}</p>
+                        <p class="comment-content my-1" style="white-space: pre-wrap;">${comment.pub === true ? comment.content : '<i class="fas fa-exclamation-circle mr-1" style="color: #fbbd0d"></i><span style="color: #d0d0d0">삭제된 댓글 입니다.</span>'}</p>
                         <a class="small text-dark" onclick="showReplyComment(this);" style="cursor: pointer">
                             <span class="reply-txt mr-1">답글</span><span class="reply-cnt font-weight-bold">${comment.count}</span>
                             <input type="radio" name="reply">
@@ -219,7 +218,7 @@ async function appendReplyComment(cno, page){ //ul, 댓글번호, 페이지
                                     }   
                                 </div>
                                 <hr class="my-1">
-                                <p class="comment-content my-1">${c.pub === true ? c.content : '<i class="fas fa-exclamation-circle mr-1" style="color: #fbbd0d"></i><span style="color: #d0d0d0">삭제된 댓글 입니다.</span>'}</p>
+                                <p class="comment-content my-1" style="white-space: pre-wrap">${c.pub === true ? c.content : '<i class="fas fa-exclamation-circle mr-1" style="color: #fbbd0d"></i><span style="color: #d0d0d0">삭제된 댓글 입니다.</span>'}</p>
                              </li>`
         appendHtml(ul, li);
     });
@@ -345,7 +344,7 @@ function deleteComment(a) { //삭제 버튼
 //추천수
 function upRecommend() {
     const articleNo = document.querySelector('#articleNo').value;
-    fetch(`${articleNo}/recommend`)
+    fetch(`${getRoot()}/boards/${articleNo}/recommend`)
     .then(response => response.text())
     .then(text => {
         if(text === '1'){
@@ -357,4 +356,40 @@ function upRecommend() {
         }
     });
 
+}
+
+async function deleteBoard(articleNo) { //글번호
+    if(confirm('정말 삭제하시겠습니까?')){
+        const response = await fetch(`${getRoot()}/boards/${articleNo}`, {
+            method: 'DELETE'
+        });
+        if(response.status === 200){
+            const text = await response.text();
+            if(text === '44')
+                alert('답변이 달린 게시글은 삭제할 수 없습니다.');
+            else if(text === '1')
+                location.href = `${getRoot()}/boards`;
+            else
+                alert('다시 시도 해주세요.');
+        }else{
+            alert('delete, Error');
+        }
+    }
+}
+
+async function disableBoard(articleNo) {
+    if(confirm('비공개 하시겠습니까?')){
+        const response = await fetch(articleNo, {
+            method: 'PUT'
+        });
+        if(response.status === 200){
+            const text = await response.text();
+            if(text === '1')
+                location.href = `${getRoot()}/boards`;
+            else
+                alert('다시 시도 해주세요.');
+        }else{
+            alert('disable, Error');
+        }
+    }
 }

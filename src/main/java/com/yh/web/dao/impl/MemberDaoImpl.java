@@ -8,6 +8,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository("memberDao")
@@ -22,9 +23,7 @@ public class MemberDaoImpl implements MemberDao {
 
     @Override
     public int updateMember(Member member) {
-        int result;
-        result = sqlSession.update(MAPPER + "updateMember", member);
-        return result;
+        return sqlSession.update(MAPPER + "updateMember", member);
     }
 
     @Override
@@ -62,5 +61,15 @@ public class MemberDaoImpl implements MemberDao {
     @Override
     public int insertMemberRole(String id) {
         return sqlSession.insert(MAPPER + "insertMemberRole", id);
+    }
+
+    @Override
+    public String searchIdByEmail(String email) {
+        return sqlSession.selectOne(MAPPER + "searchIdByEmail", email);
+    }
+
+    @Override
+    public int searchMember(Map<String, String> map) {
+        return sqlSession.selectOne(MAPPER + "searchMember", map);
     }
 }

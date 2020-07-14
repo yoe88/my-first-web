@@ -49,6 +49,7 @@ div[class= input-group-append] button[class ~= input-group-text]:focus{
 
 
 /* common */
+
 @font-face {
     font-family: 'Cafe24Oneprettynight';
     src: url('../font/Cafe24Oneprettynight.woff')
@@ -129,6 +130,16 @@ a.nav-link:hover{
 }
 /*header*/
 
+/* index페이지*/
+.main-img{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
 /*로그인 회원가입*/
 .background-overlay{
     position: fixed;
@@ -144,6 +155,10 @@ a.nav-link:hover{
     justify-content: center;
     align-items: center;
     background-color: linen;
+}
+.login .action span:hover{
+    cursor: pointer;
+    text-decoration: underline;
 }
 section.register{
     position: absolute;
@@ -162,29 +177,30 @@ section.register{
 }
 
 span[class *=error-]{
-height: 28px;
-color: red;
+    height: 28px;
+    color: red;
 }
 div#background {
-position: fixed;
-z-index: 9;
-background-color: rgba(0, 0, 0, 0.2);
-left: 0;
-top: 0;
-display: flex;
-justify-content: center;
-align-items: center;
+    position: fixed;
+    z-index: 9;
+    background-color: rgba(0, 0, 0, 0.2);
+    left: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 div[role=alert] {
-position: fixed;
-background-color: white;
-left: 50%;
-top: 10%;
-display: inline-block;
-transform: translate(-50%);
-transition: ease-in-out;
-animation: showAlert 0.2s forwards;
+    position: fixed;
+    background-color: white;
+    left: 50%;
+    top: 10%;
+    display: inline-block;
+    z-index: 1;
+    transform: translate(-50%);
+    transition: ease-in-out;
+    animation: showAlert 0.2s forwards;
 }
 
 div.btn-outline-danger[role=alert]:hover{
@@ -296,4 +312,43 @@ div.comment-write-box textarea{
     font-size: 1rem;
     font-weight: bold;
     color: #666;
+}
+
+#boardDetail .table td,
+#boardDetail .table th {
+    border-top: 0;
+}
+
+#boardDetail .table tr {
+    border-top: 1px solid #dee2e6
+}
+
+#boardDetail .table th {
+    padding: 0.7rem 0.75rem 0.1rem;
+}
+
+#boardDetail .table td {
+    padding: 0.1rem 0.75rem 0.7rem;
+}
+
+@media (min-width: 768px) {
+
+    #boardDetail .table th,
+    #boardDetail .table td {
+        padding: .75em;
+    }
+}
+
+#boardDetail .btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(246, 199, 255, 0.5)!important;
+}
+
+#boardDetail a:hover{
+    text-decoration: none;
+}
+#boardDetail li .form-control{
+    border: 1px solid white;
+}
+#boardDetail input[type=radio]{
+    display: none;
 }

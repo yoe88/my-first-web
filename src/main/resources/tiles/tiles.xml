@@ -11,16 +11,26 @@
       <put-attribute name="body" value="" />
       <put-attribute name="footer" value="/WEB-INF/views/commons/footer.jsp" />
    </definition>
-   
-  	<definition name="/*" extends="baseLayout">
+
+   <definition name="/*" extends="baseLayout">
       <put-attribute name="title" expression="${page_title}"/>
       <put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
    </definition>
-   
+
    <definition name="/*/*" extends="baseLayout">
       <put-attribute name="title" expression="${page_title}"/>
       <put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
    </definition>
+
+   <definition name="/admin/*/*" extends="baseLayout">
+      <put-attribute name="title" expression="${page_title}"/>
+      <put-attribute name="body" value="/WEB-INF/views/admin/{1}/{2}.jsp" />
+   </definition>
+
+   <!--<definition name="/*/*/*" extends="baseLayout">
+      <put-attribute name="title" expression="${page_title}"/>
+      <put-attribute name="body" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+   </definition>-->
    
     <!-- 빈화면 -->
    <definition name="empty"  template="/WEB-INF/views/commons/empty.jsp">

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.admin">
+    <resultMap id="memberResult" type="java.util.Map">
+        <result property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="regDate" column="regDate" />
+        <result property="roleName" column="roleName2" />
+    </resultMap>
+
+    <resultMap id="boardListResult" type="boardList">
+        <result property="articleNo" column="articleNo" />
+        <result property="title" column="title" />
+        <result property="writer" column="writer" />
+        <result property="regDate" column="regDate" />
+        <result property="recommend" column="recommend" />
+        <result property="hit" column="hit" />
+        <result property="cmt" column="cmt" />
+        <result property="lv" column="lv" />
+        <result property="pub" column="pub"/>
+    </resultMap>
+
+    <!-- 권한 수정 -->
+    <update id="updateMemberRole" parameterType="map">
+        UPDATE MEMBER_ROLE SET ROLENAME = #{role}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 사용가능여부 수정 -->
+    <update id="updateMemberEnable" parameterType="map">
+        UPDATE MEMBER SET ENABLE  = #{enable}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 회원정보 조회 -->
+    <select id="selectMemberById" resultType="map" parameterType="string">
+        SELECT M.*,
+               CASE
+                   WHEN ROLENAME = 'ROLE_MASTER' THEN '마스터'
+                   WHEN ROLENAME = 'ROLE_ADMIN'  THEN '관리자'
+                   WHEN ROLENAME = 'ROLE_USER'   THEN '사용자'
+                   END ROLENAME
+        FROM MEMBER M
+        JOIN MEMBER_ROLE R ON M.ID = R.ID
+        WHERE M.ID = #{id}
+    </select>
+
+    <!-- 회원리스트 조회 -->
+    <select id="memberList" resultMap="memberResult" parameterType="map">
+        SELECT *
+        FROM(
+            SELECT ROWNUM NUM, MM.*
+            FROM(
+                SELECT M.ID, NAME, REGDATE,
+                    CASE
+                        WHEN ENABLE = 0               THEN '활동중지'
+                        WHEN ROLENAME = 'ROLE_MASTER' THEN '마스터'
+                        WHEN ROLENAME = 'ROLE_ADMIN'  THEN '관리자'
+                        WHEN ROLENAME = 'ROLE_USER'   THEN '사용자'
+                    END ROLENAME2
+                FROM MEMBER M
+                JOIN MEMBER_ROLE R ON M.ID = R.ID
+                WHERE UPPER(${field}) LIKE UPPER('%'||#{query}||'%')
+                ORDER BY (
+                    CASE
+                        WHEN ENABLE = 0               THEN 4
+                        WHEN ROLENAME = 'ROLE_MASTER' THEN 1
+                        WHEN ROLENAME = 'ROLE_ADMIN'  THEN 2
+                        WHEN ROLENAME = 'ROLE_USER'   THEN 3
+                    END
+                ), REGDATE DESC
+            )MM
+        )WHERE NUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 회원 리스트 개수 -->
+    <select id="memberListCount" resultType="_int" parameterType="map">
+        SELECT COUNT(*)
+        FROM MEMBER M
+        JOIN MEMBER_ROLE R ON M.ID = R.ID
+        WHERE UPPER(${field}) LIKE UPPER('%'||#{query}||'%')
+    </select>
+
+    <!-- 해당 글번호 상세 조회 -->
+    <select id="selectBoardDetailByArticleNo" resultType="boardDetail" parameterType="_int">
+        SELECT B.ARTICLENO ARTICLENO, TITLE, CONTENT, NAME, ID, PUB,
+               B.REGDATE REGDATE, HIT, RECOMMEND,  FILENAME, ORIGINALFILENAME, PROFILEIMAGE
+        FROM(
+                SELECT b.ARTICLENO, B.TITLE, B.CONTENT, B.WRITER, B.REGDATE, B.HIT, B.PUB, COUNT(r.ID) RECOMMEND
+                FROM BOARD b
+                LEFT JOIN RECOMMEND_BOARD r ON b.ARTICLENO = r.ARTICLENO
+                WHERE b.ARTICLENO = #{articleNo}
+                GROUP BY b.ARTICLENO, B.TITLE, B.CONTENT, B.WRITER, B.REGDATE, B.HIT, B.PUB
+            )B
+        JOIN MEMBER M ON B.WRITER = M.ID
+        LEFT JOIN BOARD_FILE F ON B.ARTICLENO = F.ARTICLENO
+    </select>
+
+    <!-- 해당 글번호 pub 수정 -->
+    <update id="updateBoardPub" parameterType="map">
+        UPDATE BOARD SET PUB = #{pub} WHERE ARTICLENO = #{articleNo}
+    </update>
+
+    <!--  - - - - - - - - - -   목록 위한 쿼리 - - - - - - - - - - -->
+    <!-- 게시글 목록 조회 -->
+    <select id="selectBoardList" resultMap="boardListResult" parameterType="map">
+        SELECT *
+        <include refid="selectBoardList" />
+        WHERE NUM BETWEEN #{start} AND #{end}
+    </select>
+
+    <!-- 게시글 개수 조회 -->
+    <select id="selectBoardListCount" resultType="_int" parameterType="map">
+        SELECT count(*)
+        <include refid="selectBoardList" />
+    </select>
+
+    <sql id="selectBoardList">
+        FROM(
+            SELECT ROWNUM NUM, bbbb.*
+            FROM(
+                    SELECT bbb.*, LEVEL-1 LV
+                    FROM(
+                            SELECT ARTICLENO, TITLE, WRITER, REGDATE, RECOMMEND, HIT, PARENT, GRPNO, PUB, CMT
+                            FROM(
+                                    SELECT b.ARTICLENO, b.TITLE, b.REGDATE, b.HIT, count(distinct r.ID) RECOMMEND, b.PARENT, b.GRPNO, b.PUB, m.NAME WRITER, count(distinct c.CNO) cmt
+                                    FROM BOARD b
+                                    JOIN MEMBER m ON WRITER = m.ID
+                                    LEFT JOIN RECOMMEND_BOARD r ON b.ARTICLENO = r.ARTICLENO
+                                    LEFT JOIN COMMENT_BOARD c ON b.ARTICLENO = c.ARTICLENO
+                                    GROUP BY b.ARTICLENO, b.TITLE, m.NAME, b.REGDATE, b.HIT, b.PARENT, b.GRPNO, b.PUB
+                            )bb
+                    )bbb
+                    START WITH PARENT = 0
+                    CONNECT BY PRIOR ARTICLENO = PARENT
+                    ORDER SIBLINGS BY GRPNO DESC
+            )bbbb
+            WHERE UPPER(${field}) LIKE UPPER('%'||#{query}||'%')
+        )
+    </sql>
+
+</mapper>

@@ -14,4 +14,5 @@ public class BoardList {
     private int hit;                 //조회수
     private int cmt;                 //댓글 개수
     private int lv;                  //레벨
+    private boolean pub;                 //공개여부
 }

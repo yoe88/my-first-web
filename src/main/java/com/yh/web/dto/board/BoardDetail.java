@@ -15,6 +15,7 @@ public class BoardDetail {
     private LocalDateTime regDate;
     private int recommend;
     private int hit;
+    private boolean pub;
     private String fileName;
     private String originalFileName;
     private String profileImage;

@@ -102,4 +102,19 @@ public class BoardDaoImpl implements BoardDao {
     public int insertRecommend(Map<String, Object> map) {
         return sqlSession.insert(MAPPER + "insertRecommend", map);
     }
+
+    @Override
+    public List<String> selectTitleLastFive() {
+        return sqlSession.selectList(MAPPER + "selectTitleLastFive");
+    }
+
+    @Override
+    public int selectChildCount(int articleNo) {
+        return sqlSession.selectOne(MAPPER + "selectChildCount", articleNo);
+    }
+
+    @Override
+    public int updateBoardPubByArticleNo(int articleNo) {
+        return sqlSession.update(MAPPER + "updateBoardPubByArticleNo", articleNo);
+    }
 }

@@ -4,6 +4,7 @@ import com.yh.web.Utils;
 import com.yh.web.dto.Member;
 import com.yh.web.security.CustomUserDetails;
 import com.yh.web.service.FileService;
+import com.yh.web.service.MailService;
 import com.yh.web.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +35,17 @@ public class MemberController {
     private final MemberService memberService;
     private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     @Autowired
     public MemberController(MemberService memberService
                             ,FileService fileService
-                            ,PasswordEncoder passwordEncoder) {
+                            ,PasswordEncoder passwordEncoder
+                            ,MailService mailService) {
         this.memberService = memberService;
         this.fileService = fileService;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
     }
 
     /**
@@ -65,9 +69,9 @@ public class MemberController {
      * @return OK: 사용가능한 아이디, CONFLICT: 중복된 아이디
      */
     @GetMapping(value = "/checkid", consumes = "text/plain")
-    public ResponseEntity isDuplicatedId(@RequestParam(name = "id") String id) {
+    public ResponseEntity<String> isDuplicatedId(@RequestParam(name = "id") String id) {
         log.info("아이디 중복검사: {}", id);
-        String result = memberService.searchId(id);
+        String result = memberService.findId(id);
         if(result == null)
             return new ResponseEntity<>("1",HttpStatus.OK);
         else
@@ -79,21 +83,51 @@ public class MemberController {
      * @return OK: 사용가능한 이메일, CONFLICT: 중복된 이메일
      */
     @GetMapping(path = "/checkemail", consumes = "text/plain")
-    public ResponseEntity isDuplicatedEmail(@RequestParam(name = "email") String email) {
+    public ResponseEntity<String> isDuplicatedEmail(@RequestParam(name = "email") String email) {
         log.info("이메일 중복검사: {}", email);
-        String result = memberService.searchEmail(email);
+        String result = memberService.findEmail(email);
         if(result == null)
             return new ResponseEntity<>(HttpStatus.OK);
         else
             return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    /**
+    @RequestMapping(value = "/createcode", method = RequestMethod.GET, consumes = "text/plain")
+    @ResponseBody
+    public String sendSimpleMail(HttpServletRequest request, @RequestParam(name = "email")String receiveEmail) throws Exception {
+        request.setCharacterEncoding("utf-8");
+
+        try {
+            //인증코드 생성
+            String randomCode = Utils.createRandomCode();
+            log.info("인증코드생성: {}",randomCode);
+            //인증코드 세션 바인딩
+            HttpSession session = request.getSession();
+            session.setAttribute("code_", randomCode);
+
+            String sb = "<html>" +
+                    "<body>" +
+                    "    <div style=\"border: 2px solid rgb(77, 194, 125); display: inline-block;padding: 2px 5px;\">" +
+                    "    <p>회원가입 인증번호 입니다.</p>" +
+                    "    <p>인증번호:  <span style=\"font-size: 1.3rem; color: #1d80fb; font-weight: bold; text-decoration: underline;\">" + randomCode + "</span></p>" +
+                    "    </div>" +
+                    "</body>" +
+                    "</html>";
+            mailService.sendMail( receiveEmail, "회원가입 인증번호입니다.", sb); //받는사람이메일주소,제목,내용
+            //mailService.sendPreConfiguredMessage("안녕~!"); //미리 저장된 송수신주소로 내용만 입력
+            return "1";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "0";
+        }
+    }
+
+    /** 회원 가입 페이지에서 사용
      * @param code 사용자가 입력한 인증번호
      * @return 1:일치 0:불일치
      */
     @GetMapping(value = "/checkcode")
-    public ResponseEntity checkCode(@RequestParam(name = "code", required = false) String code,
+    public ResponseEntity<String> checkCode(@RequestParam(name = "code", required = false) String code,
                             HttpServletRequest request) {
         log.info("{}",code);
         HttpSession session = request.getSession();
@@ -109,7 +143,7 @@ public class MemberController {
             return new ResponseEntity<>("0",HttpStatus.OK);
     }
 
-    /**
+    /** 비밀번호 수정 페이지에서 사용
      * @param password 사용자가 입력한 비밀번호
      * @return 1:일치 0:불일치
      */
@@ -243,4 +277,42 @@ public class MemberController {
             return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
         }
     }
+
+    /**
+     *  로그인 페이지에서 아이디 찾기 기능
+     * @param email 이메일
+     * @return  이메일에 일치하는 아이디, 없으면 null
+     */
+    @GetMapping(path = "/findId", consumes = "text/plain")
+    public ResponseEntity<String> find(@RequestParam(name = "email") String email){
+        String ID = memberService.findIdByEmail(email);
+        return new ResponseEntity<>(ID ,HttpStatus.OK);
+    }
+
+    /**
+     *  로그인 페이지에서 비밀번호 찾기 기능
+     * @param id    아이디
+     * @param email 이메일
+     * @return  아이디와 이메일이 일치하는 회원수 1, 불일치 0
+     */
+    @GetMapping(path = "/findMember", consumes = "text/plain")
+    public ResponseEntity<Integer> find(@RequestParam(name = "id") String id ,@RequestParam(name = "email") String email){
+        int result = memberService.searchMember(id, email);
+        return new ResponseEntity<>(result ,HttpStatus.OK);
+    }
+
+    /**
+     *  로그인 페이지에서 비밀빈호 찾기 후 새로운 비밀번호 발급
+     * @param id    아이디    임시 비밀번호로 대체할 아이디
+     * @param email 이메일    임시 비밀번호를 받을 이메일
+     */
+    @GetMapping(path = "/newPassword", consumes = "text/plain")
+    public ResponseEntity<String> newPassword(@RequestParam(name = "id") String id ,@RequestParam(name = "email") String email){
+        boolean result = memberService.changeTempPassword(id,email);
+        if(result)
+            return new ResponseEntity<>("OK",HttpStatus.OK);
+        else
+            return new ResponseEntity<>("FAIL",HttpStatus.OK);
+    }
+
 }

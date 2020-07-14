@@ -7,7 +7,7 @@ function notAllowEnter(){
     document.addEventListener('keydown', function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
-        };
+        }
     }, true);
 }
 //특수키
@@ -114,4 +114,12 @@ function makeThumbnail(file, thumbImg, width,height) {
             thumbImg.style.display = 'block';
         };
     };
+}
+function notAllowEmpty(form) {
+    const q = form.querySelector("#q");
+    if(q.value === ''){
+        showAlert('danger','검색어를 입력해주세요.',true);
+        return false;
+    }
+    return true;
 }

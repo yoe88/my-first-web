@@ -148,11 +148,12 @@ function getCode(){
                     alert('전송실패');
                 }
             }else{
+                closeLoading();
                 alert('code, error');
             }
         }
     }
-    xhttp.open("GET",getRoot() +"/createcode?email="+email.value.trim(),true);
+    xhttp.open("GET","createcode?email="+email.value.trim(),true);
     xhttp.setRequestHeader('Content-Type', 'text/plain');
     xhttp.send();
 }

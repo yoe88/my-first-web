@@ -11,8 +11,14 @@ public interface MemberService{
     List<MemberRole> getMemberRoles(String loginUserId);
 	
 	List<Member> getAllMemberList();
-	String searchId(String id);
-	String searchEmail(String email);
+	String findId(String id);
+	String findEmail(String email);
 	int addMember(Member member);
     boolean modifyMember(Member member);
+
+    String findIdByEmail(String email);
+
+    int searchMember(String id, String email);
+
+    boolean changeTempPassword(String id, String email);
 }

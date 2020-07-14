@@ -21,6 +21,7 @@
     <link rel="shortcut icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/admin.css" />">
     
     <title><tiles:insertAttribute name="title" /></title>
 </head>

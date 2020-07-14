@@ -24,7 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
-@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_USER')")
 @RequestMapping(path = "/boards" )
 @Controller
 public class BoardController {
@@ -43,11 +43,6 @@ public class BoardController {
 			"        location.href= ' " + Utils.getRoot() + "/boards';" +
 			"    </script>";
 
-	private final String failedDelete =
-			"<script>" +
-					"        alert('글 삭제를 실패했습니다.!');" +
-					"        location.href= ' " + Utils.getRoot() + "/boards';" +
-					"    </script>";
 
 	public BoardController(BoardService boardService) {
 		log.info("BoardController Init...");
@@ -291,23 +286,23 @@ public class BoardController {
 		return  mav;
 	}
 
-	/** 실제 삭제가 아닌 비공개로 전환
+	/** 글번호 삭제
 	 * @param articleNo 글번호
 	 */
 	@DeleteMapping(path = "/{articleNo}")
-	public ModelAndView deleteBoard(@PathVariable("articleNo") int articleNo, HttpServletResponse response) throws IOException {
-		ModelAndView mav = new ModelAndView();
+	public ResponseEntity<Integer> deleteBoard(@PathVariable("articleNo") int articleNo) {
 		int result = boardService.deleteBoard(articleNo);
-		if(result != 0){ //성공적으로 삭제(변경)한 경우 리스트로
-			mav.setViewName("redirect: " + Utils.getRoot() + "/boards");
-		}else{
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 
-			out.print(failedDelete);
-		}
-		return mav;
+	/**
+	 * 글번호 비공개
+	 * @param articleNo 글번호
+	 */
+	@PutMapping(path = "/{articleNo}")
+	public ResponseEntity<Integer> updateBoardPub(@PathVariable("articleNo") int articleNo) {
+		int result = boardService.updateBoardPubByArticleNo(articleNo);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	/**

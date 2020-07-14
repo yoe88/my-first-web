@@ -3,13 +3,16 @@ package com.yh.web.config;
 import com.yh.web.security.CustomAuthenticationFailureHandler;
 import com.yh.web.security.CustomAuthenticationSuccessHandler;
 import com.yh.web.security.CustomUserDetailsService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,19 +21,25 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity //@EnableWebSecurity가 붙어 있을 경우 스프링 시큐리티를 구성하는 기본적인 빈(Bean)들을 자동으로 구성해준다.
 //@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true) //default false
 @ComponentScan(basePackages = {"com.yh.web.security"})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final AuthenticationProvider customAuthenticationProvider; //로그인인증
     private final CustomUserDetailsService customUserDetailsService;
@@ -40,12 +49,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public SecurityConfig(@Lazy AuthenticationProvider customAuthenticationProvider,
                           @Lazy CustomUserDetailsService customUserDetailsService,
                           DataSource dataSource) {
-        logger.info("SecurityConfig Init");
+        log.info("SecurityConfig Init");
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.customUserDetailsService = customUserDetailsService;
         this.dataSource = dataSource;
     }
 
+    //권한 계층 설정
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        Map<String, List<String>> roleHierarchyMap = new HashMap<>();
+        roleHierarchyMap.put("ROLE_MASTER", Arrays.asList("ROLE_ADMIN"));
+        roleHierarchyMap.put("ROLE_ADMIN", Arrays.asList("ROLE_USER"));
+        String roles = RoleHierarchyUtils.roleHierarchyFromMap(roleHierarchyMap);
+        roleHierarchy.setHierarchy(roles);
+        // 혹은 아래와 같이 작성할 수 있다.
+        //roleHierarchy.setHierarchy("ROLE_MASTER > ROLE_ADMIN\nROLE_ADMIN > ROLE_USER");
+        return roleHierarchy;
+    }
+
+    //권한 계층 등록
+    @Bean
+    public SecurityExpressionHandler<FilterInvocation> expressionHandler() {
+        DefaultWebSecurityExpressionHandler webSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
+        webSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
+        return webSecurityExpressionHandler;
+    }
+
+    //JSP에도 권한 계층이 설정 될수 있게 설정
+    @Override
+    public void init(WebSecurity web) throws Exception {
+        web.expressionHandler(expressionHandler());
+        super.init(web);
+    }
 
     //   resources 경로에 대한 요청은 인증/인가 처리하지 않도록 한다.
     @Override
@@ -99,7 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .expiredUrl("/expired");
     }
 
-    //내가 만든 인증 시스템인 CustomAuthenticationProvider를 ProviderManager가 알 수 있게 ProviderManager에게 등록해줘야한다.
+    //내가 만든 인증 시스템인 CustomAuthenticationProvider를 ProviderManager가 알 수 있게 등록해줘야한다.
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         auth.authenticationProvider(customAuthenticationProvider);

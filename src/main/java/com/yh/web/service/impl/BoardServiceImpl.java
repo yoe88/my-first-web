@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -46,7 +47,6 @@ public class BoardServiceImpl implements BoardService {
     @Transactional(readOnly = true)
     @Override
     public Map<String,Object> getBoardList(String field, String query, int page) {
-
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
@@ -72,7 +72,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     /**
-     * @return  다음 글번호
+     * @return  다음에 삽입할 글번호
      */
     @Override
     public int getNextArticleNo() {
@@ -161,9 +161,19 @@ public class BoardServiceImpl implements BoardService {
         return result;
     }
 
+    /**
+     * @param articleNo  글번호
+     * @return           정상적으로 삭제 했으면 1 자식을 가지고 있다면 44 실패 했다면 0
+     */
+    @Transactional
     @Override
     public int deleteBoard(int articleNo) {
-        return boardDao.deleteBoardByArticleNo(articleNo);
+        int child = boardDao.selectChildCount(articleNo);
+        if(child != 0)
+            return 44;
+        if(fileService.deleteFolder(FileService.boardPath + File.separator + articleNo)) //폴더 삭제가 된경우
+            return boardDao.deleteBoardByArticleNo(articleNo);  //글 삭제 시도
+        return 0;
     }
 
     /**
@@ -185,5 +195,15 @@ public class BoardServiceImpl implements BoardService {
         }else{ //추천수 올리고 결과 리턴
             return boardDao.insertRecommend(map);
         }
+    }
+
+    @Override
+    public List<String> selectTitleLastFive() {
+        return boardDao.selectTitleLastFive();
+    }
+
+    @Override
+    public int updateBoardPubByArticleNo(int articleNo) {
+        return boardDao.updateBoardPubByArticleNo(articleNo);
     }
 }

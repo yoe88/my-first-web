@@ -4,6 +4,7 @@ import com.yh.web.dto.board.Board;
 import com.yh.web.dto.board.BoardDetail;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 public interface BoardService {
@@ -24,4 +25,8 @@ public interface BoardService {
     int deleteBoard(int articleNo);
 
     int upRecommend(int articleNo, String userName);
+
+    List<String> selectTitleLastFive();
+
+    int updateBoardPubByArticleNo(int articleNo);
 }

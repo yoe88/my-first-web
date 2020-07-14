@@ -120,15 +120,41 @@ public class FileServiceImpl implements FileService {
      */
     public boolean deleteFile(String folderName, String fileName) {
         String filePath = uploadPath + SE + folderName + SE + fileName;//파일경로
-        log.info(filePath);
+
         try {
             File file = new File(filePath);
-            if (file.exists())
-                file.delete();
-            return true;
-        } catch (Exception e) {
+            if (file.exists())          //파일이 존재하는경우 삭제시도
+                return file.delete();
+            else return true;          //존재하지 않는경우 true
+        } catch (Exception e) {        //시도하다가 에러난경우 false
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * @param folderName  삭제할 폴더 이름
+     * @return
+     */
+    @Override
+    public boolean deleteFolder (String folderName){
+        String filePath = uploadPath + SE + folderName;  //폴더 경로
+        try {
+            File file = new File(filePath);
+            if(file.exists()) {
+                File[] fList = file.listFiles();  //폴더 안에 있는 파일목록
+                if (fList != null) {                //비어 있지 않다면 파일 전부 제거
+                    for (File f : fList) {
+                        f.delete();
+                    }
+                }
+                return file.delete();           //그러고 나서 폴더 삭제 시도
+            }else
+                return true;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

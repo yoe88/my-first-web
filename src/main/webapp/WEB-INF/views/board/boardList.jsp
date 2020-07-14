@@ -33,7 +33,7 @@
 				<tr class="text-center">
 					<th class="">번호</th>
 					<th class="">제목</th>
-					<th class="">글쓴이</th>
+					<th class="">작성자</th>
 					<th class="">작성일</th>
 					<th class="">추천</th>
 					<th class="">조회</th>
