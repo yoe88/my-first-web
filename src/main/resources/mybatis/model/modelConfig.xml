@@ -12,5 +12,8 @@
 		<typeAlias type="com.yh.web.dto.board.BoardFile" alias="boardFile" />
 		<typeAlias type="com.yh.web.dto.CommentList" alias="commentList" />
 		<typeAlias type="com.yh.web.dto.Comment" alias="comment" />
+		<typeAlias type="com.yh.web.dto.Gallery" alias="gallery" />
+		<typeAlias type="com.yh.web.dto.GalleryFile" alias="galleryFile" />
+
 	</typeAliases>
 </configuration>

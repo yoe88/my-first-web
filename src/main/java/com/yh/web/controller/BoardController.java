@@ -6,7 +6,6 @@ import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.dto.board.BoardList;
 import com.yh.web.service.BoardService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,9 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -30,19 +26,6 @@ import java.util.*;
 public class BoardController {
 
 	private final BoardService boardService;
-
-	private final String notAllow =
-				"<script>" +
-			"        alert('올바른 접근이 아닙니다.');" +
-			"        location.href= ' " + Utils.getRoot() + "/boards';" +
-			"    </script>";
-
-	private final String failedWrite =
-				"<script>" +
-			"        alert('글 작성을 실패했습니다.!');" +
-			"        location.href= ' " + Utils.getRoot() + "/boards';" +
-			"    </script>";
-
 
 	public BoardController(BoardService boardService) {
 		log.info("BoardController Init...");
@@ -86,7 +69,7 @@ public class BoardController {
 		LocalDate now = LocalDate.now(); //현재 일과 게시글 일을 비교한다.
 		for (int i = 0; i < listCount; i++) {
 			LocalDate date = list.get(i).getRegDate().toLocalDate();
-			if(ChronoUnit.DAYS.between(date,now) == 0)
+			if(ChronoUnit.DAYS.between(date,now) == 0) // 오늘이면
 				isNow[i] = true;
 		}
 
@@ -119,19 +102,16 @@ public class BoardController {
 	 * 				답글쓰기 페이지
 	 */
 	@GetMapping(path = "/{articleNo}/reply")
-	public ModelAndView replyBoardForm(@PathVariable("articleNo") String parent_
-								, HttpServletResponse response) throws IOException {
-		response.setCharacterEncoding("UTF-8");
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
+	public ModelAndView replyBoardForm(@PathVariable("articleNo") String parent_) {
 
 		ModelAndView mav = new ModelAndView();
 		int parent;
+
 		try{
 			parent = Integer.parseInt(parent_);                    //숫자로 변환이 안되거나
 			int result = boardService.searchArticleNo(parent);
 			if(result == 0) {                                  //참조 부모 글번호가 존재하지 않는경우
-				out.write(notAllow);                                //메시지 날리기
+				Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 			}else{
 				mav.setViewName("/board/boardForm");
 				mav.addObject("page_title", "답글쓰기");
@@ -140,7 +120,7 @@ public class BoardController {
 			}
 			return mav;
 		} catch (NumberFormatException e){
-			out.write(notAllow);
+			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 			return mav;
 		}
 	}
@@ -155,8 +135,7 @@ public class BoardController {
 	public ModelAndView addBoard(@ModelAttribute Board board
 						, Principal principal
 						, @RequestParam(value = "file", required = false) MultipartFile mf
-						, HttpServletRequest request
-						, HttpServletResponse response) throws IOException {
+						, HttpServletRequest request) {
 		//설정해야 할것 = 글번호, 작성자, 그룹번호, 아이피
 		//자동으로 되는것 = 제목, 내용, 등록날짜, 추천수, 조회수, 부모글번호, 공개여부
 		ModelAndView mav = new ModelAndView();
@@ -180,45 +159,36 @@ public class BoardController {
 		if(result != 0) {  //성공적으로 됐을경우 리스트로
 			mav.setViewName("redirect: " + Utils.getRoot() + "/boards");
 		} else{
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
-
-			out.print(failedWrite);
+			Utils.redirectErrorPage(mav, "글 작성을 실패했습니다.!", "/boards");
 		}
 		return mav;
 	}
 
 	/**
-	 * @param articleNo 글번호
+	 * @param articleNo_ 글번호
 	 * @return 글번호에 해당하는 상세 페이지
 	 */
 	@GetMapping(path = "/{articleNo}")
-	public ModelAndView boardDetail(@PathVariable("articleNo") int articleNo
-									,HttpServletRequest request
-									,HttpServletResponse response) throws IOException {
+	public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
+									,HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
-		mav.addObject("page_title", "상세보기");
+		int articleNo;
+
+		try {
+			articleNo = Integer.parseInt(articleNo_);
+		}catch (NumberFormatException e){
+			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
+			return mav;
+		}
+
 		BoardDetail b = boardService.getBoardDetail(articleNo, false);
 		if(b == null){
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
-
-			out.print(notAllow);
+			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 		}else{
-			mav.addObject("b",b);
+			mav.addObject("page_title", b.getTitle());
 			mav.setViewName("/board/boardDetail");
-		}
-		
-		String referer = request.getHeader("REFERER"); //게시판에서 검색한 쿼리스트링 값 넘겨주기
-		if(referer != null){
-			String qs = null;
-			int index = referer.lastIndexOf("?");
-			if(index != -1){
-				qs = referer.substring(referer.lastIndexOf("?"));
-			}
-			mav.addObject("qs",qs);
+			mav.addObject("b",b);
+			mav.addObject("qs", Utils.getPreQS(request));
 		}
 
 		return mav;
@@ -226,36 +196,34 @@ public class BoardController {
 
 
 	/**
-	 * @param articleNo 글번호
-	 * @return 글 수정페이지
+	 * @param articleNo_ 글번호
+	 * @return 글 수정 페이지
 	 */
 	@GetMapping(path = "/{articleNo}/edit")
-	public ModelAndView editBoardForm(@PathVariable("articleNo") int articleNo
-								,HttpServletResponse response
-								,Principal principal) throws IOException {
+	public ModelAndView editBoardForm(@PathVariable("articleNo") String articleNo_
+									  ,Principal principal) {
 		ModelAndView mav = new ModelAndView();
+		int articleNo;
 
+		try {
+			articleNo = Integer.parseInt(articleNo_);
+		}catch (NumberFormatException e){
+			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
+			return mav;
+		}
 
-		mav.addObject("page_title", "글 수정하기");
 		BoardDetail b = boardService.getBoardDetail(articleNo, true);
 		if(b == null){		//존재 하지 않는 글인경우
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
-
-			out.print(notAllow);
+			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 		}else{
 			if(b.getId().equals(principal.getName())){ //글 작성자와 로그인한 아이디가 같은경우에만
-				mav.addObject("b",b);
 				mav.setViewName("/board/boardForm");
+				mav.addObject("page_title", "글 수정하기");
+				mav.addObject("b",b);
 				mav.addObject("title","글 수정");
 				mav.addObject("action",articleNo+"/edit");
 			}else{
-				response.setCharacterEncoding("UTF-8");
-				response.setContentType("text/html");
-				PrintWriter out = response.getWriter();
-
-				out.print(notAllow);
+				Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 			}
 		}
 		return mav;
@@ -269,19 +237,14 @@ public class BoardController {
 	public ModelAndView modifyBoard(@ModelAttribute Board board
 									//,@PathVariable("articleNo") int articleNo
 									,@RequestParam("isDelete") boolean isDelete
-									,@RequestParam(value = "file", required = false) MultipartFile mf
-									,HttpServletResponse response) throws IOException {
+									,@RequestParam(value = "file", required = false) MultipartFile mf) {
 		log.info(board.toString());
 		ModelAndView mav = new ModelAndView();
 		int result = boardService.modifyBoard(board, mf, isDelete);
 		if(result != 0){
 			mav.setViewName("redirect: " + Utils.getRoot() + "/boards/" + board.getArticleNo());
 		}else{
-			response.setCharacterEncoding("UTF-8");
-			response.setContentType("text/html");
-			PrintWriter out = response.getWriter();
-
-			out.print(failedWrite);
+			Utils.redirectErrorPage(mav, "글 작성을 실패했습니다.!", "/boards");
 		}
 		return  mav;
 	}
@@ -292,7 +255,8 @@ public class BoardController {
 	@DeleteMapping(path = "/{articleNo}")
 	public ResponseEntity<Integer> deleteBoard(@PathVariable("articleNo") int articleNo) {
 		int result = boardService.deleteBoard(articleNo);
-		return new ResponseEntity<>(result, HttpStatus.OK);
+		//return new ResponseEntity<>(result, HttpStatus.OK);
+		return ResponseEntity.ok(result);
 	}
 
 	/**
@@ -302,7 +266,8 @@ public class BoardController {
 	@PutMapping(path = "/{articleNo}")
 	public ResponseEntity<Integer> updateBoardPub(@PathVariable("articleNo") int articleNo) {
 		int result = boardService.updateBoardPubByArticleNo(articleNo);
-		return new ResponseEntity<>(result, HttpStatus.OK);
+		//return new ResponseEntity<>(result, HttpStatus.OK);
+		return ResponseEntity.ok(result);
 	}
 
 	/**
@@ -313,6 +278,7 @@ public class BoardController {
 	public ResponseEntity<Integer> upRecommend(@PathVariable("articleNo") int articleNo, Principal principal){
 		String userName = principal.getName();
 		int result = boardService.upRecommend(articleNo, userName);
-		return new ResponseEntity<>(result, HttpStatus.OK);
+		//return new ResponseEntity<>(result, HttpStatus.OK);
+		return ResponseEntity.ok(result);
 	}
 }

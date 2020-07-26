@@ -23,6 +23,25 @@
         <result property="pub" column="pub"/>
     </resultMap>
 
+    <resultMap id="galleryList" type="map">
+        <result property="gno" column="gno" />
+        <result property="fileName" column="fileName" />
+        <result property="cnt" column="cnt" />
+        <result property="pub" column="pub" />
+    </resultMap>
+
+    <resultMap id="galleryDetail" type="map">
+        <id property="gno" column="gno" />
+        <result property="title" column="title" />
+        <result property="writer" column="writer" />
+        <collection property="file" javaType="list" ofType="map">
+            <result property="no" column="no"/>
+            <result property="fileName" column="fileName" />
+            <result property="fileSize" column="fileSize" />
+            <result property="originalFileName" column="originalFileName" />
+        </collection>
+    </resultMap>
+
     <!-- 권한 수정 -->
     <update id="updateMemberRole" parameterType="map">
         UPDATE MEMBER_ROLE SET ROLENAME = #{role}
@@ -104,6 +123,22 @@
         UPDATE BOARD SET PUB = #{pub} WHERE ARTICLENO = #{articleNo}
     </update>
 
+    <!-- 체크된 글번호 pub 수정 -->
+    <update id="updateBoardOpenPub">
+        UPDATE BOARD SET PUB = 1 WHERE ARTICLENO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 체크 안된 글번호 pub 수정 -->
+    <update id="updateBoardClosePub">
+        UPDATE BOARD SET PUB = 0 WHERE ARTICLENO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
     <!--  - - - - - - - - - -   목록 위한 쿼리 - - - - - - - - - - -->
     <!-- 게시글 목록 조회 -->
     <select id="selectBoardList" resultMap="boardListResult" parameterType="map">
@@ -141,5 +176,26 @@
             WHERE UPPER(${field}) LIKE UPPER('%'||#{query}||'%')
         )
     </sql>
+
+    <!--갤러리 인덱스 페이지 리스트-->
+    <select id="selectGalleryList" parameterType="map" resultMap="galleryList">
+        SELECT F.GNO, FILENAME, CNT, PUB
+        FROM(
+                SELECT ROW_NUMBER() OVER(ORDER BY GNO DESC) NUM, A.GNO , A.FILENAME, CNT
+                FROM GALLERY_FILE A
+                JOIN(
+                    SELECT MIN(NO) NO, COUNT(GNO) CNT
+                    FROM GALLERY_FILE
+                    GROUP BY GNO
+                )B ON A.NO = B.NO
+            )F JOIN GALLERY G ON F.GNO = G.GNO
+        WHERE NUM BETWEEN ${start} AND ${end}
+    </select>
+
+    <!--갤러리 리스트 총 개수-->
+    <select id="selectGalleryListCount" resultType="_int">
+        SELECT COUNT(*)
+        FROM GALLERY
+    </select>
 
 </mapper>

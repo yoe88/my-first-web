@@ -5,6 +5,8 @@ import java.util.List;
 import com.yh.web.dto.Member;
 import com.yh.web.dto.MemberRole;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface MemberService{
 	//시큐리티 관련
 	Member getMemberInfo(String loginUserId);
@@ -21,4 +23,6 @@ public interface MemberService{
     int searchMember(String id, String email);
 
     boolean changeTempPassword(String id, String email);
+
+    int updateEnable(String id, HttpServletRequest request);
 }

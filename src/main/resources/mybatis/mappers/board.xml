@@ -15,17 +15,13 @@
         <result property="lv" column="lv" />
     </resultMap>
 
-    <resultMap id="titleListResult" type="string">
-        <result property="title" column="title"/>
-    </resultMap>
-
     <!-- 가지고 있는 자식 글개수 -->
     <select id="selectChildCount" resultType="_int" parameterType="_int">
         SELECT COUNT(*) FROM BOARD WHERE PARENT = #{articleNo}
     </select>
 
     <!-- 최근 게시물 제목 5개 -->
-    <select id="selectTitleLastFive" resultMap="titleListResult">
+    <select id="selectTitleLastFive" resultType="string">
         SELECT TITLE
         FROM(
             SELECT ROW_NUMBER() OVER(ORDER BY ARTICLENO DESC) NUM, TITLE

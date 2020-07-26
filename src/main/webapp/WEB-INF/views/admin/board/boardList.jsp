@@ -2,7 +2,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="contextPath"  value="${pageContext.request.contextPath}"/>
-<main>
+<main id="board-list">
     <section class="container">
         <div>
             <h1 class="h1-title">관리자 게시판</h1>
@@ -42,7 +42,9 @@
                 </thead>
                 <tbody>
                 <c:if test="${list != null}">
+                    <c:set var="allNo" value=""/>
                     <c:forEach items="${list}" var="b" varStatus="st">
+                        <c:set var="allNo" value="${allNo} ${b.articleNo}" />
                         <tr class="text-center">
                             <td>${b.articleNo}</td>
                             <td class="text-left tbl-title">
@@ -64,20 +66,21 @@
                             </td>
                             <td>${b.recommend}</td>
                             <td>${b.hit}</td>
-                            <td><input type="checkbox" value="${b.articleNo}" ${b.pub ? "checked" : ""} ></td>
+                            <td><input type="checkbox" name="no" value="${b.articleNo}" ${b.pub ? "checked" : ""} ></td>
                         </tr>
                     </c:forEach>
+                    <input type="hidden" name="allNo" value="${allNo}">
                 </c:if>
                 <c:if test="${listTotalCount == 0}">
-                    <tr class="text-center"><td colspan="6">검색된 결과가 없습니다.</td></tr>
+                    <tr class="text-center"><td colspan="7">검색된 결과가 없습니다.</td></tr>
                 </c:if>
                 </tbody>
             </table>
+            <c:if test="${listTotalCount != 0}">
+                <input type="button" class="btn btn-outline-dark float-right" value="일괄공개" onclick="updateBoardsPub()">
+            </c:if>
         </div>
         <div class="clearfix">
-            <div class="float-left">
-                <a href="${contextPath}/boards/new"><button class="btn btn-outline-danger">글쓰기</button></a>
-            </div>
             <h5 class="float-right"><span class="current-page-num">${p}</span>/<span class="font-weight-normal">${pageMaxNum}</span></h5>
         </div>
     </section>
@@ -106,3 +109,5 @@
         </nav>
     </section>
 </main>
+<script src="<c:url value="/resources/js/commons.js"/>"></script>
+<script src="<c:url value="/resources/js/board.js"/>"></script>

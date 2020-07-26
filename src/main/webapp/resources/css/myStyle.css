@@ -60,11 +60,19 @@ div[class= input-group-append] button[class ~= input-group-text]:focus{
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/MapoGoldenPierA.woff')
     format('woff'); font-weight: normal; font-style: normal;
 }
+@font-face {
+    font-family: 'Jua';
+    src: url('../font/Jua-Regular.woff')
+    format('woff'); font-weight: normal; font-style: normal;
+}
 .font-Mapo{
     font-family: 'MapoGoldenPier', serif;
 }
 .font-pretty-night{
     font-family: 'Cafe24Oneprettynight', serif;
+}
+.font-Jua{
+    font-family: 'Jua', sans-serif;
 }
 .black{
     color: black;
@@ -92,7 +100,6 @@ div[class= input-group-append] button[class ~= input-group-text]:focus{
     background-color: white !important;
 }
 
-
 .bg-purple-hover:hover{
     background-color: #6c52cc!important;
 }
@@ -110,6 +117,20 @@ div[class= input-group-append] button[class ~= input-group-text]:focus{
     color: white;
 }
 
+.btn-outline-purple {
+    color: #775cdc;
+    border-color: #775cdc;
+}
+.btn-outline-purple:hover {
+    color: #fff;
+    background-color: #775cdc;
+    border-color: #775cdc;
+}
+.btn-outline-purple:focus {
+    box-shadow: 0 0 0 0.2rem rgba(119,92,220,.5);
+}
+
+
 input:read-only,textarea:read-only{
     background-color: white!important;
 }
@@ -117,6 +138,11 @@ input:read-only,textarea:read-only{
 textarea.no-resize{
     resize: none!important;
 }
+
+.pointer{
+    cursor: pointer;
+}
+
 /* common */
 
 
@@ -224,6 +250,13 @@ div.btn-outline-success[role=alert]:hover{
 /*로그인 회원가입*/
 
 /*boardList*/
+
+#board-list h1{
+    font-family: 'Jua', sans-serif;
+    color: #de6b6b;
+    display: inline;
+    box-shadow: 3px 1px 11px 3px #ffdbdb;
+}
 
 table.tbl-board thead th, table.tbl-board tbody td{
     padding: .75rem 0.2rem;

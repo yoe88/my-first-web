@@ -2,10 +2,12 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="contextPath"  value="${pageContext.request.contextPath}"/>
-<main>
+<main id="board-list">
 	<section class="container">
 		<div>
-			<h1 class="h1-title">* 자유게시판 *</h1>
+			<h1>자유 게시판</h1>
+			<%--e76767
+			de6b6b--%>
 		</div>
 
 		<!--검색창-->

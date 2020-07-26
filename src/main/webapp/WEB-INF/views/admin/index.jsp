@@ -16,7 +16,7 @@
 			</a>
 		</div>
 		<div class="col i-3 rounded">
-			<a href="admin/gallery">
+			<a href="admin/galleries">
 				<i class="fas fa-images" style="color: #654dc7"></i>
 				<h2>갤러리관리</h2>
 			</a>

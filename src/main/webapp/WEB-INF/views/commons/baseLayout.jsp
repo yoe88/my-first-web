@@ -22,6 +22,7 @@
     <link rel="icon" href="<c:url value="/resources/images/favicon.ico" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/myStyle.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/admin.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/gallery.css" />">
     
     <title><tiles:insertAttribute name="title" /></title>
 </head>

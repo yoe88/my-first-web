@@ -24,4 +24,12 @@ public interface AdminDao {
     BoardDetail selectBoardDetailByArticleNo(int articleNo);
 
     int updateBoardPub(Map<String, Integer> map);
+
+    void updateBoardOpenPub(List<String> openNo);
+
+    void updateBoardClosePub(List<String> closeNo);
+
+    List<Map<String, Object>> selectGalleryList(Map<String, Integer> map);
+
+    int selectGalleryListCount();
 }

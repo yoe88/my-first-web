@@ -246,20 +246,23 @@ public class MemberController {
                                                 ,HttpServletRequest request){
         CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         member.setId(user.getUsername());
-        String folderName = FileService.profilePath + File.separator + user.getUsername(); //  profile/id
+        String folderName = FileService.profilePath + File.separator + user.getUsername(); //  c/upload/profile/id
+        /* C:\ upload\profile\id\fileName */
+        String filePath = folderName + File.separator +  user.getProfileImage();
+        log.info("삭제할 파일 경로 {}", filePath);
 
         //---------이미지 관련 수정
         if(mf!=null) { //이미지가 첨부된 경우 업로드하고 멤버객체에 세팅
             log.info("file: {}, size: {}", mf.getOriginalFilename(), mf.getSize());
             String profileImage =  fileService.upload(mf, folderName);
             if(profileImage != null){
-                fileService.deleteFile(folderName,user.getProfileImage());
+                fileService.deleteFile(filePath);
                 member.setProfileImage(profileImage);
             }
         }
         if(isDelete) {  //이미지 삭제인 경우
             member.setProfileImage("");
-            fileService.deleteFile(folderName,user.getProfileImage());
+            fileService.deleteFile(filePath);
         }
 
         //회원정보 수정
@@ -276,6 +279,29 @@ public class MemberController {
             headers.setLocation(URI.create(Utils.getRoot() + "/member/me"));
             return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
         }
+    }
+
+    /**
+     * @return 회원 탈퇴 페이지
+     */
+    @PreAuthorize("isAuthenticated() and not hasRole('ROLE_MASTER')")
+    @GetMapping("/drop")
+    public ModelAndView drop(){
+        ModelAndView mav = new ModelAndView("/member/drop");
+        mav.addObject("page_title", "회원 탈퇴");
+        return mav;
+    }
+
+    /**
+     * @param principal  사용자 정보
+     * @return  회원 탈퇴 처리
+     */
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/drop")
+    public ResponseEntity<Integer> drop(Principal principal, HttpServletRequest request){
+       int result = memberService.updateEnable(principal.getName(), request);
+
+       return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**

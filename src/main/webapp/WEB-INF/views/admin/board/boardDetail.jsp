@@ -19,7 +19,7 @@
             <tr class="row">
                 <td class="col-md-12 clearfix">
                     <div class="d-inline-block pt-2 mr-2">
-                        <img src="${contextPath}/file/thumb/${b.id}/${b.profileImage == null ? "none" : b.profileImage}/size?w=30&h=30" width="30" height="30"
+                        <img src="${contextPath}/file/thumb/profile/${b.id}/${b.profileImage == null ? "none" : b.profileImage}/size?w=30&h=30" width="30" height="30"
                              class="border rounded-circle" alt="프로필 이미지">
                     </div>
                     <input type="hidden" value="${b.articleNo}" id="articleNo">
@@ -103,11 +103,6 @@
     </section>
 </main>
 
-<script>
-    function auto_grow(element) {
-        element.style.height = (element.scrollHeight)+"px";
-    }
-</script>
 <script src="<c:url value="/resources/js/commons.js" />"></script>
 <script src="<c:url value="/resources/js/board.js" />"></script>
 <script src="<c:url value="/resources/js/boardDetail.js" />"></script>

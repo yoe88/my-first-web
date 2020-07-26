@@ -5,14 +5,14 @@
 <sec:authentication property="principal.username" var="username" />
 <sec:authentication property="principal.profileImage" var="profileImage" />
 
-<main class="container">
+<main class="container mb-3 clearfix">
     <section class="row">
         <div class="col-md-6 my-2 p-0 px-2">
             <div class="card h-100">
                 <div class="card-header">프로필사진 / 닉네임</div>
                 <div class="card-body">
-                    <a target="_blank" href="${contextPath}/file/original/${username}/${profileImage}" style="text-decoration: none">
-                        <img class="border rounded-circle" src="${contextPath}/file/thumb/${username}/${profileImage}/size?w=60&h=60" alt="프로필사진" width="60" height="60">
+                    <a target="_blank" href="${contextPath}/file/original/profile/${username}/${profileImage}" style="text-decoration: none">
+                        <img class="border rounded-circle" src="${contextPath}/file/thumb/profile/${username}/${profileImage}/size?w=60&h=60" alt="프로필사진" width="60" height="60">
                     </a>
                     <div class="d-inline-block ml-5">
                         <strong>닉네임</strong><span class="ml-2">${m.name}</span>
@@ -72,5 +72,8 @@
             </div>
         </div>
     </section>
+    <sec:authorize access="!hasRole('ROLE_MASTER')">
+        <a href="drop" class="btn btn-sm btn-danger d-block">회원탈퇴</a>
+    </sec:authorize>
 
 </main>

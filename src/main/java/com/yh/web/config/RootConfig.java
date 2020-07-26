@@ -77,8 +77,8 @@ public class RootConfig {
 	}	
 	
      //트랜잭션 관리
-	@Bean
-	public DataSourceTransactionManager txManager() {
-		return new DataSourceTransactionManager(dataSource());
-	}
+@Bean
+public DataSourceTransactionManager transactionManager() {
+	return new DataSourceTransactionManager(dataSource());
+}
 }

@@ -20,15 +20,12 @@
             padding: .75em;
         }
     }
-    .thumb-img{
-        display: none;
-    }
 </style>
 
 <main>
     <section class="container">
         <div>
-            <h1 class="font-Mapo">${title}</h1>
+            <h1 class="font-Jua">${title}</h1>
         </div>
 
         <form action="${contextPath}/boards/${action}" method="POST" enctype="multipart/form-data" onsubmit="return validateBoard(this);">

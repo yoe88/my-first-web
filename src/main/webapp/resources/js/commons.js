@@ -115,6 +115,50 @@ function makeThumbnail(file, thumbImg, width,height) {
         };
     };
 }
+//이미지 파일, 썸네일 들어갈 img, 너비, 높이
+function returnThumbnail(file, width,height) {
+    return new Promise((resolve) =>{
+        //썸네일 제작
+        const reader = new FileReader();
+
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+            const oImage = new Image(); //drawImage 메서드에 넣기 위해 이미지 객체화
+            oImage.src = reader.result; //data-uri를 이미지 객체에 주입
+            oImage.onload =  function () {
+                //리사이즈를 위한 캔버스
+                const canvas = document.createElement('canvas');
+                const canvasContext = canvas.getContext("2d");
+
+                //캔버스 크기 설정
+                canvas.width = width;
+                canvas.height = height;
+
+                //원본 이미지의 너비 높이 저장
+                const oWidth = oImage.width; //원본 너비
+                const oHeight = oImage.height; //원본 높이
+
+                // 원본 너비를 기준으로 하여 만들고자하는 썸네일의 비율로 높이를 계산한다.
+                let nWidth = oWidth;
+                let nHeight = (height / width) * oWidth;
+                // 계산된 높이가 원본보다 높으면
+                // 원본 높이를 기준으로 썸네일의 비율로 너비를 계산한다.
+                if (nHeight > oHeight) {
+                    nWidth = (width / height) * oHeight;
+                    nHeight = oHeight;
+                }
+
+                //계산된 기준점으로 캔버스에 그리기
+                canvasContext.drawImage(this, (oWidth - nWidth) / 2, (oHeight - nHeight) / 2, nWidth, nHeight, 0, 0, width, height);
+
+                //캔버스에 그린 이미지를 다시 data-uri 형태로 변환
+                const dataURI = canvas.toDataURL("image/jpeg");
+
+                resolve(dataURI);
+            };
+        };
+    });
+}
 function notAllowEmpty(form) {
     const q = form.querySelector("#q");
     if(q.value === ''){

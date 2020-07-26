@@ -60,7 +60,7 @@ async function loadComment(page) {//페이지 번호
 
         const li = `<li class="list-group-item p-2" data-cno="${comment.cno}" data-seq="${seq + i}">
                        <div class="comment-info">
-                            <img src="${getRoot()}/file/thumb/${comment.id}/${comment.profileImage == null ? "none" : comment.profileImage}/size?w=30&h=30" width="30" height="30"
+                            <img src="${getRoot()}/file/thumb/profile/${comment.id}/${comment.profileImage == null ? "none" : comment.profileImage}/size?w=30&h=30" width="30" height="30"
                                  alt="프로필이미지" class="rounded-circle" width="30" height="30">
                             <span class="comment-writer text-muted">${comment.name}(${comment.id})</span>
                             <span class="mx-2" style="color: #e2d7df;">|</span>
@@ -195,7 +195,7 @@ async function appendReplyComment(cno, page){ //ul, 댓글번호, 페이지
         const regDate = `${regDate_.year.toString().substring(2)}.${regDate_.monthValue}.${regDate_.dayOfMonth}. ${regDate_.hour}:${regDate_.minute}:${regDate_.second}`; //날짜+시간
         const li = `<li class="list-group-item p-2" data-cno="${c.cno}" data-seq="${seq + i}">
                                 <div class="comment-info">
-                                    <img src="${getRoot()}/file/thumb/${c.id}/${c.profileImage == null ? "none" : c.profileImage}/size?w=25&h=25" width="25" height="25"
+                                    <img src="${getRoot()}/file/thumb/profile/${c.id}/${c.profileImage == null ? "none" : c.profileImage}/size?w=25&h=25" width="25" height="25"
                                         alt="프로필이미지" class="rounded-circle" width="25" height="25">
                                     <span class="comment-writer text-muted">${c.name}(${c.id})</span>
                                     <span class="mx-2" style="color: #e2d7df;">|</span>
@@ -359,21 +359,20 @@ function upRecommend() {
 }
 
 async function deleteBoard(articleNo) { //글번호
-    if(confirm('정말 삭제하시겠습니까?')){
-        const response = await fetch(`${getRoot()}/boards/${articleNo}`, {
-            method: 'DELETE'
-        });
-        if(response.status === 200){
-            const text = await response.text();
-            if(text === '44')
-                alert('답변이 달린 게시글은 삭제할 수 없습니다.');
-            else if(text === '1')
-                location.href = `${getRoot()}/boards`;
-            else
-                alert('다시 시도 해주세요.');
-        }else{
-            alert('delete, Error');
-        }
+    if(!confirm('정말 삭제하시겠습니까?\n삭제하면 복구가 불가능합니다.')) return;
+    const response = await fetch(`${getRoot()}/boards/${articleNo}`, {
+        method: 'DELETE'
+    });
+    if(response.status === 200){
+        const text = await response.text();
+        if(text === '44')
+            alert('답변이 달린 게시글은 삭제할 수 없습니다.');
+        else if(text === '1')
+            location.href = `${getRoot()}/boards`;
+        else
+            alert('다시 시도 해주세요.');
+    }else{
+        alert('delete, Error');
     }
 }
 

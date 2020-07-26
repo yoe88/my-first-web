@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,5 +148,17 @@ public class MemberServiceImpl implements MemberService {
                 return false;
             }
         }
+    }
+
+    @Override
+    public int updateEnable(String id, HttpServletRequest request) {
+        int result = memberDao.updateEnable(id);
+        if(result == 1){
+            HttpSession session = request.getSession();
+            session.invalidate();
+            return 1;
+        }
+
+        return 0;
     }
 }

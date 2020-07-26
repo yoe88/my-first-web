@@ -74,10 +74,42 @@ function cancel() {
 
 
 
-//수정페이지
+//게시판 수정 페이지 파일 삭제버튼
 function deleteFile(){
     if(document.querySelector("#isDelete") != null)
         document.querySelector("#isDelete").value = 'true';
     document.querySelector(".custom-file-label").textContent = '파일을 선택해 주세요.';//화면상에 보이는 파일이름
     document.querySelector("#customFile").value = '';
+}
+
+
+//관리자 게시판 일괄 공개 버튼
+async function updateBoardsPub(){
+    const allNo = document.querySelector('input[name=allNo]').value.trim();
+    console.log(`'${allNo}'`);
+
+    const openNoArray = [];
+    const checked = document.querySelectorAll('input[name=no]:checked');
+    checked.forEach((i)=>{
+        openNoArray.push(i.value);
+    })
+
+    const openNo = openNoArray.join(" ");
+    console.log(`'${openNo}'`);
+
+    const response = await fetch('boards/edit/AllPub',{
+        method: 'PUT',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({"allNo" : allNo, "openNo" : openNo})
+    })
+    if(response.status === 200){
+        const text = await response.text();
+        if(text === 'true'){
+            showAlert('success','변경 되었습니다.',true);
+        }else{
+            showAlert('danger','다시 시도해주세요.',true);
+        }
+    }else{
+        alert('Error')
+    }
 }

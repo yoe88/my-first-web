@@ -100,9 +100,9 @@ public class BoardServiceImpl implements BoardService {
 
         if(result != 0) { // 글을 성공적으로 추가했을경우
             if(mf.getSize() != 0) {  // 첨부된 파일이 있는지 확인
-                String folderName = FileService.boardPath + File.separator + board.getArticleNo(); //  board/articleNo
+                String folderPath = FileService.boardPath + File.separator + board.getArticleNo(); //  c/upload/board/articleNo
 
-                String safeName = fileService.upload(mf,folderName); //파일 업로드
+                String safeName = fileService.upload(mf,folderPath); //파일 업로드
 
                 if(safeName != null){ //파일 업로드가 됐다면
                     BoardFile boardFile = new BoardFile();
@@ -124,14 +124,16 @@ public class BoardServiceImpl implements BoardService {
         //먼저 글 수정하기
         int result = boardDao.updateBoard(board);
         if(result != 0){ //글 수정이 정상적으로 완료
+            String fileName = boardDao.selectBoardFileNameByArticleNo(board.getArticleNo()); //기존 파일 이름 얻기
+            /* C:\ upload\board\no\fileName */
+            String filePath = FileService.boardPath + File.separator + board.getArticleNo() + File.separator + fileName; //파일 경로
+            
             if(mf.getSize() != 0){ //파일 첨부된경우
                 //먼저 기존 파일삭제 진행
-                String folderName = FileService.boardPath + File.separator + board.getArticleNo();  //board/글번호
-                String fileName = boardDao.selectBoardFileNameByArticleNo(board.getArticleNo()); //기존 파일 이름 얻기
                 if(fileName != null){ //기존파일이 있다면 삭제하고 수정
-                    boolean delete = fileService.deleteFile(folderName, fileName);
+                    boolean delete = fileService.deleteFile(filePath);
                     if(delete){ //삭제가 되었으면
-                        String safeName =  fileService.upload(mf,folderName);  //새로운 파일 업로드
+                        String safeName =  fileService.upload(mf,filePath);  //새로운 파일 업로드
 
                         BoardFile boardFile = new BoardFile();
                         boardFile.setArticleNo(board.getArticleNo());
@@ -141,7 +143,7 @@ public class BoardServiceImpl implements BoardService {
                         boardDao.updateBoardFile(boardFile);  //파일정보 업데이트
                     }
                 }else{ // 기존파일이 없는경우 새로 추가
-                    String safeName =  fileService.upload(mf,folderName);  //새로운 파일 업로드
+                    String safeName =  fileService.upload(mf,filePath);  //새로운 파일 업로드
                     BoardFile boardFile = new BoardFile();
                     boardFile.setArticleNo(board.getArticleNo());
                     boardFile.setFileName(safeName);
@@ -150,10 +152,8 @@ public class BoardServiceImpl implements BoardService {
                     boardDao.insertBoardFile(boardFile);  //파일정보 추가
                 }
             }else if(isDelete){ //수정 없이 파일 삭제 인경우
-                String fileName = boardDao.selectBoardFileNameByArticleNo(board.getArticleNo());
-                String folderName = FileService.boardPath + File.separator + board.getArticleNo();  //board/글번호
-                boolean delete = fileService.deleteFile(folderName, fileName);
-                if(delete) { //삭제가 되었으면 db값 삭제
+                boolean delete = fileService.deleteFile(filePath);
+                if(delete) { //삭제 됐으면 db값 삭제
                     boardDao.deleteBoardFileByArticleNo(board.getArticleNo());
                 }
             }

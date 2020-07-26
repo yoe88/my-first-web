@@ -72,4 +72,9 @@ public class MemberDaoImpl implements MemberDao {
     public int searchMember(Map<String, String> map) {
         return sqlSession.selectOne(MAPPER + "searchMember", map);
     }
+
+    @Override
+    public int updateEnable(String id) {
+        return sqlSession.update(MAPPER + "updateEnable", id);
+    }
 }

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.gallery">
+    <resultMap id="galleryList" type="java.util.Map">
+        <result property="gno" column="gno" />
+        <result property="fileName" column="fileName" />
+        <result property="cnt" column="cnt" />
+    </resultMap>
+
+    <resultMap id="galleryDetail" type="map">
+        <id property="gno" column="gno" />
+        <result property="title" column="title" />
+        <result property="writer" column="writer" />
+        <collection property="file" javaType="list" ofType="map">
+            <result property="no" column="no"/>
+            <result property="fileName" column="fileName" />
+            <result property="fileSize" column="fileSize" />
+            <result property="originalFileName" column="originalFileName" />
+        </collection>
+    </resultMap>
+
+    <!--갤러리 테이블 추가-->
+    <insert id="insertGallery" parameterType="gallery">
+        INSERT INTO
+        GALLERY(GNO, TITLE, WRITER, IP)
+        VALUES(#{gno}, #{title}, #{writer}, #{ip})
+    </insert>
+
+    <!--다음 시퀀스 번호 얻기-->
+    <select id="selectNextSequence" resultType="_long">
+        SELECT SEQ_GALLERY.NEXTVAL FROM DUAL
+    </select>
+
+    <!--갤러리 파일 테이블 추가-->
+    <insert id="insertGalleryFile" parameterType="galleryFile">
+        INSERT INTO
+        GALLERY_FILE
+        VALUES (SEQ_GALLERY_FILE.NEXTVAL, #{gno}, #{fileName}, #{fileSize}, #{originalFileName})
+    </insert>
+
+    <!--갤러리 인덱스 페이지 리스트-->
+    <select id="selectGalleryList" parameterType="map" resultMap="galleryList">
+        SELECT F.GNO, FILENAME, CNT
+        FROM(
+                SELECT ROW_NUMBER() OVER(ORDER BY GNO DESC) NUM, A.GNO , A.FILENAME, CNT
+                FROM GALLERY_FILE A
+                JOIN(
+                    SELECT MIN(NO) NO, COUNT(GNO) CNT
+                    FROM GALLERY_FILE
+                    GROUP BY GNO
+                )B ON A.NO = B.NO
+            )F JOIN GALLERY G ON F.GNO = G.GNO
+        WHERE NUM BETWEEN #{start} AND #{end} AND PUB = 1
+    </select>
+
+    <!--갤러리 리스트 총 개수-->
+    <select id="selectGalleryListCount" resultType="_int">
+        SELECT COUNT(*)
+        FROM GALLERY
+        WHERE PUB = 1
+    </select>
+
+    <!--갤러리 디테일 정보-->
+    <select id="selectGalleryDetail" parameterType="_int" resultMap="galleryDetail">
+        SELECT G.GNO, TITLE, WRITER, NO, FILENAME, FILESIZE, ORIGINALFILENAME
+        FROM GALLERY G
+        JOIN GALLERY_FILE F ON G.GNO = F.GNO
+        WHERE G.GNO = #{gno} AND PUB = 1
+        ORDER BY NO
+    </select>
+
+    <!--갤러리 수정-->
+    <update id="updateGallery" parameterType="map">
+        UPDATE GALLERY SET TITLE = #{title}
+        WHERE GNO = #{gno}
+    </update>
+
+    <!--갤러리 공개 수정-->
+    <update id="updateGalleryPub" parameterType="map">
+        UPDATE GALLERY SET PUB = #{pub} WHERE GNO = #{gno}
+    </update>
+
+    <delete id="deleteGalleryFile">
+        DELETE GALLERY_FILE WHERE NO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteGallery" parameterType="_long">
+        DELETE GALLERY WHERE GNO = #{gno}
+    </delete>
+
+
+
+    <!-- - -  - - - - - - - 관리자  - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- 체크된 갤러리 번호 pub 수정 -->
+    <update id="updateGalleryOpenPub">
+        UPDATE GALLERY SET PUB = 1 WHERE GNO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 체크 안된 갤러리 번호 pub 수정 -->
+    <update id="updateGalleryClosePub">
+        UPDATE GALLERY SET PUB = 0 WHERE GNO IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

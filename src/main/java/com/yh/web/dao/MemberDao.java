@@ -19,4 +19,6 @@ public interface MemberDao {
     String searchIdByEmail(String email);
 
     int searchMember(Map<String, String> map);
+
+    int updateEnable(String id);
 }

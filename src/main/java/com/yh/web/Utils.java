@@ -1,7 +1,12 @@
 package com.yh.web;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.Random;
 
+@Slf4j
 public class Utils {
     public static String getRoot(){
         return "/web";
@@ -24,5 +29,26 @@ public class Utils {
             buf.append(characterTable[random.nextInt(tablelength)]);
         }
         return buf.toString();
+    }
+
+    /**  전달 받은 query String 추가하기*/
+    public static String getPreQS(HttpServletRequest request) {
+        String referer = request.getHeader("REFERER"); //쿼리스트링 값 넘겨주기
+        if(referer == null) {
+            return null;
+        }
+
+        String qs = "";
+        int index = referer.lastIndexOf("?");
+        if(index != -1){
+            qs = referer.substring(referer.indexOf("?"));
+        }
+        return qs;
+    }
+
+    public static void redirectErrorPage(ModelAndView mav, String msg, String redirect ){
+        mav.setViewName("/empty/commons/error/errorMessage");
+        mav.addObject("msg",msg);
+        mav.addObject("redirect",redirect);
     }
 }

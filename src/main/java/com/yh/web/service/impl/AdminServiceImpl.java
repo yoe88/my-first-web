@@ -5,9 +5,10 @@ import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -92,5 +93,50 @@ public class AdminServiceImpl implements AdminService {
         map.put("pub", pub);
 
         return adminDao.updateBoardPub(map);
+    }
+
+    /**
+     * @param allNo_  모든 글번호
+     * @param openNo_ 체크된 글번호
+     * @return
+     */
+    @Transactional
+    @Override
+    public boolean updateBoardAllPub(String allNo_, String openNo_) {
+        try{
+            List<String> closeNo = new ArrayList<>(Arrays.asList(allNo_.split(" ")));
+            List<String> openNo = new ArrayList<>(Arrays.asList(openNo_.split(" ")));
+            closeNo.removeAll(openNo);
+
+            log.info("오픈{}",openNo.toString());
+            if(openNo.size() != 0){
+                adminDao.updateBoardOpenPub(openNo);
+            }
+            log.info("닫기{}",closeNo.toString());
+            if(closeNo.size() != 0){
+                adminDao.updateBoardClosePub(closeNo);
+            }
+            return true;
+        } catch (Exception e){
+            e.printStackTrace();
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+    }
+
+
+    @Override
+    public Map<String, Object> getGalleryList(int page) {
+        Map<String, Integer> map = new HashMap<>();
+        int start = 1 + (page-1) * galleryListNum;
+        int end = page * galleryListNum;
+        map.put("start", start);
+        map.put("end", end);
+
+        Map<String,Object> resultMap = new HashMap<>();
+        resultMap.put("list",adminDao.selectGalleryList(map));
+        resultMap.put("count",adminDao.selectGalleryListCount());
+
+        return resultMap;
     }
 }

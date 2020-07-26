@@ -18,7 +18,7 @@
                         <td>
                             <div class="m-3">
                                 <div>
-                                    <img class="rounded-circle" id="profile-image" src="${contextPath}/file/thumb/${username}/${profileImage}/size?w=160&h=160" width="100" height="100" alt="프로필사진">
+                                    <img class="rounded-circle" id="profile-image" src="${contextPath}/file/thumb/profile/${username}/${profileImage}/size?w=160&h=160" width="100" height="100" alt="프로필사진">
                                 </div>
                                 <div class="my-3">
                                     <input type="hidden" id="isDelete" value="false">

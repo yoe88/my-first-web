@@ -12,7 +12,7 @@
         <tr>
             <td rowspan="4">
                 <div class="img">
-                    <img src="${contextPath}/file/thumb/${member.ID}/${member.PROFILEIMAGE == null ? "none" : member.PROFILEIMAGE}/size?w=300&h=300" alt="프로필사진">
+                    <img src="${contextPath}/file/thumb/profile/${member.ID}/${member.PROFILEIMAGE == null ? "none" : member.PROFILEIMAGE}/size?w=300&h=300" alt="프로필사진">
                 </div>
             </td>
             <td>

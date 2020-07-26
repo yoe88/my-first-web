@@ -19,7 +19,7 @@
             <tr class="row">
                 <td class="col-md-12 clearfix">
                     <div class="d-inline-block pt-2 mr-2">
-                        <img src="${contextPath}/file/thumb/${b.id}/${b.profileImage == null ? "none" : b.profileImage}/size?w=30&h=30" width="30" height="30"
+                        <img src="${contextPath}/file/thumb/profile/${b.id}/${b.profileImage == null ? "none" : b.profileImage}/size?w=30&h=30" width="30" height="30"
                         class="border rounded-circle" alt="프로필 이미지">
                     </div>
                     <input type="hidden" value="${b.articleNo}" id="articleNo">
@@ -69,7 +69,7 @@
                 <sec:authorize access="hasRole('ROLE_ADMIN')"> <%--관리자 이상만 비공개 처리 가능--%>
                     <input type="button" value="비공개하기" class="btn btn-purple" onclick="disableBoard('${b.articleNo}');">
                 </sec:authorize>
-                <c:if test="${username == b.id}">
+                <c:if test="${username == b.id}">  <%--본인이 쓴 글만 수정 가능--%>
                     <a href="${b.articleNo}/edit" class="btn btn-purple">수정하기</a>
                 </c:if>
                     <input type="button" value="삭제하기" class="btn btn-purple" onclick="deleteBoard('${b.articleNo}');">

@@ -58,18 +58,22 @@ public class FileServiceImpl implements FileService {
     /**
      * @param response       응답객체
      * @param file           파일
-     * @param originFileName 원본 파일명
+     * @param originalFileName 원본 파일명
+     * @param isImage       이미지인지 
+     * @param isDownload    다운로드할것인지
      */
     public void download(HttpServletResponse response
             , File file
-            , String originFileName
+            , String originalFileName
             , boolean isImage
             , boolean isDownload) throws IOException {
+        if(originalFileName == null)
+            originalFileName = file.getName();
         response.setHeader("Cache-Control", "no-cache");
         if(isDownload){
-            response.addHeader("Content-disposition", "attachment; fileName=" + URLEncoder.encode(originFileName, "UTF-8"));
+            response.addHeader("Content-disposition", "attachment; fileName=" + URLEncoder.encode(originalFileName, "UTF-8"));
         }else{
-            response.addHeader("Content-disposition", "inline; fileName=" + URLEncoder.encode(originFileName, "UTF-8"));
+            response.addHeader("Content-disposition", "inline; fileName=" + URLEncoder.encode(originalFileName, "UTF-8"));
         }
         if (isImage) {
             String fileName = file.getName();
@@ -91,12 +95,10 @@ public class FileServiceImpl implements FileService {
 
     /**
      * @param mf         단일 파일
-     * @param folderName 파일이 들어갈 폴더
+     * @param folderPath 파일이 들어갈 폴더 경로
      * @return 파일이 성공적으로 업로드 되었으면 파일이름, 실패 했으면 null
      */
-    public String upload(MultipartFile mf, String folderName) {
-        log.info("업로드 시작");
-        String folderPath = uploadPath + SE + folderName;  //파일이 들어갈 폴더경로
+    public String upload(MultipartFile mf, String folderPath) {
         log.info(folderPath);
         File folderFile = new File(folderPath);
         if (!folderFile.exists())
@@ -114,12 +116,10 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
-     * @param folderName 삭제할 파일이 들어 있는 폴더
-     * @param fileName   삭제할 파일 이름
+     * @param filePath  삭제할 파일 경로
      * @return  삭제가 정상적으로 됐으면  true 실패 했으면 false
      */
-    public boolean deleteFile(String folderName, String fileName) {
-        String filePath = uploadPath + SE + folderName + SE + fileName;//파일경로
+    public boolean deleteFile(String filePath) {
 
         try {
             File file = new File(filePath);
@@ -133,14 +133,13 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
-     * @param folderName  삭제할 폴더 이름
-     * @return
+     * @param folderPath  삭제할 폴더 경로
+     * @return  성공 했으면 true
      */
     @Override
-    public boolean deleteFolder (String folderName){
-        String filePath = uploadPath + SE + folderName;  //폴더 경로
+    public boolean deleteFolder (String folderPath){
         try {
-            File file = new File(filePath);
+            File file = new File(folderPath);
             if(file.exists()) {
                 File[] fList = file.listFiles();  //폴더 안에 있는 파일목록
                 if (fList != null) {                //비어 있지 않다면 파일 전부 제거

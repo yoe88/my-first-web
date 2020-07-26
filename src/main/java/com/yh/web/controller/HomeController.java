@@ -13,9 +13,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.Principal;
+import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
@@ -29,12 +31,19 @@ public class HomeController {
     }
 
     @GetMapping(path = "/index")
-    public ModelAndView home() {
+    public ModelAndView home(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("/index");
         mav.addObject("page_title", "YH");
-
         List<String> boardTitleList =  boardService.selectTitleLastFive();
-        log.info(boardTitleList.toString());
+
+        HttpSession session = request.getSession();
+        Enumeration se = session.getAttributeNames();
+        while(se.hasMoreElements()){
+            String getse = se.nextElement()+"";
+            System.out.println("@@@@@@@ session : "+getse+" : "+session.getAttribute(getse));
+        }
+
+
         return mav;
     }
 
@@ -61,4 +70,6 @@ public class HomeController {
                 "    </script>";
         out.write(msg);
     }
+
+
 }

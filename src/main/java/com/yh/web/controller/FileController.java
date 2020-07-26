@@ -18,7 +18,6 @@ import java.io.File;
 @RequestMapping("/file")
 public class FileController {
     private final String SE = File.separator;
-    private final String uploadPath = FileService.uploadPath; //"C:" + SE + "upload"; //업로드 고정 경로
     private final FileService fileService;
 
     public FileController(FileService fileService) {
@@ -27,11 +26,11 @@ public class FileController {
     }
 
     @RequestMapping("/boards/{articleNo}/{file:.+}")
-    public void boardImage(@PathVariable("articleNo") String articleNo
+    public void boardFile (@PathVariable("articleNo") String articleNo
                           ,@PathVariable("file") String fileName
                           ,@RequestParam("fName") String originalFileName
                           ,HttpServletResponse response) throws Exception {
-        String filePath = uploadPath + SE + FileService.boardPath + SE + articleNo + SE + fileName;
+        String filePath = FileService.boardPath + SE + articleNo + SE + fileName;
         File file = new File(filePath);
         fileService.download(response, file, originalFileName,false, true);
     }
@@ -39,42 +38,66 @@ public class FileController {
     /**
      * id/이미지 이름 받아서 경로 지정 해주고 썸네일 메서드 호출
      */
-    @GetMapping("/original/{id}/{imageFileName:.+}")
-    public void originalImage(@PathVariable("id") String id, @PathVariable(value = "imageFileName") String imageFileName,
-                              HttpServletResponse response) throws Exception {
+    @GetMapping("/original/{type}/{identify}/{imageFileName:.+}")
+    public void originalImage(HttpServletResponse response
+            , @PathVariable("type") String type
+            , @PathVariable("identify") String identify
+            , @PathVariable(value = "imageFileName") String imageFileName
+            , @RequestParam(name = "o", required = false) String originalFileName) throws Exception {
         String filePath;
-        if (imageFileName == null) {
-            filePath = uploadPath + SE + FileService.profilePath + SE + FileService.defaultProfile;
-        } else {
-            filePath = uploadPath + SE + FileService.profilePath + SE + id + SE + imageFileName;
+
+        if(type.equals("profile")){
+            if (imageFileName == null) {
+                filePath = FileService.defaultProfile;
+            } else {
+                filePath = FileService.profilePath + SE + identify + SE + imageFileName;
+            }
+            File file = new File(filePath);
+            fileService.download(response, file, imageFileName, true, false);
+        }else if(type.equals("gallery")){
+            filePath = FileService.galleryPath + SE + identify + SE + imageFileName;
+
+            File file = new File(filePath);
+            fileService.download(response, file, originalFileName, true, false);
         }
-        File file = new File(filePath);
-        fileService.download(response, file, imageFileName, true, false);
+
+
     }
 
 
     /**
-     * id/이미지 이름 받아서 경로 지정 해주고 썸네일 메서드 호출
+     * /타입/식별자/이미지 이름 받아서 경로 지정 해주고 썸네일 메서드 호출
      */
-    @GetMapping("/thumb/{id}/{imageFileName:.+}/size")
-    public ResponseEntity<String> printProfileImage(HttpServletResponse response
-            , @PathVariable("id") String id
+    @GetMapping("/thumb/{type}/{identify}/{imageFileName:.+}/size")
+    public ResponseEntity<String> printImage(HttpServletResponse response
+            , @PathVariable("type") String type
+            , @PathVariable("identify") String identify  //아이디, 글번호
             , @PathVariable(value = "imageFileName") String imageFileName
             , @RequestParam("w") int width
             , @RequestParam("h") int height) throws Exception {
-        //logger.info("id: {}, imageFile: {}, width {}, height {}", id, imageFileName, width, height);
-        if (width > 1500 || height > 1500) {
-            log.info("접근 거부");
+        if (width > 500 || height > 500) {
             return new ResponseEntity<>("not allowed, Please check size", HttpStatus.FORBIDDEN);
         }
         String filePath;
-        if (imageFileName.equals("none")) {
-            filePath = uploadPath + SE + FileService.profilePath + SE + FileService.defaultProfile;
-        } else {
-            filePath = uploadPath + SE + FileService.profilePath + SE + id + SE + imageFileName;
+        if(type.equals("profile")){
+            if (imageFileName.equals("none")) {
+                filePath = FileService.defaultProfile;
+                log.info("기본프로필 {}", filePath);
+            } else {
+                filePath = FileService.profilePath + SE + identify + SE + imageFileName;
+            }
+            File file = new File(filePath);
+            fileService.toThumbnail(response, file, width, height);
+            return new ResponseEntity<>("OK", HttpStatus.OK);
+        }else if(type.equals("gallery")){
+            filePath = FileService.galleryPath + SE + identify + SE + imageFileName;
+
+            File file = new File(filePath);
+            fileService.toThumbnail(response, file, width, height);
+            return ResponseEntity.ok("ok");
         }
-        File file = new File(filePath);
-        fileService.toThumbnail(response, file, width, height);
-        return new ResponseEntity<>("OK", HttpStatus.OK);
+
+        return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
     }
+
 }

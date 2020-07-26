@@ -66,4 +66,26 @@ public class AdminDaoImpl implements AdminDao {
     public int updateBoardPub(Map<String, Integer> map) {
         return sqlSession.update(MAPPER + "updateBoardPub", map);
     }
+
+    @Override
+    public void updateBoardOpenPub(List<String> openNo) {
+        sqlSession.update(MAPPER + "updateBoardOpenPub", openNo);
+    }
+
+    @Override
+    public void updateBoardClosePub(List<String> closeNo) {
+        sqlSession.update(MAPPER + "updateBoardClosePub", closeNo);
+    }
+
+    @Override
+    public List<Map<String, Object>> selectGalleryList(Map<String, Integer> map) {
+        List<Map<String, Object>> maps = sqlSession.selectList(MAPPER + "selectGalleryList", map);
+        log.info("관리 갤러리 {}",maps.toString());
+        return maps;
+    }
+
+    @Override
+    public int selectGalleryListCount() {
+        return sqlSession.selectOne(MAPPER + "selectGalleryListCount");
+    }
 }

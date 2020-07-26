@@ -44,5 +44,9 @@
    <definition name="/empty/*/*" extends="empty">
       <put-attribute name="jsp" value="/WEB-INF/views/{1}/{2}.jsp" />
    </definition>
+
+   <definition name="/empty/*/*/*" extends="empty">
+      <put-attribute name="jsp" value="/WEB-INF/views/{1}/{2}/{3}.jsp" />
+   </definition>
   
 </tiles-definitions>

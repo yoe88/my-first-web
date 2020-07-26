@@ -83,10 +83,16 @@
 			 zoneCode = #{zoneCode}, address = #{address}, extraAddress = #{extraAddress}, detailAddress = #{detailAddress},
 		    </if>
 			<if test="profileImage != null"> profileImage = #{profileImage},</if>
-			<if test="enable"> enable = #{enable},</if>
 		</trim>
 		WHERE id = #{id}
 	</update>
+
+	<!-- 회원 탈퇴 처리 enable=0 -->
+	<update id="updateEnable" parameterType="string">
+		UPDATE MEMBER SET ENABLE = 0 WHERE ID = #{id}
+	</update>
+
+
 
 	<!-- 이메일로 아이디 찾기 -->
 	<select id="searchIdByEmail" parameterType="string" resultType="string">
