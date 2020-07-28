@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +101,7 @@ public class GalleryController {
 
         boolean result = galleryService.addGallery(model);
         if(result){
-            mav.setViewName("redirect: "+ Utils.getRoot() + "/galleries");
+            mav.setViewName("redirect:/galleries");
         }
         else{
             Utils.redirectErrorPage(mav, "업로드를 실패하였습니다.\\n다시 시도해주세요.", "/galleries");
@@ -201,7 +200,7 @@ public class GalleryController {
         ModelAndView mav = new ModelAndView();
         boolean result =  galleryService.updateGallery(model);
         if(result){
-            mav.setViewName("redirect: "+ Utils.getRoot() + "/galleries/" + gno);
+            mav.setViewName("redirect:/galleries/" + gno);
         }else{
             Utils.redirectErrorPage(mav, "수정을 실패하였습니다.\\n다시 시도해주세요.", "/galleries");
         }
@@ -219,7 +218,7 @@ public class GalleryController {
         boolean result = galleryService.deleteGallery(gno);
         ModelAndView mav = new ModelAndView();
         if(result){
-            mav.setViewName("redirect: "+ Utils.getRoot() + "/galleries");
+            mav.setViewName("redirect:/galleries");
         }else{
             Utils.redirectErrorPage(mav, "삭제를 실패하였습니다.\\n다시 시도해주세요.", "/galleries/" + gno);
         }

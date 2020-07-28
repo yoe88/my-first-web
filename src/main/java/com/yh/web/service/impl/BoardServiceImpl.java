@@ -36,8 +36,8 @@ public class BoardServiceImpl implements BoardService {
      * @return 존재하면 1 없으면 0
      */
     @Override
-    public int searchArticleNo(int articleNo) {
-        return boardDao.selectBoardCountByArticleNo(articleNo);
+    public int findArticleNo(long articleNo) {
+        return boardDao.findBoardByArticleNo(articleNo);
     }
 
     /**
@@ -48,12 +48,12 @@ public class BoardServiceImpl implements BoardService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Map<String,Object> getBoardList(String field, String query, int page) {
+    public Map<String,Object> getBoardList(String field, String query, long page) {
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
-        int start = 1 + (page-1) * listNum;
-        int end = page * listNum;
+        long start = 1 + (page-1) * listNum;
+        long end = page * listNum;
         map.put("start",start);
         map.put("end",end);
 
@@ -66,20 +66,22 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional(readOnly = true)
     @Override
-    public BoardDetail getBoardDetail(int articleNo, boolean isModify) throws UnsupportedEncodingException {
+    public BoardDetail getBoardDetail(long articleNo, boolean isModify) throws UnsupportedEncodingException {
         if(!isModify){
             boardDao.updateBoardHitByArticleNo(articleNo);
         }
         BoardDetail boardDetail = boardDao.selectBoardDetailByArticleNo(articleNo);
-        if(boardDetail.getProfileImage() != null){
-            String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
-            boardDetail.setProfileImage(profileImageName);
-        }
-        if(boardDetail.getFileName() != null) {
-            String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
-            boardDetail.setFileName(fileName);
-            String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
-            boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
+        if(boardDetail != null){
+            if(boardDetail.getProfileImage() != null){
+                String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
+                boardDetail.setProfileImage(profileImageName);
+            }
+            if(boardDetail.getFileName() != null) {
+                String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
+                boardDetail.setFileName(fileName);
+                String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
+                boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
+            }
         }
         return boardDetail;
     }
@@ -88,7 +90,7 @@ public class BoardServiceImpl implements BoardService {
      * @return  다음에 삽입할 글번호
      */
     @Override
-    public int getNextArticleNo() {
+    public long getNextArticleNo() {
         return boardDao.selectNextSequence();
     }
 
@@ -97,7 +99,7 @@ public class BoardServiceImpl implements BoardService {
      * @return   부모 글번호에 대한 그룹번호
      */
     @Override
-    public int getGrpNo(int articleNo) {
+    public long getGrpNo(long articleNo) {
         return boardDao.selectGrpNoByArticleNo(articleNo);
     }
 
@@ -180,8 +182,8 @@ public class BoardServiceImpl implements BoardService {
      */
     @Transactional
     @Override
-    public int deleteBoard(int articleNo) {
-        int child = boardDao.selectChildCount(articleNo);
+    public int deleteBoard(long articleNo) {
+        long child = boardDao.selectChildCount(articleNo);
         if(child != 0)
             return 44;
         if(fileService.deleteFolder(FileService.boardPath + File.separator + articleNo)) //폴더 삭제가 된경우
@@ -196,7 +198,7 @@ public class BoardServiceImpl implements BoardService {
      */
     @Transactional
     @Override
-    public int upRecommend(int articleNo, String userName) {
+    public int upRecommend(long articleNo, String userName) {
         //isAlreadyExistsID?
         Map<String, Object> map = new HashMap<>();
         map.put("articleNo", articleNo);

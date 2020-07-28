@@ -54,7 +54,7 @@ public class BoardController {
         Map<String, Object> resultMap = adminService.getBoardList(field, query, page);
 
         List<BoardList> list = (List<BoardList>) resultMap.get("list"); //게시글 리스트
-        int listTotalCount = (int) resultMap.get("count"); 				//검색된 게시글 총개수
+        long listTotalCount = (long) resultMap.get("count"); 				//검색된 게시글 총개수
         int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)adminService.listNum)); 	//67개일경우 7
         pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;
 
@@ -88,10 +88,10 @@ public class BoardController {
     public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
             , HttpServletRequest request) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView();
-        int articleNo;
+        long articleNo;
 
         try {
-            articleNo = Integer.parseInt(articleNo_);
+            articleNo = Long.parseLong(articleNo_);
         }catch (NumberFormatException e){
             Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/admin/boards");
             return mav;

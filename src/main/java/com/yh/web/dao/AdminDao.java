@@ -9,7 +9,7 @@ import java.util.Map;
 public interface AdminDao {
     List<Object> selectMembers(Map<String, Object> map);
 
-    int selectMembersCount(Map<String, Object> map);
+    long selectMembersCount(Map<String, Object> map);
 
     Map<String, Object> selectMemberById(String id);
 
@@ -19,19 +19,17 @@ public interface AdminDao {
 
     List<BoardList> selectBoardList(Map<String, Object> map);
 
-    int selectBoardListCount(Map<String, Object> map);
+    long selectBoardListCount(Map<String, Object> map);
 
-    BoardDetail selectBoardDetailByArticleNo(int articleNo);
-
-    int updateBoardPub(Map<String, Integer> map);
+    BoardDetail selectBoardDetailByArticleNo(long articleNo);
 
     void updateBoardOpenPub(List<String> openNo);
 
     void updateBoardClosePub(List<String> closeNo);
 
-    List<Map<String, String>> selectGalleryList(Map<String, Integer> map);
+    List<Map<String, String>> selectGalleryList(Map<String, Long> map);
 
-    int selectGalleryListCount();
+    long selectGalleryListCount();
 
-    Map<String, Object> selectGalleryDetail(int gno);
+    Map<String, Object> selectGalleryDetail(long gno);
 }

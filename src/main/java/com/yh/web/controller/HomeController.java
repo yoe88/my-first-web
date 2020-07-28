@@ -34,14 +34,14 @@ public class HomeController {
     public ModelAndView home(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView("/index");
         mav.addObject("page_title", "YH");
-        List<String> boardTitleList =  boardService.selectTitleLastFive();
+        /*List<String> boardTitleList =  boardService.selectTitleLastFive();
 
         HttpSession session = request.getSession();
         Enumeration se = session.getAttributeNames();
         while(se.hasMoreElements()){
             String getse = se.nextElement()+"";
             System.out.println("@@@@@@@ session : "+getse+" : "+session.getAttribute(getse));
-        }
+        }*/
 
 
         return mav;

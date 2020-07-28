@@ -11,21 +11,21 @@ import java.util.Map;
 public interface BoardService {
     int listNum = 10;  //게시글 개수 10개씩
 
-    Map<String,Object> getBoardList(String field, String query, int page);
+    Map<String,Object> getBoardList(String field, String query, long page);
 
-    int searchArticleNo(int articleNo);
-    BoardDetail getBoardDetail(int articleNo, boolean isModify) throws UnsupportedEncodingException;
-    int getNextArticleNo();
+    int findArticleNo(long articleNo);
+    BoardDetail getBoardDetail(long articleNo, boolean isModify) throws UnsupportedEncodingException;
+    long getNextArticleNo();
 
-    int getGrpNo(int articleNo);
+    long getGrpNo(long articleNo);
 
     int addBoard(Board board, MultipartFile mf);
 
     int modifyBoard(Board board, MultipartFile mf, boolean isDelete);
 
-    int deleteBoard(int articleNo);
+    int deleteBoard(long articleNo);
 
-    int upRecommend(int articleNo, String userName);
+    int upRecommend(long articleNo, String userName);
 
     List<String> selectTitleLastFive();
 

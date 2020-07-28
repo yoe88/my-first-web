@@ -50,7 +50,7 @@ public class MemberController {
 
         Map<String, Object> resultMap = adminService.getMembers(field, query, page);
         List<Object> members = (List<Object>) resultMap.get("list");    //게시글 리스트
-        int listTotalCount = (int) resultMap.get("count"); 				//검색된 게시글 총개수
+        long listTotalCount = (long) resultMap.get("count"); 				//검색된 게시글 총개수
         int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)adminService.listNum)); 	//67개일경우 7
         pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;
 
@@ -72,10 +72,14 @@ public class MemberController {
     @GetMapping(path = "/members/{id}")
     public ModelAndView member(@PathVariable("id") String id, HttpServletRequest request) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView("/admin/member/member");
-        mav.addObject("page_title", "회원정보");
         Map<String, Object> member = adminService.getMember(id);
-        mav.addObject("member",member);
-        mav.addObject("qs", Utils.getPreQS(request));
+        if(member == null){
+            Utils.redirectErrorPage(mav,"올바른 접근이 아닙니다.","/admin/members");
+        }else {
+            mav.addObject("page_title", "회원정보");
+            mav.addObject("member",member);
+            mav.addObject("qs", Utils.getPreQS(request));
+        }
         return mav;
     }
 

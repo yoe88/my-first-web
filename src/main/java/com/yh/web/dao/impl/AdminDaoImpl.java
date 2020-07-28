@@ -28,7 +28,7 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public int selectMembersCount(Map<String, Object> map) {
+    public long selectMembersCount(Map<String, Object> map) {
         return sqlSession.selectOne(MAPPER + "memberListCount", map);
     }
 
@@ -53,18 +53,13 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public int selectBoardListCount(Map<String, Object> map) {
+    public long selectBoardListCount(Map<String, Object> map) {
         return sqlSession.selectOne(MAPPER + "selectBoardListCount", map);
     }
 
     @Override
-    public BoardDetail selectBoardDetailByArticleNo(int articleNo) {
+    public BoardDetail selectBoardDetailByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectBoardDetailByArticleNo", articleNo);
-    }
-
-    @Override
-    public int updateBoardPub(Map<String, Integer> map) {
-        return sqlSession.update(MAPPER + "updateBoardPub", map);
     }
 
     @Override
@@ -78,18 +73,18 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public List<Map<String, String>> selectGalleryList(Map<String, Integer> map) {
+    public List<Map<String, String>> selectGalleryList(Map<String, Long> map) {
         List<Map<String, String>> maps = sqlSession.selectList(MAPPER + "selectGalleryList", map);
         return maps;
     }
 
     @Override
-    public int selectGalleryListCount() {
+    public long selectGalleryListCount() {
         return sqlSession.selectOne(MAPPER + "selectGalleryListCount");
     }
 
     @Override
-    public Map<String, Object> selectGalleryDetail(int gno) {
+    public Map<String, Object> selectGalleryDetail(long gno) {
         return sqlSession.selectOne(MAPPER + "selectGalleryDetail", gno);
     }
 }

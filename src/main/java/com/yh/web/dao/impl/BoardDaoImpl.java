@@ -24,7 +24,7 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public int selectNextSequence() {
+    public long selectNextSequence() {
         return sqlSession.selectOne(MAPPER + "selectNextSequence");
     }
 
@@ -34,22 +34,22 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public int selectBoardListCount( Map<String,Object> map) {
+    public long selectBoardListCount( Map<String,Object> map) {
         return sqlSession.selectOne(MAPPER + "selectBoardListCount", map);
     }
 
     @Override
-    public int selectBoardCountByArticleNo(int articleNo) {
+    public int findBoardByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectBoardCountByArticleNo", articleNo);
     }
 
     @Override
-    public BoardDetail selectBoardDetailByArticleNo(int articleNo) {
+    public BoardDetail selectBoardDetailByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectBoardDetailByArticleNo", articleNo);
     }
 
     @Override
-    public int selectGrpNoByArticleNo(int articleNo) {
+    public long selectGrpNoByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectGrpNoByArticleNo", articleNo);
     }
 
@@ -64,7 +64,7 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public void updateBoardHitByArticleNo(int articleNo) {
+    public void updateBoardHitByArticleNo(long articleNo) {
         sqlSession.update(MAPPER + "updateBoardHitByArticleNo", articleNo);
     }
 
@@ -74,7 +74,7 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public String selectBoardFileNameByArticleNo(int articleNo) {
+    public String selectBoardFileNameByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectBoardFileNameByArticleNo", articleNo);
     }
 
@@ -84,12 +84,12 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public int deleteBoardFileByArticleNo(int articleNo) {
+    public int deleteBoardFileByArticleNo(long articleNo) {
         return sqlSession.delete(MAPPER + "deleteBoardFileByArticleNo", articleNo);
     }
 
     @Override
-    public int deleteBoardByArticleNo(int articleNo) {
+    public int deleteBoardByArticleNo(long articleNo) {
         return sqlSession.delete(MAPPER + "deleteBoardByArticleNo", articleNo);
     }
 
@@ -109,7 +109,7 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public int selectChildCount(int articleNo) {
+    public long selectChildCount(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectChildCount", articleNo);
     }
 

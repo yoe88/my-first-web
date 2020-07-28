@@ -47,7 +47,7 @@ public class GalleryController {
 
         Map<String, Object> resultMap =  adminService.getGalleryList(page);
         List<Map<String, String>> list = (List<Map<String, String>>) resultMap.get("list");
-        int listTotalCount = (int) resultMap.get("count");
+        long listTotalCount = (long) resultMap.get("count");
 
         int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)AdminService.galleryListNum)); 	//82개일경우 3
         pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;

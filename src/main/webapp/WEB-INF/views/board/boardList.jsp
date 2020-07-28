@@ -6,8 +6,6 @@
 	<section class="container">
 		<div>
 			<h1>자유 게시판</h1>
-			<%--e76767
-			de6b6b--%>
 		</div>
 
 		<!--검색창-->

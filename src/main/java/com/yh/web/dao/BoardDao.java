@@ -10,31 +10,31 @@ import java.util.Map;
 
 public interface BoardDao {
     List<BoardList> selectBoardList( Map<String,Object> map);
-    int selectBoardListCount( Map<String,Object> map);
-    int selectBoardCountByArticleNo(int articleNo);
+    long selectBoardListCount( Map<String,Object> map);
+    int findBoardByArticleNo(long articleNo);
 
-    BoardDetail selectBoardDetailByArticleNo(int articleNo);
-    int selectNextSequence();
+    BoardDetail selectBoardDetailByArticleNo(long articleNo);
+    long selectNextSequence();
 
-    int selectGrpNoByArticleNo(int articleNo);
+    long selectGrpNoByArticleNo(long articleNo);
 
     int insertBoard(Board board);
 
     int insertBoardFile(BoardFile boardFile);
 
-    void updateBoardHitByArticleNo(int articleNo);
+    void updateBoardHitByArticleNo(long articleNo);
 
     int updateBoard(Board board);
 
-    String selectBoardFileNameByArticleNo(int articleNo);
+    String selectBoardFileNameByArticleNo(long articleNo);
 
     int updateBoardFile(BoardFile boardFile);
 
-    int deleteBoardFileByArticleNo(int articleNo);
+    int deleteBoardFileByArticleNo(long articleNo);
 
     int updateBoardPubByArticleNo(Map<String, Object> map);
 
-    int deleteBoardByArticleNo(int articleNo);
+    int deleteBoardByArticleNo(long articleNo);
 
     boolean isAlreadyExistsID(Map<String, Object> map);
 
@@ -42,5 +42,5 @@ public interface BoardDao {
 
     List<String> selectTitleLastFive();
 
-    int selectChildCount(int articleNo);
+    long selectChildCount(long articleNo);
 }

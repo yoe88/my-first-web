@@ -16,7 +16,7 @@
     </resultMap>
 
     <!-- 가지고 있는 자식 글개수 -->
-    <select id="selectChildCount" resultType="_int" parameterType="_int">
+    <select id="selectChildCount" resultType="_long" parameterType="_long">
         SELECT COUNT(*) FROM BOARD WHERE PARENT = #{articleNo}
     </select>
 
@@ -33,12 +33,12 @@
 
     <!--  - - - - - - - - - -   글 쓰기 위한 쿼리 - - - - - - - - - - -->
     <!-- 시퀀스 조회 -->
-    <select id="selectNextSequence" resultType="_int">
+    <select id="selectNextSequence" resultType="_long">
         SELECT SEQ_BOARD.NEXTVAL FROM DUAL
     </select>
 
     <!-- 해당 글번호에 대한 그룹번호 조회 -->
-    <select id="selectGrpNoByArticleNo" resultType="_int" parameterType="_int">
+    <select id="selectGrpNoByArticleNo" resultType="_long" parameterType="_long">
         SELECT GRPNO FROM BOARD WHERE ARTICLENO = #{articleNo}
     </select>
 
@@ -64,12 +64,12 @@
 
     <!--  - - - - - - - - - -   상세 조회 위한 쿼리 - - - - - - - - - - -->
     <!-- 글번호 존재 하는지 검색 -->
-    <select id="selectBoardCountByArticleNo" resultType="_int" parameterType="_int">
+    <select id="selectBoardCountByArticleNo" resultType="_int" parameterType="_long">
         SELECT COUNT(ARTICLENO) count  FROM BOARD WHERE ARTICLENO = #{articleNo} AND PUB =1
     </select>
 
     <!-- 조회수 증가 -->
-    <update id="updateBoardHitByArticleNo" parameterType="_int">
+    <update id="updateBoardHitByArticleNo" parameterType="_long">
         UPDATE BOARD SET HIT = HIT +1 WHERE ARTICLENO = #{articleNo}
     </update>
 
@@ -87,7 +87,7 @@
 
 
     <!-- 해당 글번호 상세 조회 -->
-    <select id="selectBoardDetailByArticleNo" resultType="boardDetail" parameterType="_int">
+    <select id="selectBoardDetailByArticleNo" resultType="boardDetail" parameterType="_long">
         SELECT B.ARTICLENO ARTICLENO, TITLE, CONTENT, NAME, ID,
                B.REGDATE REGDATE, HIT, RECOMMEND,  FILENAME, ORIGINALFILENAME, PROFILEIMAGE
         FROM(
@@ -108,7 +108,7 @@
     </update>
 
     <!-- 파일 이름 조회 -->
-    <select id="selectBoardFileNameByArticleNo" resultType="string" parameterType="_int">
+    <select id="selectBoardFileNameByArticleNo" resultType="string" parameterType="_long">
         SELECT FILENAME FROM BOARD_FILE WHERE ARTICLENO = #{articleNo}
     </select>
 
@@ -119,7 +119,7 @@
     </update>
 
     <!-- 파일 정보 삭제 -->
-    <delete id="deleteBoardFileByArticleNo" parameterType="_int">
+    <delete id="deleteBoardFileByArticleNo" parameterType="_long">
         DELETE BOARD_FILE WHERE ARTICLENO = #{articleNo}
     </delete>
 
@@ -129,7 +129,7 @@
     </update>
 
     <!--  - - - - - - - - - -   삭제 위한 쿼리 - - - - - - - - - - -->
-    <delete id="deleteBoardByArticleNo" parameterType="_int">
+    <delete id="deleteBoardByArticleNo" parameterType="_long">
         DELETE FROM BOARD WHERE ARTICLENO = #{articleNo}
     </delete>
 
@@ -142,7 +142,7 @@
     </select>
 
     <!-- 게시글 개수 조회 -->
-    <select id="selectBoardListCount" resultType="_int" parameterType="map">
+    <select id="selectBoardListCount" resultType="_long" parameterType="map">
         SELECT count(*)
         <include refid="selectBoardList" />
     </select>

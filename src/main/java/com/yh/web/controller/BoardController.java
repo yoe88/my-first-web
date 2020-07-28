@@ -60,7 +60,7 @@ public class BoardController {
 		Map<String, Object> resultMap = boardService.getBoardList(field, query, page);
 
 		List<BoardList> list = (List<BoardList>) resultMap.get("list"); //게시글 리스트
-		int listTotalCount = (int) resultMap.get("count"); 				//검색된 게시글 총개수
+		long listTotalCount = (long) resultMap.get("count"); 				//검색된 게시글 총개수
 		int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)boardService.listNum)); 	//67개일경우 7
 		pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;
 
@@ -106,11 +106,11 @@ public class BoardController {
 	public ModelAndView replyBoardForm(@PathVariable("articleNo") String parent_) {
 
 		ModelAndView mav = new ModelAndView();
-		int parent;
+		long parent;
 
 		try{
-			parent = Integer.parseInt(parent_);                    //숫자로 변환이 안되거나
-			int result = boardService.searchArticleNo(parent);
+			parent = Long.parseLong(parent_);                    //숫자로 변환이 안되거나
+			int result = boardService.findArticleNo(parent);
 			if(result == 0) {                                  //참조 부모 글번호가 존재하지 않는경우
 				Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 			}else{
@@ -145,11 +145,11 @@ public class BoardController {
 		board.setIp(ip);					    //아이피 설정
 		board.setWriter(principal.getName());  //작성자 아이디 설정
 
-		int articleNo = boardService.getNextArticleNo();  //다음 글번호 얻기, 시퀀스
+		long articleNo = boardService.getNextArticleNo();  //다음 글번호 얻기, 시퀀스
 		board.setArticleNo(articleNo);  //글번호 설정
 
 		if(board.getParent() != 0){   //답글 쓰기 인 경우,  부모글번호가 존재할때
-			int grpNo = boardService.getGrpNo(board.getParent());  //부모 글번호에 대한 그룹번호 얻어오기
+			long grpNo = boardService.getGrpNo(board.getParent());  //부모 글번호에 대한 그룹번호 얻어오기
 			board.setGrpNo(grpNo);  //그룹번호 설정
 		}else {
 			board.setGrpNo(articleNo);  // 답글쓰기가 아닌경우 글번호와 동일하게 설정
@@ -173,10 +173,10 @@ public class BoardController {
 	public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
 									,HttpServletRequest request) throws UnsupportedEncodingException {
 		ModelAndView mav = new ModelAndView();
-		int articleNo;
+		long articleNo;
 
 		try {
-			articleNo = Integer.parseInt(articleNo_);
+			articleNo = Long.parseLong(articleNo_);
 		}catch (NumberFormatException e){
 			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 			return mav;
@@ -204,10 +204,10 @@ public class BoardController {
 	public ModelAndView editBoardForm(@PathVariable("articleNo") String articleNo_
 									  ,Principal principal) throws UnsupportedEncodingException {
 		ModelAndView mav = new ModelAndView();
-		int articleNo;
+		long articleNo;
 
 		try {
-			articleNo = Integer.parseInt(articleNo_);
+			articleNo = Long.parseLong(articleNo_);
 		}catch (NumberFormatException e){
 			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 			return mav;
@@ -280,7 +280,6 @@ public class BoardController {
 	public ResponseEntity<Integer> upRecommend(@PathVariable("articleNo") int articleNo, Principal principal){
 		String userName = principal.getName();
 		int result = boardService.upRecommend(articleNo, userName);
-		//return new ResponseEntity<>(result, HttpStatus.OK);
 		return ResponseEntity.ok(result);
 	}
 }

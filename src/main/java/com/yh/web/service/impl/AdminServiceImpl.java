@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.awt.image.ImageProducer;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -24,14 +23,14 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Map<String,Object> getMembers(String field, String query, int page) {
+    public Map<String,Object> getMembers(String field, String query, long page) {
         if(field.equals("id"))
             field = "M.ID";
         Map<String, Object> map = new HashMap<>();
         map.put("field", field);
         map.put("query", query);
-        int start = 1 + (page-1) * listNum;
-        int end = page * listNum;
+        long start = 1 + (page-1) * listNum;
+        long end = page * listNum;
         map.put("start",start);
         map.put("end",end);
 
@@ -45,11 +44,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Map<String, Object> getMember(String id) throws UnsupportedEncodingException {
         Map<String, Object> member = adminDao.selectMemberById(id);
-        String profileImage = (String) member.get("PROFILEIMAGE");
-        if(profileImage != null){
-            profileImage = URLEncoder.encode( profileImage,"UTF-8").replace("+","%20");
+        if(member != null){
+            String profileImage = (String) member.get("PROFILEIMAGE");
+            if(profileImage != null){
+                profileImage = URLEncoder.encode( profileImage,"UTF-8").replace("+","%20");
+            }
+            member.put("PROFILEIMAGE",profileImage);
         }
-        member.put("PROFILEIMAGE",profileImage);
         return member;
     }
 
@@ -74,12 +75,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Map<String, Object> getBoardList(String field, String query, int page) {
+    public Map<String, Object> getBoardList(String field, String query, long page) {
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
-        int start = 1 + (page-1) * listNum;
-        int end = page * listNum;
+        long start = 1 + (page-1) * listNum;
+        long end = page * listNum;
         map.put("start",start);
         map.put("end",end);
 
@@ -91,29 +92,24 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public BoardDetail getBoardDetail(int articleNo) throws UnsupportedEncodingException {
+    public BoardDetail getBoardDetail(long articleNo) throws UnsupportedEncodingException {
         BoardDetail boardDetail = adminDao.selectBoardDetailByArticleNo(articleNo);
-        if(boardDetail.getProfileImage() != null){
-            String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
-            boardDetail.setProfileImage(profileImageName);
-        }
-        if(boardDetail.getFileName() != null) {
-            String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
-            boardDetail.setFileName(fileName);
-            String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
-            boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
+        if(boardDetail != null){
+            if(boardDetail.getProfileImage() != null){
+                String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
+                boardDetail.setProfileImage(profileImageName);
+            }
+            if(boardDetail.getFileName() != null) {
+                String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
+                boardDetail.setFileName(fileName);
+                String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
+                boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
+            }
         }
         return boardDetail;
     }
 
-    @Override
-    public int updateBoardPub(int articleNo, int pub) {
-        Map<String, Integer> map = new HashMap<>();
-        map.put("articleNo", articleNo);
-        map.put("pub", pub);
 
-        return adminDao.updateBoardPub(map);
-    }
 
     /**
      * @param allNo_  모든 글번호
@@ -146,10 +142,10 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public Map<String, Object> getGalleryList(int page) throws UnsupportedEncodingException {
-        Map<String, Integer> map = new HashMap<>();
-        int start = 1 + (page-1) * galleryListNum;
-        int end = page * galleryListNum;
+    public Map<String, Object> getGalleryList(long page) throws UnsupportedEncodingException {
+        Map<String, Long> map = new HashMap<>();
+        long start = 1 + (page-1) * galleryListNum;
+        long end = page * galleryListNum;
         map.put("start", start);
         map.put("end", end);
 
@@ -167,7 +163,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Map<String, Object> getGalleryDetail(int gno) throws UnsupportedEncodingException {
+    public Map<String, Object> getGalleryDetail(long gno) throws UnsupportedEncodingException {
         Map<String, Object> galleryDetail = adminDao.selectGalleryDetail(gno);
         List<Map<String,String>> fileList = (List<Map<String, String>>) galleryDetail.get("file");
         for (Map<String,String> file : fileList ){

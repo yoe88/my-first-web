@@ -97,7 +97,7 @@
     </select>
 
     <!-- 회원 리스트 개수 -->
-    <select id="memberListCount" resultType="_int" parameterType="map">
+    <select id="memberListCount" resultType="_long" parameterType="map">
         SELECT COUNT(*)
         FROM MEMBER M
         JOIN MEMBER_ROLE R ON M.ID = R.ID
@@ -105,7 +105,7 @@
     </select>
 
     <!-- 해당 글번호 상세 조회 -->
-    <select id="selectBoardDetailByArticleNo" resultType="boardDetail" parameterType="_int">
+    <select id="selectBoardDetailByArticleNo" resultType="boardDetail" parameterType="_long">
         SELECT B.ARTICLENO ARTICLENO, TITLE, CONTENT, NAME, ID, PUB,
                B.REGDATE REGDATE, HIT, RECOMMEND,  FILENAME, ORIGINALFILENAME, PROFILEIMAGE
         FROM(
@@ -149,7 +149,7 @@
     </select>
 
     <!-- 게시글 개수 조회 -->
-    <select id="selectBoardListCount" resultType="_int" parameterType="map">
+    <select id="selectBoardListCount" resultType="_long" parameterType="map">
         SELECT count(*)
         <include refid="selectBoardList" />
     </select>
@@ -194,13 +194,13 @@
     </select>
 
     <!--갤러리 리스트 총 개수-->
-    <select id="selectGalleryListCount" resultType="_int">
+    <select id="selectGalleryListCount" resultType="_long">
         SELECT COUNT(*)
         FROM GALLERY
     </select>
 
     <!--갤러리 디테일 정보-->
-    <select id="selectGalleryDetail" parameterType="_int" resultMap="galleryDetail">
+    <select id="selectGalleryDetail" parameterType="_long" resultMap="galleryDetail">
         SELECT G.GNO, TITLE, WRITER, PUB, NO, FILENAME, FILESIZE, ORIGINALFILENAME
         FROM GALLERY G
         JOIN GALLERY_FILE F ON G.GNO = F.GNO

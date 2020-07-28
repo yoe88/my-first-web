@@ -105,13 +105,14 @@ public class GalleryServiceImpl implements GalleryService {
     @Override
     public Map<String, Object> getGalleryDetail(int gno) throws UnsupportedEncodingException {
         Map<String, Object> galleryDetail = galleryDao.selectGalleryDetail(gno);
-        List<Map<String,String>> fileList = (List<Map<String, String>>) galleryDetail.get("file");
-        for (Map<String,String> file : fileList ){
-            String fileName = URLEncoder.encode(file.get("fileName"), "UTF-8").replace("+", "%20");
-            file.put("fileName", fileName);
-            String originalFileName = URLEncoder.encode(file.get("originalFileName"), "UTF-8").replace("+", "%20");
-            file.put("originalFileName", originalFileName);
-
+        if(galleryDetail != null) {
+            List<Map<String, String>> fileList = (List<Map<String, String>>) galleryDetail.get("file");
+            for (Map<String, String> file : fileList) {
+                String fileName = URLEncoder.encode(file.get("fileName"), "UTF-8").replace("+", "%20");
+                file.put("fileName", fileName);
+                String originalFileName = URLEncoder.encode(file.get("originalFileName"), "UTF-8").replace("+", "%20");
+                file.put("originalFileName", originalFileName);
+            }
         }
 
         return galleryDetail;
