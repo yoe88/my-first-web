@@ -1,6 +1,6 @@
 package com.yh.web.controller.admin;
 
-import com.yh.web.dto.Gallery;
+import com.yh.web.Utils;
 import com.yh.web.service.AdminService;
 import com.yh.web.service.GalleryService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,11 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller("admin.galleryController")
@@ -34,7 +33,7 @@ public class GalleryController {
      * @return   갤러리 인덱스
      */
     @GetMapping("/galleries")
-    public ModelAndView index(@RequestParam(name = "p",required = false,defaultValue = "1") String p_){
+    public ModelAndView index(@RequestParam(name = "p",required = false,defaultValue = "1") String p_) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView("/admin/gallery/galleryList");
         mav.addObject("page_title", "갤러리");
 
@@ -61,7 +60,7 @@ public class GalleryController {
     }
 
     /**         체크된 갤러리 번호는 공개처리 체크 안된건 비공개처리
-     * allNo   현재 페이지 모든 갤러리 번호
+     * allNo    현재 페이지 모든 갤러리 번호
      * openNo   체크된 갤러리 번호
      */
     @PutMapping("/galleries")
@@ -72,6 +71,36 @@ public class GalleryController {
 
         boolean result = galleryService.updateGalleriesPub(allNo,openNo);
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * @param gno_  갤러리 번호
+     * @return      상세 페이지
+     */
+    @GetMapping(path = "/galleries/{gno}")
+    public ModelAndView detailGallery(@PathVariable("gno") String gno_
+            , HttpServletRequest request) throws UnsupportedEncodingException {
+        ModelAndView mav = new ModelAndView();
+        int gno;
+
+        try {
+            gno = Integer.parseInt(gno_);
+        }catch (NumberFormatException e){
+            Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/galleries");
+            return mav;
+        }
+
+        Map<String, Object> model = adminService.getGalleryDetail(gno);
+        if(model == null){
+            Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/galleries");
+            return mav;
+        }else{
+            mav.addObject("page_title", model.get("title"));
+            mav.setViewName("/admin/gallery/detail");
+            mav.addObject("model",model);
+            mav.addObject("qs", Utils.getPreQS(request));
+        }
+        return mav;
     }
 }
 

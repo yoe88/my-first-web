@@ -123,9 +123,9 @@
         DELETE BOARD_FILE WHERE ARTICLENO = #{articleNo}
     </delete>
 
-    <!-- 비공개로 전환 -->
-    <update id="updateBoardPubByArticleNo" parameterType="_int">
-        UPDATE BOARD SET PUB = 0 WHERE ARTICLENO = #{articleNo}
+    <!--게시판 공개 수정-->
+    <update id="updateBoardPubByArticleNo" parameterType="map">
+        UPDATE BOARD SET PUB = #{pub} WHERE ARTICLENO = #{articleNo}
     </update>
 
     <!--  - - - - - - - - - -   삭제 위한 쿼리 - - - - - - - - - - -->

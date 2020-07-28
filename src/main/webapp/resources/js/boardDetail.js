@@ -60,7 +60,7 @@ async function loadComment(page) {//페이지 번호
 
         const li = `<li class="list-group-item p-2" data-cno="${comment.cno}" data-seq="${seq + i}">
                        <div class="comment-info">
-                            <img src="${getRoot()}/file/thumb/profile/${comment.id}/${comment.profileImage == null ? "none" : comment.profileImage}/size?w=30&h=30" width="30" height="30"
+                            <img src="${getRoot()}/file/thumb/profile/${comment.id}/${comment.profileImage == null ? "none" : encodeURI(comment.profileImage)}/size?w=30&h=30" width="30" height="30"
                                  alt="프로필이미지" class="rounded-circle" width="30" height="30">
                             <span class="comment-writer text-muted">${comment.name}(${comment.id})</span>
                             <span class="mx-2" style="color: #e2d7df;">|</span>
@@ -76,7 +76,7 @@ async function loadComment(page) {//페이지 번호
                                 <!--Menu-->
                                 <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item" onclick="deleteComment(this);" >삭제</a>
-                                <a class="dropdown-item" href="#">????</a>
+                                <!--<a class="dropdown-item" href="#">????</a>-->
                                 </div>
                                 </div>
                                 </span>` : ''
@@ -195,7 +195,7 @@ async function appendReplyComment(cno, page){ //ul, 댓글번호, 페이지
         const regDate = `${regDate_.year.toString().substring(2)}.${regDate_.monthValue}.${regDate_.dayOfMonth}. ${regDate_.hour}:${regDate_.minute}:${regDate_.second}`; //날짜+시간
         const li = `<li class="list-group-item p-2" data-cno="${c.cno}" data-seq="${seq + i}">
                                 <div class="comment-info">
-                                    <img src="${getRoot()}/file/thumb/profile/${c.id}/${c.profileImage == null ? "none" : c.profileImage}/size?w=25&h=25" width="25" height="25"
+                                    <img src="${getRoot()}/file/thumb/profile/${c.id}/${c.profileImage == null ? "none" : encodeURI(c.profileImage)}/size?w=25&h=25" width="25" height="25"
                                         alt="프로필이미지" class="rounded-circle" width="25" height="25">
                                     <span class="comment-writer text-muted">${c.name}(${c.id})</span>
                                     <span class="mx-2" style="color: #e2d7df;">|</span>
@@ -211,7 +211,7 @@ async function appendReplyComment(cno, page){ //ul, 댓글번호, 페이지
                                         <!--Menu-->
                                         <div class="dropdown-menu dropdown-menu-right">
                                         <a class="dropdown-item" onclick="deleteComment(this);">삭제</a>
-                                        <a class="dropdown-item" href="#">????</a>
+                                        <!--<a class="dropdown-item" href="#">????</a>-->
                                         </div>
                                         </div>
                                         </span>` : ''
@@ -377,18 +377,20 @@ async function deleteBoard(articleNo) { //글번호
 }
 
 async function disableBoard(articleNo) {
-    if(confirm('비공개 하시겠습니까?')){
-        const response = await fetch(articleNo, {
-            method: 'PUT'
-        });
-        if(response.status === 200){
-            const text = await response.text();
-            if(text === '1')
-                location.href = `${getRoot()}/boards`;
-            else
-                alert('다시 시도 해주세요.');
-        }else{
-            alert('disable, Error');
-        }
+    if(!confirm('비공개 하시겠습니까?')) return;
+
+    const response = await fetch(`${articleNo}/edit/pub`, {
+        method: 'PUT',
+        headers: {'Content-Type' : 'application/json'},
+        body: JSON.stringify({pub:0})
+    });
+    if(response.status === 200){
+        const text = await response.text();
+        if(text === 'true')
+            location.href = `${getRoot()}/boards`;
+        else
+            alert('다시 시도 해주세요.');
+    }else{
+        alert('disable, Error');
     }
 }

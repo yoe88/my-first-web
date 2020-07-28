@@ -1,5 +1,6 @@
 package com.yh.web.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -8,9 +9,9 @@ public interface GalleryService {
 
     boolean addGallery(Map<String, Object> model);
 
-    Map<String, Object> getGalleryList(int page);
+    Map<String, Object> getGalleryList(int page) throws UnsupportedEncodingException;
 
-    Map<String, Object> getGalleryDetail(int gno);
+    Map<String, Object> getGalleryDetail(int gno) throws UnsupportedEncodingException;
 
     boolean updateGallery(Map<String, Object> model);
 

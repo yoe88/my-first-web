@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,11 +66,22 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional(readOnly = true)
     @Override
-    public BoardDetail getBoardDetail(int articleNo, boolean isModify) {
+    public BoardDetail getBoardDetail(int articleNo, boolean isModify) throws UnsupportedEncodingException {
         if(!isModify){
             boardDao.updateBoardHitByArticleNo(articleNo);
         }
-        return boardDao.selectBoardDetailByArticleNo(articleNo);
+        BoardDetail boardDetail = boardDao.selectBoardDetailByArticleNo(articleNo);
+        if(boardDetail.getProfileImage() != null){
+            String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
+            boardDetail.setProfileImage(profileImageName);
+        }
+        if(boardDetail.getFileName() != null) {
+            String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
+            boardDetail.setFileName(fileName);
+            String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
+            boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
+        }
+        return boardDetail;
     }
 
     /**
@@ -203,7 +216,12 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public int updateBoardPubByArticleNo(int articleNo) {
-        return boardDao.updateBoardPubByArticleNo(articleNo);
+    public boolean updateBoardPubByArticleNo(long articleNo, Integer pub) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("articleNo",articleNo);
+        map.put("pub",pub);
+
+        int result = boardDao.updateBoardPubByArticleNo(map);
+        return result == 1;
     }
 }

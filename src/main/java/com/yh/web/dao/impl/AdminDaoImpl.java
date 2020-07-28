@@ -78,14 +78,18 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public List<Map<String, Object>> selectGalleryList(Map<String, Integer> map) {
-        List<Map<String, Object>> maps = sqlSession.selectList(MAPPER + "selectGalleryList", map);
-        log.info("관리 갤러리 {}",maps.toString());
+    public List<Map<String, String>> selectGalleryList(Map<String, Integer> map) {
+        List<Map<String, String>> maps = sqlSession.selectList(MAPPER + "selectGalleryList", map);
         return maps;
     }
 
     @Override
     public int selectGalleryListCount() {
         return sqlSession.selectOne(MAPPER + "selectGalleryListCount");
+    }
+
+    @Override
+    public Map<String, Object> selectGalleryDetail(int gno) {
+        return sqlSession.selectOne(MAPPER + "selectGalleryDetail", gno);
     }
 }

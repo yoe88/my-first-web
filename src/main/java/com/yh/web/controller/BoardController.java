@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -170,7 +171,7 @@ public class BoardController {
 	 */
 	@GetMapping(path = "/{articleNo}")
 	public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
-									,HttpServletRequest request) {
+									,HttpServletRequest request) throws UnsupportedEncodingException {
 		ModelAndView mav = new ModelAndView();
 		int articleNo;
 
@@ -201,7 +202,7 @@ public class BoardController {
 	 */
 	@GetMapping(path = "/{articleNo}/edit")
 	public ModelAndView editBoardForm(@PathVariable("articleNo") String articleNo_
-									  ,Principal principal) {
+									  ,Principal principal) throws UnsupportedEncodingException {
 		ModelAndView mav = new ModelAndView();
 		int articleNo;
 
@@ -259,14 +260,15 @@ public class BoardController {
 		return ResponseEntity.ok(result);
 	}
 
-	/**
-	 * 글번호 비공개
-	 * @param articleNo 글번호
+	/** 게시판 상세보기에서 공개 비공개 처리
+	 * @param articleNo  게시글 번호
+	 * @param param      json = {pub = 1 or 0}
 	 */
-	@PutMapping(path = "/{articleNo}")
-	public ResponseEntity<Integer> updateBoardPub(@PathVariable("articleNo") int articleNo) {
-		int result = boardService.updateBoardPubByArticleNo(articleNo);
-		//return new ResponseEntity<>(result, HttpStatus.OK);
+	@PutMapping(path = "/{articleNo}/edit/pub")
+	public ResponseEntity<Boolean> boardTogglePub(@PathVariable("articleNo") long articleNo
+												,@RequestBody Map<String, Integer> param){
+
+		boolean result = boardService.updateBoardPubByArticleNo(articleNo, param.get("pub"));
 		return ResponseEntity.ok(result);
 	}
 

@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +38,7 @@ public class GalleryController {
      */
     @PreAuthorize("permitAll()")
     @GetMapping(path = "")
-    public ModelAndView index(@RequestParam(name = "p",required = false,defaultValue = "1") String p_){
+    public ModelAndView index(@RequestParam(name = "p",required = false,defaultValue = "1") String p_) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView("/gallery/index");
         mav.addObject("page_title", "갤러리");
 
@@ -114,7 +116,7 @@ public class GalleryController {
      */
     @GetMapping(path = "/{gno}")
     public ModelAndView detailGallery(@PathVariable("gno") String gno_
-                                    ,HttpServletRequest request){
+                                    ,HttpServletRequest request) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView();
         int gno;
 
@@ -145,7 +147,7 @@ public class GalleryController {
      */
     @GetMapping(path = "/{gno}/edit")
     public ModelAndView editGalleryForm(@PathVariable("gno") String gno_
-                                        ,Principal principal){
+                                        ,Principal principal) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView();
         int gno;
 
@@ -229,7 +231,7 @@ public class GalleryController {
      * @param param  pub가 담겨 있는 param 
      * @return  성공시 true
      */
-    @PutMapping(path = "{gno}")
+    @PutMapping(path = "{gno}/edit/pub")
     public ResponseEntity<Boolean> updateGalleryPub(@PathVariable("gno") long gno
                                                     ,@RequestBody Map<String,Integer> param){
         boolean result = galleryService.updateGalleryPub(gno, param.get("pub"));

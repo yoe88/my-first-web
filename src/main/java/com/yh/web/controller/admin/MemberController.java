@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Slf4j
@@ -69,7 +70,7 @@ public class MemberController {
      * @return           아이디에 해당하는 회원 정보 페이지
      */
     @GetMapping(path = "/members/{id}")
-    public ModelAndView member(@PathVariable("id") String id, HttpServletRequest request){
+    public ModelAndView member(@PathVariable("id") String id, HttpServletRequest request) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView("/admin/member/member");
         mav.addObject("page_title", "회원정보");
         Map<String, Object> member = adminService.getMember(id);

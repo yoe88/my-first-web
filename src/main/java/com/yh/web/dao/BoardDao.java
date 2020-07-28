@@ -32,7 +32,7 @@ public interface BoardDao {
 
     int deleteBoardFileByArticleNo(int articleNo);
 
-    int updateBoardPubByArticleNo(int articleNo);
+    int updateBoardPubByArticleNo(Map<String, Object> map);
 
     int deleteBoardByArticleNo(int articleNo);
 

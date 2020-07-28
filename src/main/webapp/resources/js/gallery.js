@@ -125,7 +125,7 @@ function deleteGallery(gno) {
     if(!confirm('정말 삭제하시겠습니까?\n삭제하면 복구가 불가능합니다.')) return;
 
     const form = document.createElement('form');
-    form.action = gno;
+    form.action = `${getRoot()}/galleries/${gno}`;
     form.method = 'POST';
 
     const input = document.createElement('input');
@@ -141,7 +141,7 @@ function deleteGallery(gno) {
 async function disableGallery(gno) {
     if(!confirm('비공개 하시겠습니까?')) return;
 
-    const response = await fetch(`${gno}`,{
+    const response = await fetch(`${gno}/edit/pub`,{
         method : 'PUT',
         //post는 되는데 put으로 보내면 서버에서 받지를 못한다;; json으로 하자..
         //headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

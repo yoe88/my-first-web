@@ -46,7 +46,7 @@
                     <th class="col-md-2">첨부파일</th>
                     <td class="col-md-10 clearfix">
                         <div class="form-control text-center">
-                            <a href="${contextPath}/file/boards/${b.articleNo}/${b.fileName}?fName=${b.originalFileName}" class="text-info">
+                            <a href="${contextPath}/file/boards/${b.articleNo}/${b.fileName}?fName=${b.encodeOriginalFileName}" class="text-info">
                                 <h5 class="d-inline" style="word-break: break-all">${fn:substring(b.originalFileName,0 , 36)}</h5>
                             </a>
                         </div>

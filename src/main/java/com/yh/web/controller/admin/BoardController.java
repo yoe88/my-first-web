@@ -5,7 +5,6 @@ import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.dto.board.BoardList;
 import com.yh.web.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -31,8 +31,8 @@ public class BoardController {
     /**
      * @param field  검색타입
      * @param query  검색 하고자 하는 내용
-     * @param p_  페이지 숫자
-     * @return  게시글 리스트
+     * @param p_     페이지 숫자
+     * @return       게시글 리스트
      */
     @GetMapping(path = {"/boards"})
     public ModelAndView boardList(@RequestParam(name = "f",required = false,defaultValue = "title") String field
@@ -86,7 +86,7 @@ public class BoardController {
      */
     @GetMapping(path = "/boards/{articleNo}")
     public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
-            , HttpServletRequest request){
+            , HttpServletRequest request) throws UnsupportedEncodingException {
         ModelAndView mav = new ModelAndView();
         int articleNo;
 
@@ -108,21 +108,6 @@ public class BoardController {
         }
 
         return mav;
-    }
-
-
-
-    /** 관리자 게시판 상세보기에서 공개 비공개 처리
-     * @param articleNo  게시글 번호
-     * @param map      json = {pub = 1 or 0}
-     */
-    @PutMapping(path = "/boards/{articleNo}")
-    public ResponseEntity<Integer> boardTogglePub(@PathVariable("articleNo") int articleNo
-                                                 ,@RequestBody Map<String, Object> map){
-        int pub = (int) map.get("pub");
-        int result = adminService.updateBoardPub(articleNo, pub);
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**         체크된 글번호는 공개처리 체크 안된건 비공개처리

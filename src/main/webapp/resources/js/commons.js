@@ -167,3 +167,8 @@ function notAllowEmpty(form) {
     }
     return true;
 }
+
+function cancel() {
+    if (confirm("변경사항이 저장되지 않을 수 있습니다."))
+        history.go(-1);
+}

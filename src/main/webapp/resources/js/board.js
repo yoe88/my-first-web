@@ -66,10 +66,6 @@ function changeFile(thisFile) { //파일버튼
         document.querySelector("#isDelete").value = 'false';
 }
 
-function cancel() {
-    if (confirm("변경사항이 저장되지 않을 수 있습니다."))
-        history.go(-1);
-}
 //게시판 작성페이지
 
 
@@ -112,4 +108,22 @@ async function updateBoardsPub(){
     }else{
         alert('Error')
     }
+}
+
+//관리자 게시판 체크박스 모두 선택
+function checkedBoardsPub(){
+    const allNo = document.querySelectorAll('input[name=no');
+
+    allNo.forEach(i =>{
+        i.checked = true;
+    })
+}
+
+//관리자 게시판 체크박스 모두 해제
+function unCheckedBoardsPub(){
+    const allNo = document.querySelectorAll('input[name=no');
+
+    allNo.forEach(i =>{
+        i.checked = false;
+    })
 }

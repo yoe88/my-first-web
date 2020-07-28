@@ -18,6 +18,7 @@ public class BoardDetail {
     private boolean pub;
     private String fileName;
     private String originalFileName;
+    private String encodeOriginalFileName;
     private String profileImage;
 
 }

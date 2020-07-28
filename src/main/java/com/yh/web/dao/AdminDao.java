@@ -29,7 +29,9 @@ public interface AdminDao {
 
     void updateBoardClosePub(List<String> closeNo);
 
-    List<Map<String, Object>> selectGalleryList(Map<String, Integer> map);
+    List<Map<String, String>> selectGalleryList(Map<String, Integer> map);
 
     int selectGalleryListCount();
+
+    Map<String, Object> selectGalleryDetail(int gno);
 }

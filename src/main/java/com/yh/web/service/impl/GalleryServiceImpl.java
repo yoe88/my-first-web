@@ -12,6 +12,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 
@@ -29,7 +31,7 @@ public class GalleryServiceImpl implements GalleryService {
     }
 
     @Override
-    public Map<String, Object> getGalleryList(int page) {
+    public Map<String, Object> getGalleryList(int page) throws UnsupportedEncodingException {
         Map<String, Integer> map = new HashMap<>();
         int start = 1 + (page-1) * listNum;
         int end = page * listNum;
@@ -37,7 +39,13 @@ public class GalleryServiceImpl implements GalleryService {
         map.put("end", end);
 
         Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("list",galleryDao.selectGalleryList(map));
+        List<Map<String,String>> list = galleryDao.selectGalleryList(map);
+        //URL Encode
+        for (Map<String, String> gallery : list) {
+            String encode = URLEncoder.encode(gallery.get("fileName"), "UTF-8").replace("+", "%20");
+            gallery.put("fileName", encode);
+        }
+        resultMap.put("list", list);
         resultMap.put("count",galleryDao.selectGalleryListCount());
 
         return resultMap;
@@ -95,8 +103,18 @@ public class GalleryServiceImpl implements GalleryService {
     }
 
     @Override
-    public Map<String, Object> getGalleryDetail(int gno) {
-        return galleryDao.selectGalleryDetail(gno);
+    public Map<String, Object> getGalleryDetail(int gno) throws UnsupportedEncodingException {
+        Map<String, Object> galleryDetail = galleryDao.selectGalleryDetail(gno);
+        List<Map<String,String>> fileList = (List<Map<String, String>>) galleryDetail.get("file");
+        for (Map<String,String> file : fileList ){
+            String fileName = URLEncoder.encode(file.get("fileName"), "UTF-8").replace("+", "%20");
+            file.put("fileName", fileName);
+            String originalFileName = URLEncoder.encode(file.get("originalFileName"), "UTF-8").replace("+", "%20");
+            file.put("originalFileName", originalFileName);
+
+        }
+
+        return galleryDetail;
     }
 
     /**

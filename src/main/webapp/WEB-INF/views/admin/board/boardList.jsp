@@ -77,7 +77,11 @@
                 </tbody>
             </table>
             <c:if test="${listTotalCount != 0}">
-                <input type="button" class="btn btn-outline-dark float-right" value="일괄공개" onclick="updateBoardsPub()">
+                <article class="mb-3 text-right">
+                    <button class="btn btn-outline-purple" onclick="checkedBoardsPub();">전체 선택</button>
+                    <button class="btn btn-outline-danger mr-5" onclick="unCheckedBoardsPub();">전체 해제</button>
+                    <input type="button" class="btn btn-outline-dark" value="일괄공개" onclick="updateBoardsPub()">
+                </article>
             </c:if>
         </div>
         <div class="clearfix">

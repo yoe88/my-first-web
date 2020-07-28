@@ -114,7 +114,7 @@ public class BoardDaoImpl implements BoardDao {
     }
 
     @Override
-    public int updateBoardPubByArticleNo(int articleNo) {
-        return sqlSession.update(MAPPER + "updateBoardPubByArticleNo", articleNo);
+    public int updateBoardPubByArticleNo(Map<String, Object> map) {
+        return sqlSession.update(MAPPER + "updateBoardPubByArticleNo", map);
     }
 }

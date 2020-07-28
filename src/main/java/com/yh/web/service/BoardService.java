@@ -4,6 +4,7 @@ import com.yh.web.dto.board.Board;
 import com.yh.web.dto.board.BoardDetail;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public interface BoardService {
     Map<String,Object> getBoardList(String field, String query, int page);
 
     int searchArticleNo(int articleNo);
-    BoardDetail getBoardDetail(int articleNo, boolean isModify);
+    BoardDetail getBoardDetail(int articleNo, boolean isModify) throws UnsupportedEncodingException;
     int getNextArticleNo();
 
     int getGrpNo(int articleNo);
@@ -28,5 +29,6 @@ public interface BoardService {
 
     List<String> selectTitleLastFive();
 
-    int updateBoardPubByArticleNo(int articleNo);
+    boolean updateBoardPubByArticleNo(long articleNo, Integer pub);
+
 }
