@@ -27,10 +27,10 @@ public class CommentServiceImpl implements CommentService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Map<String, Object> selectCommentByArticleNo(int articleNo, int page) {
-        Map<String, Integer> map = new HashMap<>();
-        int start = 1 + (page-1) * listNum;
-        int end = page * listNum;
+    public Map<String, Object> selectCommentByArticleNo(long articleNo, long page) {
+        Map<String, Long> map = new HashMap<>();
+        long start = 1 + (page-1) * listNum;
+        long end = page * listNum;
 
         map.put("articleNo", articleNo);
         map.put("start",start);
@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
         Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("list", commentDao.selectCommentByArticleNo(map));  //댓글리스트 *답글제외
         resultMap.put("count" , commentDao.selectCommentCountByArticleNo(articleNo)); //답글제외한 댓글개수
-        resultMap.put("totalCount" , commentDao.selectCommentToTalCountByArticleNo(articleNo));
+        resultMap.put("totalCount" , commentDao.selectCommentToTalCountByArticleNo(articleNo)); //답글 포함 총 개수
 
         return resultMap;
     }
@@ -51,10 +51,10 @@ public class CommentServiceImpl implements CommentService {
      */
     @Transactional(readOnly = true)
     @Override
-    public Map<String, Object> selectCommentByCno(int cno, int page) {
-        Map<String, Integer> map = new HashMap<>();
-        int start = 1 + (page-1) * listNum;
-        int end = page * listNum;
+    public Map<String, Object> selectCommentByCno(long cno, long page) {
+        Map<String, Long> map = new HashMap<>();
+        long start = 1 + (page-1) * listNum;
+        long end = page * listNum;
 
         map.put("cno", cno);
         map.put("start",start);
@@ -73,7 +73,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public int deleteComment(int cno) {
-        return commentDao.updateComment(cno);
+    public int deleteComment(long cno) {
+        return commentDao.updateCommentPub(cno);
     }
 }

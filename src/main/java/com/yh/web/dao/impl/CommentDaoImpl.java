@@ -27,7 +27,7 @@ public class CommentDaoImpl implements CommentDao {
      * @return 댓글 리스트
      */
     @Override
-    public List<CommentList> selectCommentByArticleNo(Map<String, Integer> map) {
+    public List<CommentList> selectCommentByArticleNo(Map<String, Long> map) {
         return sqlSession.selectList(MAPPER + "selectCommentByArticleNo", map);
     }
 
@@ -36,7 +36,7 @@ public class CommentDaoImpl implements CommentDao {
      * @return  글번호에 해당하는 댓글이 몇개 있는지 답글제외
      */
     @Override
-    public int selectCommentCountByArticleNo(int articleNo) {
+    public long selectCommentCountByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectCommentCountByArticleNo", articleNo);
     }
 
@@ -45,7 +45,7 @@ public class CommentDaoImpl implements CommentDao {
      * @return   댓글 총 개수
      */
     @Override
-    public int selectCommentToTalCountByArticleNo(int articleNo) {
+    public long selectCommentToTalCountByArticleNo(long articleNo) {
         return sqlSession.selectOne(MAPPER + "selectCommentToTalCountByArticleNo", articleNo);
     }
 
@@ -54,12 +54,12 @@ public class CommentDaoImpl implements CommentDao {
      * @return  댓글에대한 답글 리스트
      */
     @Override
-    public List<CommentList> selectCommentByCno(Map<String, Integer> map) {
+    public List<CommentList> selectCommentByCno(Map<String, Long> map) {
         return sqlSession.selectList(MAPPER + "selectCommentByCno", map);
     }
 
     @Override
-    public int selectCommentCountByCno(int cno) {
+    public long selectCommentCountByCno(long cno) {
         return sqlSession.selectOne(MAPPER + "selectCommentCountByCno", cno);
     }
 
@@ -69,7 +69,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public int updateComment(int cno) {
-        return sqlSession.update(MAPPER + "updateComment", cno);
+    public int updateCommentPub(long cno) {
+        return sqlSession.update(MAPPER + "updateCommentPub", cno);
     }
 }

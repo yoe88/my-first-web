@@ -3,7 +3,6 @@ package com.yh.web.controller;
 import com.yh.web.dto.Comment;
 import com.yh.web.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,7 @@ import java.security.Principal;
 import java.util.Map;
 
 @Slf4j
-@PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+@PreAuthorize("hasAnyRole('ROLE_USER')")
 @RequestMapping("/comment")
 @Controller
 public class CommentController {
@@ -31,19 +30,19 @@ public class CommentController {
      * @return  글번호에 해당하는 댓글리스트
      */
     @GetMapping(path = "/{articleNo}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<Map<String,Object>> getComment(@PathVariable("articleNo") int articleNo
+    public ResponseEntity<Map<String,Object>> getComment(@PathVariable("articleNo") long articleNo
             ,@RequestParam(value = "p", required = false, defaultValue = "1") String p_){
 
-        int page;
-        try{  //p_ 문자열이 숫자로 변환이 안되거나 음수일 경우 1로 초기화
-            page = Integer.parseInt(p_);
+        long page;
+        try{  //p_ 문자열이 숫자로 변환이 안되거나 1보다 작을 경우 1로 초기화
+            page = Long.parseLong(p_);
             if(page < 1) page = 1;
         } catch (NumberFormatException e){
             page = 1;
         }
         Map<String,Object> resultMap = commentService.selectCommentByArticleNo(articleNo, page);
 
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+        return ResponseEntity.ok(resultMap);
     }
 
     /**
@@ -51,19 +50,19 @@ public class CommentController {
      * @return  댓글번호에 해당하는 답글 리스트
      */
     @GetMapping(path = "/reply/{cno}", produces = "application/json", consumes = "application/json" )
-	public ResponseEntity<Map<String,Object>> getReplyComment(@PathVariable("cno") int cno
+	public ResponseEntity<Map<String,Object>> getReplyComment(@PathVariable("cno") long cno
             ,@RequestParam(value = "p", required = false, defaultValue = "1") String p_){
 
-        int page;
-        try{  //p_ 문자열이 숫자로 변환이 안되거나 음수일 경우 1로 초기화
-            page = Integer.parseInt(p_);
+        long page;
+        try{  //p_ 문자열이 숫자로 변환이 안되거나 1보다 작을 경우 1로 초기화
+            page = Long.parseLong(p_);
             if(page < 1) page = 1;
         } catch (NumberFormatException e){
             page = 1;
         }
 
         Map<String,Object> resultMap = commentService.selectCommentByCno(cno, page);
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+        return ResponseEntity.ok(resultMap);
 	}
 
     /**
@@ -81,7 +80,7 @@ public class CommentController {
         comment.setIp(ip);
 
         int result = commentService.addComment(comment);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -89,9 +88,9 @@ public class CommentController {
      * @return  댓글삭제 성공 1, 실패 0
      */
     @DeleteMapping(path = "/{cno}",  consumes = "text/plain")
-    public ResponseEntity<Integer> deleteComment(@PathVariable("cno") int cno){
+    public ResponseEntity<Integer> deleteComment(@PathVariable("cno") long cno){
         int result = commentService.deleteComment(cno);
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return ResponseEntity.ok(result);
     }
 }

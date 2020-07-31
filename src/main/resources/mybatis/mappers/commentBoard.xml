@@ -16,14 +16,14 @@
     </resultMap>
 
     <!-- 글번호 댓글 총 개수 조회 -->
-    <select id="selectCommentToTalCountByArticleNo" resultType="_int" parameterType="_int">
+    <select id="selectCommentToTalCountByArticleNo" resultType="_long" parameterType="_long">
         SELECT COUNT(*)
         FROM COMMENT_BOARD
         WHERE ARTICLENO = #{articleNo}
     </select>
 
     <!-- 글번호 댓글 개수 조회   *답글제외 -->
-    <select id="selectCommentCountByArticleNo" resultType="_int" parameterType="_int">
+    <select id="selectCommentCountByArticleNo" resultType="_long" parameterType="_long">
         SELECT COUNT(*)
         FROM COMMENT_BOARD
         WHERE ARTICLENO = #{articleNo} AND PARENT = 0
@@ -46,8 +46,8 @@
         WHERE NUM BETWEEN #{start} AND #{end}
     </select>
 
-    <!-- 댓글번호 답글 개수 조회 -->
-    <select id="selectCommentCountByCno" resultType="_int" parameterType="_int">
+    <!-- 댓글번호에 해당하는 답글 개수 조회 -->
+    <select id="selectCommentCountByCno" resultType="_long" parameterType="_long">
         SELECT COUNT(*)
         FROM COMMENT_BOARD
         WHERE PARENT = #{cno}
@@ -85,7 +85,7 @@
     </insert>
 
     <!-- 댓글 삭제 기능 실제 삭제 아닌 공개x -->
-    <update id="updateComment" parameterType="_int">
+    <update id="updateCommentPub" parameterType="_long">
         UPDATE COMMENT_BOARD SET PUB = 0 WHERE CNO = #{cno}
     </update>
 </mapper>

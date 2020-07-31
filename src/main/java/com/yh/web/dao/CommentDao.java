@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 
 public interface CommentDao {
-    List<CommentList> selectCommentByArticleNo(Map<String, Integer> map);
+    List<CommentList> selectCommentByArticleNo(Map<String, Long> map);
 
-    List<CommentList> selectCommentByCno(Map<String, Integer> map);
+    List<CommentList> selectCommentByCno(Map<String, Long> map);
 
     int insertComment(Comment comment);
 
-    int updateComment(int cno);
+    int updateCommentPub(long cno);
 
-    int selectCommentCountByArticleNo(int articleNo);
+    long selectCommentCountByArticleNo(long articleNo);
 
-    int selectCommentCountByCno(int cno);
+    long selectCommentCountByCno(long cno);
 
-    int selectCommentToTalCountByArticleNo(int articleNo);
+    long selectCommentToTalCountByArticleNo(long articleNo);
 }

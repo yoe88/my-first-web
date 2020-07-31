@@ -33,7 +33,7 @@ public class BoardServiceImpl implements BoardService {
 
     /**
      * 해당 글번호가 존재하는지 조회
-     * @param articleNo  글벊호
+     * @param articleNo  글번호
      * @return 존재하면 1 없으면 0
      */
     @Override

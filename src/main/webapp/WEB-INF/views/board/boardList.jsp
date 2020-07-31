@@ -9,7 +9,7 @@
 		</div>
 
 		<!--검색창-->
-		<div class="text-right my-3 float-right">
+		<article class="text-right my-3 float-right">
 			<form action="" onsubmit="return notAllowEmpty(this);">
 				<div class="input-group">
 					<div class="input-group-prepend">
@@ -24,10 +24,10 @@
 					</div>
 				</div>
 			</form>
-		</div>
+		</article>
 
 		<!--게시글목록-->
-		<div class="table-responsive">
+		<article class="table-responsive">
 			<table class="table tbl-board">
 				<thead>
 				<tr class="text-center">
@@ -71,7 +71,7 @@
 				</c:if>
 				</tbody>
 			</table>
-		</div>
+		</article>
 		<div class="clearfix">
 			<div class="float-left">
 				<a href="${contextPath}/boards/new"><button class="btn btn-outline-danger">글쓰기</button></a>
@@ -93,7 +93,8 @@
 					<c:if test="${currentPageNum > 0 and currentPageNum <= pageMaxNum}">
 						<li class="page-item ${currentPageNum == p ? "active" : ""}">
 							<a class="page-link" href="<c:if test="${currentPageNum == p}">javascript:;</c:if>
-													<c:if test="${currentPageNum != p}">?f=${f}&q=${param.q}&p=${currentPageNum}</c:if> ">${currentPageNum}</a>
+								<c:if test="${currentPageNum != p}">?f=${f}&q=${param.q}&p=${currentPageNum}</c:if> ">${currentPageNum}
+							</a>
 						</li>
 					</c:if>
 				</c:forEach>
