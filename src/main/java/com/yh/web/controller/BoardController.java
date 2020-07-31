@@ -36,17 +36,17 @@ public class BoardController {
 	/**
 	 * @param field  검색타입
 	 * @param query  검색 하고자 하는 내용
-	 * @param p_  페이지 숫자
-	 * @return  게시글 리스트
+	 * @param p_  	페이지 숫자
+	 * @return  	게시글 리스트
 	 */
 	@PreAuthorize("permitAll()")  //누구나
 	@GetMapping(path = {"","/"})
 	public ModelAndView boardList(@RequestParam(name = "f",required = false,defaultValue = "title") String field
 								 ,@RequestParam(name = "q",required = false,defaultValue = "") String query
 								 ,@RequestParam(name = "p",required = false,defaultValue = "1") String p_){
-		int page;
-		try{  //page 문자열이 숫자로 변환이 안되거나 음수일 경우 1로 초기화
-			page = Integer.parseInt(p_);
+		long page;
+		try{  //p_ 문자열이 숫자로 변환이 안되거나 1보다 작을 경우 1로 초기화
+			page = Long.parseLong(p_);
 			if(page < 1) page = 1;
 		} catch (NumberFormatException e){
 			page = 1;
@@ -57,18 +57,22 @@ public class BoardController {
 			field = "title";
 		}
 
-		Map<String, Object> resultMap = boardService.getBoardList(field, query, page);
+		long listTotalCount = boardService.getBoardListCount(field, query, page);			//검색된 게시글 총개수
+		long pageMaxNum =  (long) Math.ceil((listTotalCount/(double)boardService.listNum)); //67개일경우 7 == 페이지 끝번호
+		pageMaxNum = (pageMaxNum == 0) ? 1 : pageMaxNum;
+		if(page > pageMaxNum){											//param p가 페이지 끝 번호보다 큰경우
+			ModelAndView mav = new ModelAndView();
+			Utils.redirectErrorPage(mav,"존재하지 않는 페이지입니다.\\n확인 후 다시 시도하시기 바랍니다.","/boards");
+			return mav;
+		}
 
-		List<BoardList> list = (List<BoardList>) resultMap.get("list"); //게시글 리스트
-		long listTotalCount = (long) resultMap.get("count"); 				//검색된 게시글 총개수
-		int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)boardService.listNum)); 	//67개일경우 7
-		pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;
+		List<BoardList> list = boardService.getBoardList(field, query, page); 				//게시글 리스트
 
-		int listCount = list.size();  //현재 페이지 게시글 개수  ? <= 10
-		boolean[] isNow = new boolean[listCount];
+		int currentPageListCount = list.size();  							//현재 페이지 게시글 개수  ? <= 10
+		boolean[] isNow = new boolean[currentPageListCount];
 
-		LocalDate now = LocalDate.now(); //현재 일과 게시글 일을 비교한다.
-		for (int i = 0; i < listCount; i++) {
+		LocalDate now = LocalDate.now(); 									//현재 일과 게시글 일을 비교한다.
+		for (int i = 0; i < currentPageListCount; i++) {
 			LocalDate date = list.get(i).getRegDate().toLocalDate();
 			if(ChronoUnit.DAYS.between(date,now) == 0) // 오늘이면
 				isNow[i] = true;
@@ -99,8 +103,8 @@ public class BoardController {
 	}
 
 	/**
-	 * @param parent_  참조 부모 글번호
-	 * 				답글쓰기 페이지
+	 * @param parent_   참조 부모 글번호
+	 * @return			답글쓰기 페이지
 	 */
 	@GetMapping(path = "/{articleNo}/reply")
 	public ModelAndView replyBoardForm(@PathVariable("articleNo") String parent_) {
@@ -129,14 +133,13 @@ public class BoardController {
 	/**
 	 * 					글 추가 기능 
 	 * @param board     글정보
-	 * @param principal 사용자 정보
 	 * @param mf        첨부된 파일
 	 */
 	@PostMapping(path = {"/new"})
-	public ModelAndView addBoard(@ModelAttribute Board board
-						, Principal principal
+	public ModelAndView addBoard(HttpServletRequest request
+						, @ModelAttribute Board board
 						, @RequestParam(value = "file", required = false) MultipartFile mf
-						, HttpServletRequest request) {
+						, Principal principal) {
 		//설정해야 할것 = 글번호, 작성자, 그룹번호, 아이피
 		//자동으로 되는것 = 제목, 내용, 등록날짜, 추천수, 조회수, 부모글번호, 공개여부
 		ModelAndView mav = new ModelAndView();
@@ -145,20 +148,10 @@ public class BoardController {
 		board.setIp(ip);					    //아이피 설정
 		board.setWriter(principal.getName());  //작성자 아이디 설정
 
-		long articleNo = boardService.getNextArticleNo();  //다음 글번호 얻기, 시퀀스
-		board.setArticleNo(articleNo);  //글번호 설정
-
-		if(board.getParent() != 0){   //답글 쓰기 인 경우,  부모글번호가 존재할때
-			long grpNo = boardService.getGrpNo(board.getParent());  //부모 글번호에 대한 그룹번호 얻어오기
-			board.setGrpNo(grpNo);  //그룹번호 설정
-		}else {
-			board.setGrpNo(articleNo);  // 답글쓰기가 아닌경우 글번호와 동일하게 설정
-		}
-
-		int result = boardService.addBoard(board,mf);
+		int result = boardService.addBoard(board, mf);
 
 		if(result != 0) {  //성공적으로 됐을경우 리스트로
-			mav.setViewName("redirect: " + Utils.getRoot() + "/boards");
+			mav.setViewName("redirect:/boards");
 		} else{
 			Utils.redirectErrorPage(mav, "글 작성을 실패했습니다.!", "/boards");
 		}
@@ -214,18 +207,15 @@ public class BoardController {
 		}
 
 		BoardDetail b = boardService.getBoardDetail(articleNo, true);
-		if(b == null){		//존재 하지 않는 글인경우
+		//존재 하지 않는 글이거나 글 작성자와 로그인한 아이디가 불일치 하는 경우
+		if(b == null || !b.getId().equals(principal.getName()) ){
 			Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
 		}else{
-			if(b.getId().equals(principal.getName())){ //글 작성자와 로그인한 아이디가 같은경우에만
-				mav.setViewName("/board/boardForm");
-				mav.addObject("page_title", "글 수정하기");
-				mav.addObject("b",b);
-				mav.addObject("title","글 수정");
-				mav.addObject("action",articleNo+"/edit");
-			}else{
-				Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/boards");
-			}
+			mav.setViewName("/board/boardForm");
+			mav.addObject("page_title", "글 수정하기");
+			mav.addObject("b",b);
+			mav.addObject("title","글 수정");
+			mav.addObject("action",articleNo+"/edit");
 		}
 		return mav;
 	}
@@ -236,14 +226,13 @@ public class BoardController {
 	 */
 	@PostMapping(path = "/{articleNo}/edit")
 	public ModelAndView modifyBoard(@ModelAttribute Board board
-									//,@PathVariable("articleNo") int articleNo
 									,@RequestParam("isDelete") boolean isDelete
 									,@RequestParam(value = "file", required = false) MultipartFile mf) {
 		log.info(board.toString());
 		ModelAndView mav = new ModelAndView();
 		int result = boardService.modifyBoard(board, mf, isDelete);
 		if(result != 0){
-			mav.setViewName("redirect: " + Utils.getRoot() + "/boards/" + board.getArticleNo());
+			mav.setViewName("redirect:/boards/" + board.getArticleNo());
 		}else{
 			Utils.redirectErrorPage(mav, "글 작성을 실패했습니다.!", "/boards");
 		}
@@ -254,9 +243,8 @@ public class BoardController {
 	 * @param articleNo 글번호
 	 */
 	@DeleteMapping(path = "/{articleNo}")
-	public ResponseEntity<Integer> deleteBoard(@PathVariable("articleNo") int articleNo) {
+	public ResponseEntity<Integer> deleteBoard(@PathVariable("articleNo") long articleNo) {
 		int result = boardService.deleteBoard(articleNo);
-		//return new ResponseEntity<>(result, HttpStatus.OK);
 		return ResponseEntity.ok(result);
 	}
 

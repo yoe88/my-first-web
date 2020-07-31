@@ -4,6 +4,7 @@ import com.yh.web.dao.BoardDao;
 import com.yh.web.dto.board.Board;
 import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.dto.board.BoardFile;
+import com.yh.web.dto.board.BoardList;
 import com.yh.web.service.BoardService;
 import com.yh.web.service.FileService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +47,8 @@ public class BoardServiceImpl implements BoardService {
      * @param page   페이지 숫자
      * @return       게시글 리스트
      */
-    @Transactional(readOnly = true)
     @Override
-    public Map<String,Object> getBoardList(String field, String query, long page) {
+    public List<BoardList> getBoardList(String field, String query, long page) {
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
@@ -57,11 +57,16 @@ public class BoardServiceImpl implements BoardService {
         map.put("start",start);
         map.put("end",end);
 
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("list",boardDao.selectBoardList(map));
-        resultMap.put("count",boardDao.selectBoardListCount(map));
+        return boardDao.selectBoardList(map);
+    }
 
-        return resultMap;
+    @Override
+    public long getBoardListCount(String field, String query, long page) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("field",field);
+        map.put("query",query);
+
+        return boardDao.selectBoardListCount(map);
     }
 
     @Transactional(readOnly = true)
@@ -87,23 +92,6 @@ public class BoardServiceImpl implements BoardService {
     }
 
     /**
-     * @return  다음에 삽입할 글번호
-     */
-    @Override
-    public long getNextArticleNo() {
-        return boardDao.selectNextSequence();
-    }
-
-    /**
-     * @param articleNo  부모글번호
-     * @return   부모 글번호에 대한 그룹번호
-     */
-    @Override
-    public long getGrpNo(long articleNo) {
-        return boardDao.selectGrpNoByArticleNo(articleNo);
-    }
-
-    /**
      * @param board  글정보
      * @param mf     파일
      */
@@ -111,6 +99,16 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public int addBoard(Board board, MultipartFile mf) {
         int result;
+
+        long articleNo = boardDao.selectNextSequence();  //다음 글번호 얻기, 시퀀스
+        board.setArticleNo(articleNo);  //글번호 설정
+
+        if(board.getParent() != 0){   //답글 쓰기 인 경우,  부모글번호가 존재할때
+            long grpNo = boardDao.selectGrpNoByArticleNo(board.getParent());  //부모 글번호에 대한 그룹번호 얻어오기
+            board.setGrpNo(grpNo);  //그룹번호 설정
+        }else {
+            board.setGrpNo(articleNo);  // 답글쓰기가 아닌경우 글번호와 동일하게 설정
+        }
         result = boardDao.insertBoard(board);//글 추가하기
 
         if(result != 0) { // 글을 성공적으로 추가했을경우
@@ -135,38 +133,35 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     @Override
     public int modifyBoard(Board board, MultipartFile mf, boolean isDelete) {
-
         //먼저 글 수정하기
         int result = boardDao.updateBoard(board);
         if(result != 0){ //글 수정이 정상적으로 완료
             String fileName = boardDao.selectBoardFileNameByArticleNo(board.getArticleNo()); //기존 파일 이름 얻기
-            /* C:\ upload\board\no\fileName */
-            String filePath = FileService.boardPath + File.separator + board.getArticleNo() + File.separator + fileName; //파일 경로
+            // C:\ upload\board\no
+            String folderPath = FileService.boardPath + File.separator + board.getArticleNo();
+            // C:\ upload\board\no\fileName
+            String filePath = folderPath + File.separator + fileName; //파일 경로
             
-            if(mf.getSize() != 0){ //파일 첨부된경우
-                //먼저 기존 파일삭제 진행
-                if(fileName != null){ //기존파일이 있다면 삭제하고 수정
-                    boolean delete = fileService.deleteFile(filePath);
-                    if(delete){ //삭제가 되었으면
-                        String safeName =  fileService.upload(mf,filePath);  //새로운 파일 업로드
+            if(mf.getSize() != 0) { //파일 첨부된경우
+                //새로운 파일 업로드
+                BoardFile boardFile = new BoardFile();
+                boardFile.setArticleNo(board.getArticleNo());
+                String safeName = fileService.upload(mf, folderPath);
+                boardFile.setFileName(safeName);
+                boardFile.setFileSize(mf.getSize());
+                boardFile.setOriginalFileName(mf.getOriginalFilename());
 
-                        BoardFile boardFile = new BoardFile();
-                        boardFile.setArticleNo(board.getArticleNo());
-                        boardFile.setFileName(safeName);
-                        boardFile.setFileSize(mf.getSize());
-                        boardFile.setOriginalFileName(mf.getOriginalFilename());
+                if (fileName != null) { //기존 파일이 있다면 삭제
+                    boolean delete = fileService.deleteFile(filePath);
+                    if (delete) { //삭제가 되었으면
                         boardDao.updateBoardFile(boardFile);  //파일정보 업데이트
                     }
-                }else{ // 기존파일이 없는경우 새로 추가
-                    String safeName =  fileService.upload(mf,filePath);  //새로운 파일 업로드
-                    BoardFile boardFile = new BoardFile();
-                    boardFile.setArticleNo(board.getArticleNo());
-                    boardFile.setFileName(safeName);
-                    boardFile.setFileSize(mf.getSize());
-                    boardFile.setOriginalFileName(mf.getOriginalFilename());
+                } else { // 기존파일이 없는경우 새로 추가
                     boardDao.insertBoardFile(boardFile);  //파일정보 추가
                 }
-            }else if(isDelete){ //수정 없이 파일 삭제 인경우
+            }
+
+            if(isDelete){ //파일 삭제 인경우
                 boolean delete = fileService.deleteFile(filePath);
                 if(delete) { //삭제 됐으면 db값 삭제
                     boardDao.deleteBoardFileByArticleNo(board.getArticleNo());

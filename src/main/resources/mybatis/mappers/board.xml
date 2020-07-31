@@ -129,6 +129,7 @@
     </update>
 
     <!--  - - - - - - - - - -   삭제 위한 쿼리 - - - - - - - - - - -->
+    <!-- 게시글 삭제 -->
     <delete id="deleteBoardByArticleNo" parameterType="_long">
         DELETE FROM BOARD WHERE ARTICLENO = #{articleNo}
     </delete>
