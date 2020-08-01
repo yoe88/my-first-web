@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
-@PreAuthorize("hasAnyRole('ROLE_USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping(path = "/boards" )
 @Controller
 public class BoardController {

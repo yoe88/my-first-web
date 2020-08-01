@@ -1,15 +1,15 @@
 package com.yh.web.service.impl;
 
+import com.yh.web.Utils;
 import com.yh.web.dao.AdminDao;
 import com.yh.web.dto.board.BoardDetail;
+import com.yh.web.dto.board.BoardList;
 import com.yh.web.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 @Slf4j
@@ -42,12 +42,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Map<String, Object> getMember(String id) throws UnsupportedEncodingException {
+    public Map<String, Object> getMember(String id) {
         Map<String, Object> member = adminDao.selectMemberById(id);
         if(member != null){
             String profileImage = (String) member.get("PROFILEIMAGE");
             if(profileImage != null){
-                profileImage = URLEncoder.encode( profileImage,"UTF-8").replace("+","%20");
+                profileImage = Utils.urlEncode( profileImage);
             }
             member.put("PROFILEIMAGE",profileImage);
         }
@@ -75,7 +75,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Map<String, Object> getBoardList(String field, String query, long page) {
+    public List<BoardList> getBoardList(String field, String query, long page) {
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
@@ -84,37 +84,40 @@ public class AdminServiceImpl implements AdminService {
         map.put("start",start);
         map.put("end",end);
 
-        Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("list",adminDao.selectBoardList(map));
-        resultMap.put("count",adminDao.selectBoardListCount(map));
+        return adminDao.selectBoardList(map);
 
-        return resultMap;
     }
 
     @Override
-    public BoardDetail getBoardDetail(long articleNo) throws UnsupportedEncodingException {
+    public long getBoardListCount(String field, String query) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("field",field);
+        map.put("query",query);
+
+        return adminDao.selectBoardListCount(map);
+    }
+
+    @Override
+    public BoardDetail getBoardDetail(long articleNo) {
         BoardDetail boardDetail = adminDao.selectBoardDetailByArticleNo(articleNo);
         if(boardDetail != null){
             if(boardDetail.getProfileImage() != null){
-                String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
+                String profileImageName = Utils.urlEncode(boardDetail.getProfileImage());
                 boardDetail.setProfileImage(profileImageName);
             }
             if(boardDetail.getFileName() != null) {
-                String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
+                String fileName = Utils.urlEncode(boardDetail.getFileName());
                 boardDetail.setFileName(fileName);
-                String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
+                String encodeOriginalFileName = Utils.urlEncode(boardDetail.getOriginalFileName());
                 boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
             }
         }
         return boardDetail;
     }
 
-
-
     /**
      * @param allNo_  모든 글번호
      * @param openNo_ 체크된 글번호
-     * @return
      */
     @Transactional
     @Override
@@ -142,35 +145,38 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public Map<String, Object> getGalleryList(long page) throws UnsupportedEncodingException {
+    public List<Map<String,String>> getGalleryList(long page) {
         Map<String, Long> map = new HashMap<>();
         long start = 1 + (page-1) * galleryListNum;
         long end = page * galleryListNum;
         map.put("start", start);
         map.put("end", end);
 
-        Map<String,Object> resultMap = new HashMap<>();
         List<Map<String,String>> list = adminDao.selectGalleryList(map);
         //URL Encode
         for (Map<String, String> gallery : list) {
-            String encode = URLEncoder.encode(gallery.get("fileName"), "UTF-8").replace("+", "%20");
+            String encode = Utils.urlEncode(gallery.get("fileName"));
             gallery.put("fileName", encode);
         }
-        resultMap.put("list",list);
-        resultMap.put("count",adminDao.selectGalleryListCount());
-
-        return resultMap;
+        return list;
     }
 
     @Override
-    public Map<String, Object> getGalleryDetail(long gno) throws UnsupportedEncodingException {
+    public long getGalleryListCount() {
+        return adminDao.selectGalleryListCount();
+    }
+
+    @Override
+    public Map<String, Object> getGalleryDetail(long gno) {
         Map<String, Object> galleryDetail = adminDao.selectGalleryDetail(gno);
-        List<Map<String,String>> fileList = (List<Map<String, String>>) galleryDetail.get("file");
-        for (Map<String,String> file : fileList ){
-            String fileName = URLEncoder.encode(file.get("fileName"), "UTF-8").replace("+", "%20");
-            file.put("fileName", fileName);
-            String originalFileName = URLEncoder.encode(file.get("originalFileName"), "UTF-8").replace("+", "%20");
-            file.put("originalFileName", originalFileName);
+        if(galleryDetail != null){
+            List<Map<String,String>> fileList = (List<Map<String, String>>) galleryDetail.get("file");
+            for (Map<String,String> file : fileList ){
+                String fileName = Utils.urlEncode(file.get("fileName"));
+                file.put("fileName", fileName);
+                String originalFileName = Utils.urlEncode(file.get("originalFileName"));
+                file.put("originalFileName", originalFileName);
+            }
         }
         return galleryDetail;
     }

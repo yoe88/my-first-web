@@ -38,9 +38,9 @@ public class BoardController {
     public ModelAndView boardList(@RequestParam(name = "f",required = false,defaultValue = "title") String field
             , @RequestParam(name = "q",required = false,defaultValue = "") String query
             , @RequestParam(name = "p",required = false,defaultValue = "1") String p_){
-        int page;
-        try{  //page 문자열이 숫자로 변환이 안되거나 음수일 경우 1로 초기화
-            page = Integer.parseInt(p_);
+        long page;
+        try{  //p_ 문자열이 숫자로 변환이 안되거나 1보다 작을 경우 1로 초기화
+            page = Long.parseLong(p_);
             if(page < 1) page = 1;
         } catch (NumberFormatException e){
             page = 1;
@@ -50,19 +50,23 @@ public class BoardController {
         if(!fieldOption.contains(field)){
             field = "title";
         }
-        //게시글 검색값 가져오기
-        Map<String, Object> resultMap = adminService.getBoardList(field, query, page);
 
-        List<BoardList> list = (List<BoardList>) resultMap.get("list"); //게시글 리스트
-        long listTotalCount = (long) resultMap.get("count"); 				//검색된 게시글 총개수
-        int pageMaxNum =  (int) Math.ceil((listTotalCount/(double)adminService.listNum)); 	//67개일경우 7
+        long listTotalCount = adminService.getBoardListCount(field, query);			//검색된 게시글 총개수
+        long pageMaxNum =  (long) Math.ceil((listTotalCount/(double)adminService.listNum)); 	//67개일경우 7
         pageMaxNum = (pageMaxNum ==0) ? 1 : pageMaxNum;
+        if(page > pageMaxNum){											//param p가 페이지 끝 번호보다 큰경우
+            ModelAndView mav = new ModelAndView();
+            Utils.redirectErrorPage(mav,"존재하지 않는 페이지입니다.\\n확인 후 다시 시도하시기 바랍니다.","/admin/boards");
+            return mav;
+        }
+        //게시글 검색값 가져오기
+        List<BoardList> list = adminService.getBoardList(field, query, page); //게시글 리스트
 
-        int listCount = list.size();  //현재 페이지 게시글 개수  ? <= 10
-        boolean[] isNow = new boolean[listCount];
+        int currentPageListCount = list.size();  							//현재 페이지 게시글 개수  ? <= 10
+        boolean[] isNow = new boolean[currentPageListCount];
 
         LocalDate now = LocalDate.now(); //현재 일과 게시글 일을 비교한다.
-        for (int i = 0; i < listCount; i++) {
+        for (int i = 0; i < currentPageListCount; i++) {
             LocalDate date = list.get(i).getRegDate().toLocalDate();
             if(ChronoUnit.DAYS.between(date,now) == 0)
                 isNow[i] = true;
@@ -101,7 +105,7 @@ public class BoardController {
         if(b == null){
             Utils.redirectErrorPage(mav, "올바른 접근이 아닙니다.", "/admin/boards");
         }else{
-            mav.addObject("page_title", "상세보기");
+            mav.addObject("page_title", b.getTitle());
             mav.setViewName("/admin/board/boardDetail");
             mav.addObject("b",b);
             mav.addObject("qs", Utils.getPreQS(request));

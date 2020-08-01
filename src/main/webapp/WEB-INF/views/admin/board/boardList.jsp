@@ -5,11 +5,11 @@
 <main id="board-list">
     <section class="container">
         <div>
-            <h1 class="h1-title">관리자 게시판</h1>
+            <h1>관리자 게시판</h1>
         </div>
 
         <!--검색창-->
-        <div class="text-right my-3 float-right">
+        <article class="text-right my-3 float-right">
             <form action="" onsubmit="return notAllowEmpty(this);">
                 <div class="input-group">
                     <div class="input-group-prepend">
@@ -24,10 +24,10 @@
                     </div>
                 </div>
             </form>
-        </div>
+        </article>
 
         <!--게시글목록-->
-        <div class="table-responsive">
+        <article class="table-responsive">
             <table class="table tbl-board">
                 <thead>
                 <tr class="text-center">
@@ -83,29 +83,31 @@
                     <input type="button" class="btn btn-outline-dark" value="일괄공개" onclick="updateBoardsPub()">
                 </article>
             </c:if>
-        </div>
+        </article>
         <div class="clearfix">
             <h5 class="float-right"><span class="current-page-num">${p}</span>/<span class="font-weight-normal">${pageMaxNum}</span></h5>
         </div>
     </section>
 
     <section class="container my-2 text-center clearfix">
-
+        <c:set var="startNum" value="${p-2}"/>
         <nav class="pager">
             <ul class="pagination">
                 <c:if test="${p != 1}">
                     <li class="page-item"><a class="page-link" href="?f=${f}&q=${param.q}&p=1"><i class="fas fa-angle-double-left"></i></a></li>
                     <li class="page-item"><a class="page-link" href="?f=${f}&q=${param.q}&p=${p-1}"><i class="fas fa-angle-left"></i></a></li>
                 </c:if>
-                <c:forEach begin="${p-2 > 0 ? p-2 : 1}" end="${p+2}" varStatus="st">
-                    <c:if test="${st.current <= pageMaxNum}">
-                        <li class="page-item ${p==st.current ? "active" : ""}">
-                            <a class="page-link" href="<c:if test="${st.current == p}">javascript:;</c:if>
-													<c:if test="${st.current != p}">?f=${f}&q=${param.q}&p=${st.current}</c:if> ">${st.current}</a>
+                <c:forEach var="i" begin="0" end="4">
+                    <c:set var="currentPageNum" value="${startNum + i}"/>
+                    <c:if test="${currentPageNum > 0 and currentPageNum <= pageMaxNum}">
+                        <li class="page-item ${currentPageNum == p ? "active" : ""}">
+                            <a class="page-link" href="<c:if test="${currentPageNum == p}">javascript:;</c:if>
+								<c:if test="${currentPageNum != p}">?f=${f}&q=${param.q}&p=${currentPageNum}</c:if> ">${currentPageNum}
+                            </a>
                         </li>
                     </c:if>
                 </c:forEach>
-                <c:if test="${p != pageMaxNum and pageMaxNum !=0}">
+                <c:if test="${p < pageMaxNum}">
                     <li class="page-item"><a class="page-link" href="?f=${f}&q=${param.q}&p=${p+1}"><i class="fas fa-angle-right"></i></a></li>
                     <li class="page-item"><a class="page-link" href="?f=${f}&q=${param.q}&p=${pageMaxNum}"><i class="fas fa-angle-double-right"></i></a></li>
                 </c:if>

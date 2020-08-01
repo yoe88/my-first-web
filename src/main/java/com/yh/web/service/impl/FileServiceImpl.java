@@ -1,5 +1,6 @@
 package com.yh.web.service.impl;
 
+import com.yh.web.Utils;
 import com.yh.web.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
@@ -10,7 +11,6 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URLEncoder;
 
 @Slf4j
 @Service
@@ -47,7 +47,7 @@ public class FileServiceImpl implements FileService {
 
         byte[] imgByte = imageOutputStream.toByteArray();
         response.setHeader("Cache-Control", "no-cache");                    //인코더 해야 한글 이름으로도 다운로드 받을수 있다.
-        response.addHeader("Content-disposition", "inline; fileName=" + URLEncoder.encode(file.getName(), "UTF-8"));
+        response.addHeader("Content-disposition", "inline; fileName=" + Utils.urlEncode(file.getName()) );
         response.setContentType("image/png");
 
         OutputStream out = response.getOutputStream();
@@ -71,9 +71,9 @@ public class FileServiceImpl implements FileService {
             originalFileName = file.getName();
         response.setHeader("Cache-Control", "no-cache");
         if(isDownload){
-            response.addHeader("Content-disposition", "attachment; fileName=" + URLEncoder.encode(originalFileName, "UTF-8"));
+            response.addHeader("Content-disposition", "attachment; fileName=" + Utils.urlEncode(originalFileName));
         }else{
-            response.addHeader("Content-disposition", "inline; fileName=" + URLEncoder.encode(originalFileName, "UTF-8"));
+            response.addHeader("Content-disposition", "inline; fileName=" + Utils.urlEncode(originalFileName));
         }
         if (isImage) {
             String fileName = file.getName();
