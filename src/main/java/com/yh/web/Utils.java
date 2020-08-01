@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Random;
 
 @Slf4j
@@ -46,9 +48,24 @@ public class Utils {
         return qs;
     }
 
+    /**
+     * @param mav       ModelAndView
+     * @param msg       메시지
+     * @param redirect  이동할 url
+     */
     public static void redirectErrorPage(ModelAndView mav, String msg, String redirect ){
         mav.setViewName("/empty/commons/error/errorMessage");
         mav.addObject("msg",msg);
         mav.addObject("redirect",redirect);
+    }
+
+    public static String urlEncode(String s){
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(s,"UTF-8").replace("+","%20");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return encode;
     }
 }

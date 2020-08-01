@@ -98,7 +98,7 @@
 						</li>
 					</c:if>
 				</c:forEach>
-				<c:if test="${p != pageMaxNum and pageMaxNum !=0}">
+				<c:if test="${p < pageMaxNum}">
 					<li class="page-item"><a class="page-link" href="?f=${f}&q=${param.q}&p=${p+1}"><i class="fas fa-angle-right"></i></a></li>
 					<li class="page-item"><a class="page-link" href="?f=${f}&q=${param.q}&p=${pageMaxNum}"><i class="fas fa-angle-double-right"></i></a></li>
 				</c:if>

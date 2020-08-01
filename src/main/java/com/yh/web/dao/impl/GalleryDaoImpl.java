@@ -39,17 +39,17 @@ public class GalleryDaoImpl implements GalleryDao {
     }
 
     @Override
-    public List<Map<String, String>> selectGalleryList(Map<String, Integer> map) {
+    public List<Map<String, String>> selectGalleryList(Map<String, Long> map) {
         return sqlSession.selectList(MAPPER + "selectGalleryList", map);
     }
 
     @Override
-    public int selectGalleryListCount() {
+    public long selectGalleryListCount() {
         return sqlSession.selectOne(MAPPER + "selectGalleryListCount");
     }
 
     @Override
-    public Map<String, Object> selectGalleryDetail(int gno) {
+    public Map<String, Object> selectGalleryDetail(long gno) {
         return sqlSession.selectOne(MAPPER + "selectGalleryDetail", gno);
     }
 
@@ -59,7 +59,7 @@ public class GalleryDaoImpl implements GalleryDao {
     }
 
     @Override
-    public void deleteGalleryFile(List<Integer> deleteNo) {
+    public void deleteGalleryFile(List<Long> deleteNo) {
         sqlSession.delete(MAPPER + "deleteGalleryFile", deleteNo);
     }
 

@@ -2,8 +2,6 @@ package com.yh.web.dao;
 
 import com.yh.web.dto.Gallery;
 import com.yh.web.dto.GalleryFile;
-import com.yh.web.dto.board.BoardDetail;
-import com.yh.web.dto.board.BoardList;
 
 import java.util.List;
 import java.util.Map;
@@ -16,15 +14,15 @@ public interface GalleryDao {
 
     void insertGalleryFile(GalleryFile galleryFile);
 
-    List<Map<String, String>> selectGalleryList(Map<String, Integer> map);
+    List<Map<String, String>> selectGalleryList(Map<String, Long> map);
 
-    int selectGalleryListCount();
+    long selectGalleryListCount();
 
-    Map<String, Object> selectGalleryDetail(int gno);
+    Map<String, Object> selectGalleryDetail(long gno);
 
     void updateGallery(Map<String, Object> gallery);
 
-    void deleteGalleryFile(List<Integer> deleteNo);
+    void deleteGalleryFile(List<Long> deleteNo);
 
     int deleteGallery(long gno);
 

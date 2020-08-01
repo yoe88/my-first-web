@@ -57,7 +57,7 @@ public class BoardController {
 			field = "title";
 		}
 
-		long listTotalCount = boardService.getBoardListCount(field, query, page);			//검색된 게시글 총개수
+		long listTotalCount = boardService.getBoardListCount(field, query);			//검색된 게시글 총개수
 		long pageMaxNum =  (long) Math.ceil((listTotalCount/(double)boardService.listNum)); //67개일경우 7 == 페이지 끝번호
 		pageMaxNum = (pageMaxNum == 0) ? 1 : pageMaxNum;
 		if(page > pageMaxNum){											//param p가 페이지 끝 번호보다 큰경우

@@ -5,20 +5,20 @@ import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.dto.board.BoardList;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.UnsupportedEncodingException;
+import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public interface BoardService {
-    int listNum = 10;  //게시글 개수 10개씩
+    int listNum = 10;  //리스트 개수 10개씩
+    String SE = File.separator;
 
     List<BoardList> getBoardList(String field, String query, long page);
 
-    long getBoardListCount(String field, String query, long page);
+    long getBoardListCount(String field, String query);
 
     int findArticleNo(long articleNo);
 
-    BoardDetail getBoardDetail(long articleNo, boolean isModify) throws UnsupportedEncodingException;
+    BoardDetail getBoardDetail(long articleNo, boolean isModify);
 
     int addBoard(Board board, MultipartFile mf);
 

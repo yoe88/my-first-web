@@ -1,5 +1,6 @@
 package com.yh.web.service.impl;
 
+import com.yh.web.Utils;
 import com.yh.web.dao.BoardDao;
 import com.yh.web.dto.board.Board;
 import com.yh.web.dto.board.BoardDetail;
@@ -12,9 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +59,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public long getBoardListCount(String field, String query, long page) {
+    public long getBoardListCount(String field, String query) {
         Map<String,Object> map = new HashMap<>();
         map.put("field",field);
         map.put("query",query);
@@ -71,20 +69,20 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional(readOnly = true)
     @Override
-    public BoardDetail getBoardDetail(long articleNo, boolean isModify) throws UnsupportedEncodingException {
+    public BoardDetail getBoardDetail(long articleNo, boolean isModify) {
         if(!isModify){
             boardDao.updateBoardHitByArticleNo(articleNo);
         }
         BoardDetail boardDetail = boardDao.selectBoardDetailByArticleNo(articleNo);
         if(boardDetail != null){
             if(boardDetail.getProfileImage() != null){
-                String profileImageName = URLEncoder.encode(boardDetail.getProfileImage(), "UTF-8").replace("+", "%20");
+                String profileImageName = Utils.urlEncode(boardDetail.getProfileImage());
                 boardDetail.setProfileImage(profileImageName);
             }
             if(boardDetail.getFileName() != null) {
-                String fileName = URLEncoder.encode(boardDetail.getFileName(), "UTF-8").replace("+", "%20");
+                String fileName = Utils.urlEncode(boardDetail.getFileName());
                 boardDetail.setFileName(fileName);
-                String encodeOriginalFileName = URLEncoder.encode(boardDetail.getOriginalFileName(), "UTF-8").replace("+", "%20");
+                String encodeOriginalFileName = Utils.urlEncode(boardDetail.getOriginalFileName());
                 boardDetail.setEncodeOriginalFileName(encodeOriginalFileName);
             }
         }
@@ -113,7 +111,7 @@ public class BoardServiceImpl implements BoardService {
 
         if(result != 0) { // 글을 성공적으로 추가했을경우
             if(mf.getSize() != 0) {  // 첨부된 파일이 있는지 확인
-                String folderPath = FileService.boardPath + File.separator + board.getArticleNo(); //  c/upload/board/articleNo
+                String folderPath = FileService.boardPath + SE + board.getArticleNo(); //  c/upload/board/articleNo
 
                 String safeName = fileService.upload(mf,folderPath); //파일 업로드
 
@@ -138,9 +136,9 @@ public class BoardServiceImpl implements BoardService {
         if(result != 0){ //글 수정이 정상적으로 완료
             String fileName = boardDao.selectBoardFileNameByArticleNo(board.getArticleNo()); //기존 파일 이름 얻기
             // C:\ upload\board\no
-            String folderPath = FileService.boardPath + File.separator + board.getArticleNo();
+            String folderPath = FileService.boardPath + SE + board.getArticleNo();
             // C:\ upload\board\no\fileName
-            String filePath = folderPath + File.separator + fileName; //파일 경로
+            String filePath = folderPath + SE + fileName; //파일 경로
             
             if(mf.getSize() != 0) { //파일 첨부된경우
                 //새로운 파일 업로드
@@ -181,7 +179,7 @@ public class BoardServiceImpl implements BoardService {
         long child = boardDao.selectChildCount(articleNo);
         if(child != 0)
             return 44;
-        if(fileService.deleteFolder(FileService.boardPath + File.separator + articleNo)) //폴더 삭제가 된경우
+        if(fileService.deleteFolder(FileService.boardPath + SE + articleNo)) //폴더 삭제가 된경우
             return boardDao.deleteBoardByArticleNo(articleNo);  //글 삭제 시도
         return 0;
     }

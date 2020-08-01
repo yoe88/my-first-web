@@ -45,7 +45,7 @@
     <select id="selectGalleryList" parameterType="map" resultMap="galleryList">
         SELECT GNO, FILENAME, CNT
         FROM(
-                SELECT ROW_NUMBER() OVER(ORDER BY A.GNO DESC) NUM, A.GNO , A.FILENAME, CNT, PUB
+                SELECT ROW_NUMBER() OVER(ORDER BY A.GNO DESC) NUM, A.GNO , A.FILENAME, CNT
                 FROM GALLERY_FILE A
                 JOIN(
                     SELECT MIN(NO) NO, COUNT(GNO) CNT
@@ -59,14 +59,14 @@
     </select>
 
     <!--갤러리 리스트 총 개수-->
-    <select id="selectGalleryListCount" resultType="_int">
+    <select id="selectGalleryListCount" resultType="_long">
         SELECT COUNT(*)
         FROM GALLERY
         WHERE PUB = 1
     </select>
 
     <!--갤러리 디테일 정보-->
-    <select id="selectGalleryDetail" parameterType="_int" resultMap="galleryDetail">
+    <select id="selectGalleryDetail" parameterType="_long" resultMap="galleryDetail">
         SELECT G.GNO, TITLE, WRITER, NO, FILENAME, FILESIZE, ORIGINALFILENAME
         FROM GALLERY G
         JOIN GALLERY_FILE F ON G.GNO = F.GNO
