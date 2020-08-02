@@ -23,16 +23,7 @@ public class MybatisTest {
 
 	@Autowired
 	AdminDao adminDao;
-	
-	@Test
-	public void selectAllMemberList() {
-		List<Member> list = memberService.getAllMemberList();
-		assertNotNull(list);
-		System.out.println(list);
-	}	
-	
 
-	
 	@Test
 	public void getMemberInfor() {
 		Member m = memberService.getMemberInfo("nana");

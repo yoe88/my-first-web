@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -164,7 +163,7 @@ public class BoardController {
 	 */
 	@GetMapping(path = "/{articleNo}")
 	public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
-									,HttpServletRequest request) throws UnsupportedEncodingException {
+									,HttpServletRequest request) {
 		ModelAndView mav = new ModelAndView();
 		long articleNo;
 
@@ -195,7 +194,7 @@ public class BoardController {
 	 */
 	@GetMapping(path = "/{articleNo}/edit")
 	public ModelAndView editBoardForm(@PathVariable("articleNo") String articleNo_
-									  ,Principal principal) throws UnsupportedEncodingException {
+									  ,Principal principal) {
 		ModelAndView mav = new ModelAndView();
 		long articleNo;
 

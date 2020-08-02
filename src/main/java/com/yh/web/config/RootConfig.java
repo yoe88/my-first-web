@@ -71,7 +71,7 @@ public class RootConfig {
 		return sessionFactory.getObject();
 	}
 	
-	@Bean  // SqlSession구현
+	@Bean  // SqlSession 구현
 	public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
 		return new SqlSessionTemplate(sqlSessionFactory);
 	}	

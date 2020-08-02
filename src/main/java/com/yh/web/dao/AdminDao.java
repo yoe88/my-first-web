@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface AdminDao {
-    List<Object> selectMembers(Map<String, Object> map);
+    List<Map<String, Object>> selectMembers(Map<String, Object> map);
 
     long selectMembersCount(Map<String, Object> map);
 

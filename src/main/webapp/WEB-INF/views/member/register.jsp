@@ -45,7 +45,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-address-card"></i></span>
                         </div>
-                        <input type="text" class="form-control" placeholder="아이디 (공백제외 4~12자의 영문 소문자, 숫자)" name="id" autocomplete="off" autofocus onkeyup="resetId();">
+                        <input type="text" class="form-control" placeholder="아이디 (공백제외 4~12자의 영문 소문자, 숫자)" name="id" autocomplete="off" onkeyup="resetId();">
                         <div class="input-group-append">
                             <button type="button" class="input-group-text check-id" onclick="checkId();">중복확인</button>
                         </div>

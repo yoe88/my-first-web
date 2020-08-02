@@ -19,7 +19,7 @@ function checkId(){
     }
 
     //아이디중복체크
-    fetch('checkid?id='+id.value.trim(),{
+    fetch('checkId?id='+id.value.trim(),{
         headers:{'Content-Type': 'text/plain'}
     })
     .then(response => {
@@ -84,7 +84,7 @@ function validateEmail(){
     }
 
     //이메일중복체크
-    fetch('checkemail?email=' + email.value.trim(),{
+    fetch('checkEmail?email=' + email.value.trim(),{
         headers:{'Content-Type': 'text/plain'}
     }).then(response =>{
         if(response.status === 200){
@@ -153,7 +153,7 @@ function getCode(){
             }
         }
     }
-    xhttp.open("GET","createcode?email="+email.value.trim(),true);
+    xhttp.open("GET","createCode?email="+email.value.trim(),true);
     xhttp.setRequestHeader('Content-Type', 'text/plain');
     xhttp.send();
 }
@@ -178,7 +178,7 @@ function sendCode(){
     }
     const errorCode = document.querySelector(".error-code");
 
-    fetch('checkcode?code='+ code.value.trim(),{
+    fetch('checkCode?code='+ code.value.trim(),{
         //headers:{'Content-Type': 'text/plain'}
     })
     .then(response => response.text())

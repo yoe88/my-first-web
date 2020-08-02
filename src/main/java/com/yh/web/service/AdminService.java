@@ -3,7 +3,6 @@ package com.yh.web.service;
 import com.yh.web.dto.board.BoardDetail;
 import com.yh.web.dto.board.BoardList;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,9 @@ public interface AdminService {
     int listNum = 10;  //리스트 10개씩
     int galleryListNum = 40;
 
-    Map<String,Object> getMembers(String field, String query, long page);
+    List<Map<String,Object>> getMembers(String field, String query, long page);
+
+    long getMembersCount(String field, String query);
 
     Map<String, Object> getMember(String id);
 
@@ -32,4 +33,5 @@ public interface AdminService {
     long getGalleryListCount();
 
     Map<String, Object> getGalleryDetail(long gno);
+
 }

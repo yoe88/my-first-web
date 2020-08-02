@@ -27,6 +27,10 @@ public class GalleryServiceImpl implements GalleryService {
         this.fileService = fileService;
     }
 
+    /**
+     * @param page  페이지 숫자
+     * @return      페이지에 해당하는 갤러리 리스트
+     */
     @Override
     public List<Map<String,String>> getGalleryList(long page) {
         Map<String, Long> map = new HashMap<>();
@@ -45,11 +49,18 @@ public class GalleryServiceImpl implements GalleryService {
         return list;
     }
 
+    /**
+     * @return  갤러리 갯수
+     */
     @Override
     public long getGalleryListCount() {
         return galleryDao.selectGalleryListCount();
     }
 
+    /**
+     * @param model  갤러리 정보
+     * @return    성공시 true 실패 false
+     */
     @Transactional
     @Override
     public boolean addGallery(Map<String, Object> model)  {
@@ -100,6 +111,10 @@ public class GalleryServiceImpl implements GalleryService {
         }
     }
 
+    /**
+     * @param gno  갤러리 번호
+     * @return    번호에 해당하는 갤러리 정보
+     */
     @Override
     public Map<String, Object> getGalleryDetail(long gno) {
         Map<String, Object> galleryDetail = galleryDao.selectGalleryDetail(gno);
@@ -117,8 +132,8 @@ public class GalleryServiceImpl implements GalleryService {
     }
 
     /**
-     * 갤러리 테이블 수정, 갤러리 파일 테이블 삭제, 추가  파일 삭제, 추가  총 5가지
-     * @param model 번호,제목 삭제할번호, 파일이름, 추가할 파일
+     * 갤러리 테이블 수정, 갤러리 파일 테이블(삭제, 추가)  파일 (삭제, 추가)  총 5가지
+     * @param model 갤러리 (번호,제목) 삭제할 (파일번호, 파일이름), 추가할 파일
      */
     @Transactional
     @Override
@@ -204,6 +219,10 @@ public class GalleryServiceImpl implements GalleryService {
         }
     }
 
+    /**
+     * @param gno  갤러리 번호
+     * @param pub  번호에 해당하는 갤러리 공개 수정
+     */
     @Override
     public boolean updateGalleryPub(long gno, Integer pub) {
         Map<String, Object> map = new HashMap<>();
@@ -215,7 +234,7 @@ public class GalleryServiceImpl implements GalleryService {
     }
 
     //************************************** 관리자 서비스 ********************************
-    /**
+    /**  체크된건 공개  체크 안된건 비공개 처리
     * @param allNo_    모든 갤러리 번호
     * @param openNo_   체크된 갤러리 번호
     */

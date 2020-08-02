@@ -17,7 +17,6 @@ import java.io.*;
 public class FileServiceImpl implements FileService {
     /**
      * 원본 이미지를 썸네일로 만들어 출력
-     *
      * @param file   파일
      * @param width  너비
      * @param height 높이
@@ -46,7 +45,7 @@ public class FileServiceImpl implements FileService {
         ImageIO.write(thumImg, "png", imageOutputStream);
 
         byte[] imgByte = imageOutputStream.toByteArray();
-        response.setHeader("Cache-Control", "no-cache");                    //인코더 해야 한글 이름으로도 다운로드 받을수 있다.
+        response.setHeader("Cache-Control", "no-cache");               //인코더 해야 한글 이름으로도 다운로드 받을수 있다.
         response.addHeader("Content-disposition", "inline; fileName=" + Utils.urlEncode(file.getName()) );
         response.setContentType("image/png");
 
@@ -70,12 +69,12 @@ public class FileServiceImpl implements FileService {
         if(originalFileName == null)
             originalFileName = file.getName();
         response.setHeader("Cache-Control", "no-cache");
-        if(isDownload){
+        if(isDownload){  //다운로드 일 경우 attachment 아니면 inline
             response.addHeader("Content-disposition", "attachment; fileName=" + Utils.urlEncode(originalFileName));
         }else{
             response.addHeader("Content-disposition", "inline; fileName=" + Utils.urlEncode(originalFileName));
         }
-        if (isImage) {
+        if (isImage) { //이미지 일 경우 ContentType 이미지로
             String fileName = file.getName();
             String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
             response.setContentType(String.format("image/%s", fileExtension));

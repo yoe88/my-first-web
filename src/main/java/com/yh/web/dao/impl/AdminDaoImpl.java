@@ -23,7 +23,7 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     @Override
-    public List<Object> selectMembers(Map<String, Object> map) {
+    public List<Map<String, Object>> selectMembers(Map<String, Object> map) {
         return sqlSession.selectList(MAPPER + "memberList", map);
     }
 
@@ -74,8 +74,7 @@ public class AdminDaoImpl implements AdminDao {
 
     @Override
     public List<Map<String, String>> selectGalleryList(Map<String, Long> map) {
-        List<Map<String, String>> maps = sqlSession.selectList(MAPPER + "selectGalleryList", map);
-        return maps;
+        return sqlSession.selectList(MAPPER + "selectGalleryList", map);
     }
 
     @Override

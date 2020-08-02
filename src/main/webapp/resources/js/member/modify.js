@@ -135,7 +135,7 @@ function modifyPassword (passwordArray) {
             }
         }
     }
-    xhttp.open("GET",getRoot() +"/member/checkpassword?password="+passwordArray[0].value.trim(),false);
+    xhttp.open("GET",getRoot() +"/member/checkPassword?password="+passwordArray[0].value.trim(),false);
     xhttp.send();
     if(response === '1'){
         return true;
@@ -174,20 +174,22 @@ async function dropMember() {
         showAlert('info', '비밀번호 확인이 일치하지 않습니다.', true);
         return;
     }
-    const rText = await fetch('checkpassword?password='+passwordArray[0].value.trim()).then(r => r.text());
-    if(rText === '0'){
-        showAlert('danger', '비밀번호가 일치하지 않습니다.', true);
-        return;
-    }else{
-        if(confirm('정말 탈퇴하시겠습니까?')){
-            const rText = await fetch('drop',{
-                method: 'PUT'
-            }).then(r => r.text());
-            if(rText === '1'){
-                location.href = `${getRoot()}/index`;
+    const response = await fetch('checkPassword?password='+passwordArray[0].value.trim());
+    if(response.status === 200){
+        const rText = await response.text();
+        if(rText === '0'){
+            showAlert('danger', '비밀번호가 일치하지 않습니다.', true);
+        }else{
+            if(confirm('정말 탈퇴하시겠습니까?')){
+                const rText = await fetch('drop',{
+                    method: 'PUT'
+                }).then(r => r.text());
+                if(rText === '1'){
+                    location.href = `${getRoot()}/index`;
+                }
             }
         }
+    }else{
+        alert('Error');
     }
-
-
 }

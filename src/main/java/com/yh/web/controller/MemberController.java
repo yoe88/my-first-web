@@ -20,11 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.security.Principal;
 
@@ -68,7 +65,7 @@ public class MemberController {
      * @param id 아이디
      * @return OK: 사용가능한 아이디, CONFLICT: 중복된 아이디
      */
-    @GetMapping(value = "/checkid", consumes = "text/plain")
+    @GetMapping(value = "/checkId", consumes = "text/plain")
     public ResponseEntity<String> isDuplicatedId(@RequestParam(name = "id") String id) {
         log.info("아이디 중복검사: {}", id);
         String result = memberService.findId(id);
@@ -82,7 +79,7 @@ public class MemberController {
      * @param email 이메일
      * @return OK: 사용가능한 이메일, CONFLICT: 중복된 이메일
      */
-    @GetMapping(path = "/checkemail", consumes = "text/plain")
+    @GetMapping(path = "/checkEmail", consumes = "text/plain")
     public ResponseEntity<String> isDuplicatedEmail(@RequestParam(name = "email") String email) {
         log.info("이메일 중복검사: {}", email);
         String result = memberService.findEmail(email);
@@ -92,9 +89,13 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    @RequestMapping(value = "/createcode", method = RequestMethod.GET, consumes = "text/plain")
+    /**  해당 이메일에 인증코드 전송
+     * @param receiveEmail  이메일 
+     */
+    @RequestMapping(value = "/createCode", method = RequestMethod.GET, consumes = "text/plain")
     @ResponseBody
-    public String sendSimpleMail(HttpServletRequest request, @RequestParam(name = "email")String receiveEmail) throws Exception {
+    public String sendSimpleMail(HttpServletRequest request
+                                , @RequestParam(name = "email")String receiveEmail) throws Exception {
         request.setCharacterEncoding("utf-8");
 
         try {
@@ -105,7 +106,8 @@ public class MemberController {
             HttpSession session = request.getSession();
             session.setAttribute("code_", randomCode);
 
-            String sb = "<html>" +
+            String sb =
+                    "<html>" +
                     "<body>" +
                     "    <div style=\"border: 2px solid rgb(77, 194, 125); display: inline-block;padding: 2px 5px;\">" +
                     "    <p>회원가입 인증번호 입니다.</p>" +
@@ -126,7 +128,7 @@ public class MemberController {
      * @param code 사용자가 입력한 인증번호
      * @return 1:일치 0:불일치
      */
-    @GetMapping(value = "/checkcode")
+    @GetMapping(value = "/checkCode")
     public ResponseEntity<String> checkCode(@RequestParam(name = "code", required = false) String code,
                             HttpServletRequest request) {
         log.info("{}",code);
@@ -138,9 +140,9 @@ public class MemberController {
         if (code_.equals(code)) {
             //입력한 인증코드와 실제 인증코드가 일치하면 1전송
             session.removeAttribute("code_");
-            return new ResponseEntity<>("1",HttpStatus.OK);
+            return ResponseEntity.ok("1");
         } else
-            return new ResponseEntity<>("0",HttpStatus.OK);
+            return ResponseEntity.ok("0");
     }
 
     /** 비밀번호 수정 페이지에서 사용
@@ -148,14 +150,14 @@ public class MemberController {
      * @return 1:일치 0:불일치
      */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping(value = "/checkpassword")
+    @GetMapping(value = "/checkPassword")
     public ResponseEntity<String> checkPassword(@RequestParam(name = "password") String password) {
         log.info("{}",password);
         CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if(passwordEncoder.matches(password,user.getPassword()))
-            return new ResponseEntity<>("1",HttpStatus.OK);
+            return ResponseEntity.ok("1");
         else
-            return new ResponseEntity<>("0",HttpStatus.OK);
+            return ResponseEntity.ok("0");
     }
 
 
@@ -165,23 +167,17 @@ public class MemberController {
      * 성공시 첫페이지로 리턴
      */
     @PostMapping("/new")
-    public void addMember(@ModelAttribute Member member
-                        ,HttpServletResponse response) throws IOException {
+    public ModelAndView addMember(@ModelAttribute Member member) {
+        ModelAndView mav = new ModelAndView();
         log.info(member.toString());
         int result;
         result = memberService.addMember(member);
         if(result != 0){
-            response.sendRedirect(Utils.getRoot() + "/index");
+            mav.setViewName("redirect:/index");
         } else{
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("text/html");
-            PrintWriter out = response.getWriter();
-            String msg = "<script>" +
-                    "        alert('회원정보 추가에 실패하였습니다.');" +
-                    "        location.href= ' " + Utils.getRoot() + "/index';" +
-                    "    </script>";
-            out.write(msg);
+            Utils.redirectErrorPage(mav,"회원정보 추가에 실패하였습니다.","/index");
         }
+        return mav;
     }
 
     /**
@@ -301,7 +297,7 @@ public class MemberController {
     public ResponseEntity<Integer> drop(Principal principal, HttpServletRequest request){
        int result = memberService.updateEnable(principal.getName(), request);
 
-       return new ResponseEntity<>(result, HttpStatus.OK);
+       return ResponseEntity.ok(result);
     }
 
     /**
@@ -311,8 +307,8 @@ public class MemberController {
      */
     @GetMapping(path = "/findId", consumes = "text/plain")
     public ResponseEntity<String> find(@RequestParam(name = "email") String email){
-        String ID = memberService.findIdByEmail(email);
-        return new ResponseEntity<>(ID ,HttpStatus.OK);
+        String id = memberService.findIdByEmail(email);
+        return ResponseEntity.ok(id);
     }
 
     /**
@@ -322,9 +318,10 @@ public class MemberController {
      * @return  아이디와 이메일이 일치하는 회원수 1, 불일치 0
      */
     @GetMapping(path = "/findMember", consumes = "text/plain")
-    public ResponseEntity<Integer> find(@RequestParam(name = "id") String id ,@RequestParam(name = "email") String email){
-        int result = memberService.searchMember(id, email);
-        return new ResponseEntity<>(result ,HttpStatus.OK);
+    public ResponseEntity<Integer> findMember(@RequestParam(name = "id") String id
+                                       ,@RequestParam(name = "email") String email){
+        int result = memberService.findMemberByIdAndEmail(id, email);
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -333,12 +330,13 @@ public class MemberController {
      * @param email 이메일    임시 비밀번호를 받을 이메일
      */
     @GetMapping(path = "/newPassword", consumes = "text/plain")
-    public ResponseEntity<String> newPassword(@RequestParam(name = "id") String id ,@RequestParam(name = "email") String email){
+    public ResponseEntity<String> newPassword(@RequestParam(name = "id") String id
+                                                ,@RequestParam(name = "email") String email){
         boolean result = memberService.changeTempPassword(id,email);
         if(result)
-            return new ResponseEntity<>("OK",HttpStatus.OK);
+            return ResponseEntity.ok("OK");
         else
-            return new ResponseEntity<>("FAIL",HttpStatus.OK);
+            return ResponseEntity.ok("FAIL");
     }
 
 }

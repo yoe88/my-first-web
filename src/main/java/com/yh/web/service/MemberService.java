@@ -12,7 +12,6 @@ public interface MemberService{
 	Member getMemberInfo(String loginUserId);
     List<MemberRole> getMemberRoles(String loginUserId);
 	
-	List<Member> getAllMemberList();
 	String findId(String id);
 	String findEmail(String email);
 	int addMember(Member member);
@@ -20,7 +19,7 @@ public interface MemberService{
 
     String findIdByEmail(String email);
 
-    int searchMember(String id, String email);
+    int findMemberByIdAndEmail(String id, String email);
 
     boolean changeTempPassword(String id, String email);
 

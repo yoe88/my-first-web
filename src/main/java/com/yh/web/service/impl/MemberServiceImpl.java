@@ -35,35 +35,49 @@ public class MemberServiceImpl implements MemberService {
         this.mailService = mailService;
     }
 
-    @Transactional(readOnly = true)
+    /**
+     * @param id 사용자 아이디
+     * @return 아이디에 해당하는 사용자 정보
+     */
     @Override
     public Member getMemberInfo(String id) {
-        return memberDao.selectMemberById(id);
+        Member m = memberDao.selectMemberById(id);
+        if(m.getProfileImage() == null){
+            m.setProfileImage("none");
+        }else{
+            String encodeProfileImageName = Utils.urlEncode(m.getProfileImage());
+            m.setProfileImage(encodeProfileImageName);
+        }
+        return m;
     }
 
-    @Transactional(readOnly = true)
+    /**
+     * @param id 사용자 아이디
+     * @return   아이디에 해당하는 권한
+     */
     @Override
     public List<MemberRole> getMemberRoles(String id) {
         return memberDao.selectRolesById(id);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public List<Member> getAllMemberList() {
-        return memberDao.selectAllMemberList();
-    }
-
-    @Transactional(readOnly = true)
+    /**
+     * @param id  찾을 아이디
+     * @return    일치하는게 있으면 아이디 그대로 리턴 없으면 null
+     */
     @Override
     public String findId(String id) {
         return memberDao.selectId(id);
     }
 
-    @Transactional(readOnly = true)
+    /**
+     * @param email  찾을 이메일
+     * @return       일치하는게 있으면 이메일 그대로 리턴 없으면 null
+     */
     @Override
     public String findEmail(String email) {
         return memberDao.selectEmail(email);
     }
+
 
     @Transactional
     @Override
@@ -76,21 +90,24 @@ public class MemberServiceImpl implements MemberService {
         return  result;
     }
 
-    @Transactional
+    /** 회원 수정
+     * @param member  회원정보
+     */
     @Override
     public boolean modifyMember(Member member) {
         int result;
         if(member.getPassword() != null) //수정할 비밀번호가 있으면 암호화 작업
             member.setPassword(passwordEncoder.encode(member.getPassword()));
         
-        result = memberDao.updateMember(member); //
+        result = memberDao.updateMember(member);
         if(result != 0){ //업데이트 완료
             CustomUserDetails user = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if(member.getProfileImage() != null){ //프로필 이미지 변경 됐으면 세션 수정
                 if (member.getProfileImage().equals("")) {
                     user.setProfileImage("none");
                 } else {
-                    user.setProfileImage(member.getProfileImage());
+                    String s = Utils.urlEncode(member.getProfileImage());
+                    user.setProfileImage(s);
                 }
             }
             if(member.getPassword() != null)  //비밀번호 변경 됐으면 세션 수정
@@ -101,17 +118,24 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+    /**
+     * @param email 이메일
+     * @return 이메일과 일치하는 아이디 
+     */
     @Override
     public String findIdByEmail(String email) {
         return memberDao.searchIdByEmail(email);
     }
 
+    /**
+     * @return   아이디와 이메일이 일치하는 회원이 있으면 1 없으면 0
+     */
     @Override
-    public int searchMember(String id, String email) {
+    public int findMemberByIdAndEmail(String id, String email) {
         Map<String, String> map = new HashMap<>();
         map.put("id", id);
         map.put("email", email);
-        return memberDao.searchMember(map);
+        return memberDao.findMemberByIdAndEmail(map);
     }
 
     /**
@@ -150,6 +174,10 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+    /**
+     *          해당 하는 아이디  사용 불가로 변경 하고 세션 제거
+     * @param id         아이디
+     */
     @Override
     public int updateEnable(String id, HttpServletRequest request) {
         int result = memberDao.updateEnable(id);

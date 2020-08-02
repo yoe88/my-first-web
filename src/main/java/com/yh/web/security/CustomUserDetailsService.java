@@ -3,7 +3,6 @@ package com.yh.web.security;
 import com.yh.web.dto.Member;
 import com.yh.web.dto.MemberRole;
 import com.yh.web.service.MemberService;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.memberService = memberService;
     }
 
-    @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String id) {//유저정보를 읽어오는 역할
         // Id에 해당하는 정보를 데이터베이스에서 읽어 Member객체에 저장한다.
@@ -43,11 +40,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.setUsername(member.getId());
         customUserDetails.setPassword(member.getPassword());
-        if(member.getProfileImage() == null){
-            member.setProfileImage("none");
-        }else{
-            member.setProfileImage(URLEncoder.encode(member.getProfileImage(),"UTF-8").replace("+","%20"));
-        }
         customUserDetails.setProfileImage(member.getProfileImage());
 
         customUserDetails.setEnabled(member.isEnable());

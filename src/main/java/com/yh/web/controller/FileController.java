@@ -26,20 +26,23 @@ public class FileController {
     }
 
     @RequestMapping("/boards/{articleNo}/{file:.+}")
-    public void boardFile (@PathVariable("articleNo") String articleNo
+    public ResponseEntity<String> boardFile (@PathVariable("articleNo") String articleNo
                           ,@PathVariable("file") String fileName
                           ,@RequestParam("fName") String originalFileName
                           ,HttpServletResponse response) throws Exception {
         String filePath = FileService.boardPath + SE + articleNo + SE + fileName;
         File file = new File(filePath);
+        if(!file.exists())
+            return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
         fileService.download(response, file, originalFileName,false, true);
+        return ResponseEntity.ok("200");
     }
 
     /**
      * id/이미지 이름 받아서 경로 지정 해주고 썸네일 메서드 호출
      */
     @GetMapping("/original/{type}/{identify}/{imageFileName:.+}")
-    public void originalImage(HttpServletResponse response
+    public ResponseEntity<String> originalImage(HttpServletResponse response
             , @PathVariable("type") String type
             , @PathVariable("identify") String identify
             , @PathVariable(value = "imageFileName") String imageFileName
@@ -53,15 +56,18 @@ public class FileController {
                 filePath = FileService.profilePath + SE + identify + SE + imageFileName;
             }
             File file = new File(filePath);
+            if(!file.exists())
+                return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
             fileService.download(response, file, imageFileName, true, false);
         }else if(type.equals("gallery")){
             filePath = FileService.galleryPath + SE + identify + SE + imageFileName;
 
             File file = new File(filePath);
+            if(!file.exists())
+                return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
             fileService.download(response, file, originalFileName, true, false);
         }
-
-
+        return ResponseEntity.ok("200");
     }
 
 
@@ -87,12 +93,16 @@ public class FileController {
                 filePath = FileService.profilePath + SE + identify + SE + imageFileName;
             }
             File file = new File(filePath);
+            if(!file.exists())
+                return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
             fileService.toThumbnail(response, file, width, height);
             return new ResponseEntity<>("OK", HttpStatus.OK);
         }else if(type.equals("gallery")){
             filePath = FileService.galleryPath + SE + identify + SE + imageFileName;
 
             File file = new File(filePath);
+            if(!file.exists())
+                return new ResponseEntity<>("NOT_FOUND", HttpStatus.NOT_FOUND);
             fileService.toThumbnail(response, file, width, height);
             return ResponseEntity.ok("ok");
         }

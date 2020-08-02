@@ -1,13 +1,12 @@
 package com.yh.web.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import com.yh.web.dto.Member;
 import com.yh.web.dto.MemberRole;
 
+import java.util.List;
+import java.util.Map;
+
 public interface MemberDao {
-	List<Member> selectAllMemberList();
 	int updateMember(Member member);
 	Member selectMemberById(String loginUserId);
 	List<MemberRole> selectRolesById(String id);
@@ -18,7 +17,7 @@ public interface MemberDao {
 
     String searchIdByEmail(String email);
 
-    int searchMember(Map<String, String> map);
+    int findMemberByIdAndEmail(Map<String, String> map);
 
     int updateEnable(String id);
 }

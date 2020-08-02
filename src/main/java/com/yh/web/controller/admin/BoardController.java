@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -90,7 +89,7 @@ public class BoardController {
      */
     @GetMapping(path = "/boards/{articleNo}")
     public ModelAndView boardDetail(@PathVariable("articleNo") String articleNo_
-            , HttpServletRequest request) throws UnsupportedEncodingException {
+                                    , HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
         long articleNo;
 

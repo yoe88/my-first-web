@@ -27,13 +27,6 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public List<Member> selectAllMemberList() {
-        List<Member> membersList;
-        membersList = sqlSession.selectList(MAPPER + "selectAllMemberList");
-        return membersList;
-    }
-
-    @Override
     public Member selectMemberById(String id) {
         return sqlSession.selectOne(MAPPER + "selectMemberById", id);
     }
@@ -69,8 +62,8 @@ public class MemberDaoImpl implements MemberDao {
     }
 
     @Override
-    public int searchMember(Map<String, String> map) {
-        return sqlSession.selectOne(MAPPER + "searchMember", map);
+    public int findMemberByIdAndEmail(Map<String, String> map) {
+        return sqlSession.selectOne(MAPPER + "findMemberByIdAndEmail", map);
     }
 
     @Override

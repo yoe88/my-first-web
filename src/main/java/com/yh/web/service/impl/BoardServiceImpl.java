@@ -58,6 +58,11 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.selectBoardList(map);
     }
 
+    /**
+     * @param field  필드 타입
+     * @param query  검색 내용
+     * @return       검색된 글 리스트
+     */
     @Override
     public long getBoardListCount(String field, String query) {
         Map<String,Object> map = new HashMap<>();
@@ -67,6 +72,11 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.selectBoardListCount(map);
     }
 
+    /**
+     * @param articleNo  번호
+     * @param isModify   수정 하려고 하는지
+     * @return          번호에 해당하는 정보
+     */
     @Transactional(readOnly = true)
     @Override
     public BoardDetail getBoardDetail(long articleNo, boolean isModify) {
@@ -90,8 +100,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     /**
-     * @param board  글정보
-     * @param mf     파일
+     * @param board  추가 할 글정보
+     * @param mf     추가 할 단일 파일
      */
     @Transactional
     @Override
@@ -128,6 +138,11 @@ public class BoardServiceImpl implements BoardService {
         return result;
     }
 
+    /**
+     * @param board     수정할 글 정보
+     * @param mf         파일
+     * @param isDelete   파일을 삭제하는건지?
+     */
     @Transactional
     @Override
     public int modifyBoard(Board board, MultipartFile mf, boolean isDelete) {
@@ -171,7 +186,7 @@ public class BoardServiceImpl implements BoardService {
 
     /**
      * @param articleNo  글번호
-     * @return           정상적으로 삭제 했으면 1 자식을 가지고 있다면 44 실패 했다면 0
+     * @return          정상적으로 삭제 했으면 1 자식을 가지고 있다면 44 실패 했다면 0
      */
     @Transactional
     @Override
@@ -210,6 +225,11 @@ public class BoardServiceImpl implements BoardService {
         return boardDao.selectTitleLastFive();
     }
 
+    /**
+     * @param articleNo   글 번호
+     * @param pub         번호에 해당하는 글 공개 수정
+     * @return            수정 됐으면 1 실패 0
+     */
     @Override
     public boolean updateBoardPubByArticleNo(long articleNo, Integer pub) {
         Map<String, Object> map = new HashMap<>();

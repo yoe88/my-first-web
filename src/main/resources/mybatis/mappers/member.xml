@@ -98,14 +98,14 @@
 	<select id="searchIdByEmail" parameterType="string" resultType="string">
 		SELECT ID
 		FROM MEMBER
-		WHERE EMAIL = #{email}
+		WHERE EMAIL = #{email} AND ENABLE = 1
 	</select>
 
 	<!-- 이메일과 아이디가 일치하는 회원 수 -->
-	<select id="searchMember" parameterType="map" resultType="_int">
+	<select id="findMemberByIdAndEmail" parameterType="map" resultType="_int">
 		SELECT COUNT(*)
 		FROM MEMBER
-		WHERE ID = #{id} AND EMAIL = #{email}
+		WHERE ID = #{id} AND EMAIL = #{email} AND EMAIL = 1
 	</select>
 
 </mapper>

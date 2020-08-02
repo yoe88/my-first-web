@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 
 @Data
 public class Comment {
-    int cno;
-    int articleNo;
-    String content;
-    String writer;
-    LocalDateTime regDate;
-    int parent;
-    String ip;
-    boolean pub;
+    private int cno;
+    private int articleNo;
+    private String content;
+    private String writer;
+    private LocalDateTime regDate;
+    private int parent;
+    private String ip;
+    private boolean pub;
 }

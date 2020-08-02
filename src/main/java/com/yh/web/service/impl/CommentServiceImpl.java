@@ -67,11 +67,17 @@ public class CommentServiceImpl implements CommentService {
         return resultMap;
     }
 
+    /**  댓글 추가하기
+     * @param comment  댓글 정보
+     */
     @Override
     public int addComment(Comment comment) {
         return commentDao.insertComment(comment);
     }
 
+    /**  실제 삭제 아닌 비공개 처리
+     * @param cno  댓글 번호
+     */
     @Override
     public int deleteComment(long cno) {
         return commentDao.updateCommentPub(cno);
