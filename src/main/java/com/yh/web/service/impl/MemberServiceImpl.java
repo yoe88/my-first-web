@@ -42,11 +42,13 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Member getMemberInfo(String id) {
         Member m = memberDao.selectMemberById(id);
-        if(m.getProfileImage() == null){
-            m.setProfileImage("none");
-        }else{
-            String encodeProfileImageName = Utils.urlEncode(m.getProfileImage());
-            m.setProfileImage(encodeProfileImageName);
+        if(m != null) {
+            if (m.getProfileImage() == null) {
+                m.setProfileImage("none");
+            } else {
+                String encodeProfileImageName = Utils.urlEncode(m.getProfileImage());
+                m.setProfileImage(encodeProfileImageName);
+            }
         }
         return m;
     }

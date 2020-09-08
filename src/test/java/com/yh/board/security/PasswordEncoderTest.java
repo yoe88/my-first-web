@@ -1,3 +1,4 @@
+/*
 package com.yh.board.security;
 
 import org.junit.Test;
@@ -32,4 +33,4 @@ public class PasswordEncoderTest {
   	boolean test = passwordEncoder.matches(password, encodePasswd);
   	System.out.println(test);
   }
-}
+}*/
